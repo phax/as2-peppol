@@ -78,7 +78,7 @@ public final class MainAS2TestClient
   /** Your AS2 sender email address */
   private static final String SENDER_EMAIL = "peppol@example.org";
   /** Your AS2 key alias in the PKCS12 key store */
-  private static final String SENDER_KEY_ALIAS = SENDER_AS2_ID;
+  private static final String SENDER_KEY_ALIAS = "APP_1000000004";
   /** The PEPPOL document type to use. */
   private static final SimpleDocumentTypeIdentifier DOCTYPE = EPredefinedDocumentTypeIdentifier.INVOICE_T010_BIS4A_V20.getAsDocumentTypeIdentifier ();
   /** The PEPPOL process to use. */
