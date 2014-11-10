@@ -31,14 +31,19 @@ import org.bouncycastle.asn1.x500.style.IETFUtils;
 import org.bouncycastle.cert.jcajce.JcaX509CertificateHolder;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.busdox.servicemetadata.publishing._1.EndpointType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.unece.cefact.namespaces.sbdh.SBDMarshaller;
 import org.unece.cefact.namespaces.sbdh.StandardBusinessDocument;
 import org.w3c.dom.Document;
 
 import com.helger.as2lib.client.AS2Client;
 import com.helger.as2lib.client.AS2ClientRequest;
+import com.helger.as2lib.client.AS2ClientResponse;
 import com.helger.as2lib.client.AS2ClientSettings;
 import com.helger.as2lib.crypto.ECryptoAlgorithm;
+import com.helger.commons.GlobalDebug;
+import com.helger.commons.exceptions.InitializationException;
 import com.helger.commons.io.resource.ClassPathResource;
 import com.helger.commons.io.streams.NonBlockingByteArrayOutputStream;
 import com.helger.commons.xml.serialize.DOMReader;
@@ -52,37 +57,58 @@ import eu.europa.ec.cipa.peppol.identifier.participant.SimpleParticipantIdentifi
 import eu.europa.ec.cipa.peppol.identifier.process.EPredefinedProcessIdentifier;
 import eu.europa.ec.cipa.peppol.identifier.process.SimpleProcessIdentifier;
 import eu.europa.ec.cipa.peppol.sml.ESML;
+import eu.europa.ec.cipa.peppol.utils.ConfigFile;
 import eu.europa.ec.cipa.smp.client.ESMPTransportProfile;
 import eu.europa.ec.cipa.smp.client.SMPServiceCaller;
 import eu.europa.ec.cipa.smp.client.SMPServiceCallerReadonly;
 
 /**
- * Main class to
+ * Main class to send AS2 messages.
  *
  * @author Philip Helger
  */
 public final class MainAS2TestClient
 {
+  /** The file path to the PKCS12 key store */
   private static final String PKCS12_CERTSTORE_PATH = "as2-client-data/client-certs.p12";
+  /** The password to open the PKCS12 key store */
   private static final String PKCS12_CERTSTORE_PASSWORD = "peppol";
+  /** Your AS2 sender ID */
   private static final String SENDER_AS2_ID = "APP_1000000004";
-  private static final String SENDER_EMAIL = "support-erb@brz.gv.at";
+  /** Your AS2 sender email address */
+  private static final String SENDER_EMAIL = "peppol@example.org";
+  /** Your AS2 key alias in the PKCS12 key store */
   private static final String SENDER_KEY_ALIAS = SENDER_AS2_ID;
+  /** The PEPPOL document type to use. */
   private static final SimpleDocumentTypeIdentifier DOCTYPE = EPredefinedDocumentTypeIdentifier.INVOICE_T010_BIS4A_V20.getAsDocumentTypeIdentifier ();
+  /** The PEPPOL process to use. */
   private static final SimpleProcessIdentifier PROCESS = EPredefinedProcessIdentifier.BIS4A_V20.getAsProcessIdentifier ();
+  /** The PEPPOL transport profile to use */
   private static final ESMPTransportProfile TRANSPORT_PROFILE = ESMPTransportProfile.TRANSPORT_PROFILE_AS2;
+
+  private static final Logger s_aLogger = LoggerFactory.getLogger (MainAS2TestClient.class);
 
   static
   {
-    // Set Proxy Settings
-    System.setProperty ("java.net.useSystemProxies", "true");
-    if (false)
+    // Set Proxy Settings from property file. See:
+    // http://download.oracle.com/javase/6/docs/technotes/guides/net/proxies.html
+    for (final String sProperty : new String [] { "java.net.useSystemProxies",
+                                                 "http.proxyHost",
+                                                 "http.proxyPort",
+                                                 "https.proxyHost",
+                                                 "https.proxyPort" })
     {
-      System.setProperty ("http.proxyHost", "1.2.3.4");
-      System.setProperty ("http.proxyPort", "8080");
-      System.setProperty ("https.proxyHost", "1.2.3.4");
-      System.setProperty ("https.proxyPort", "8080");
+      final String sConfigValue = ConfigFile.getInstance ().getString (sProperty);
+      if (sConfigValue != null)
+      {
+        System.setProperty (sProperty, sConfigValue);
+        s_aLogger.info ("Set proxy property: " + sProperty + "=" + sConfigValue);
+      }
     }
+
+    // Sanity check
+    if (!new File (PKCS12_CERTSTORE_PATH).exists ())
+      throw new InitializationException ("The PKCS12 key store file '" + PKCS12_CERTSTORE_PATH + "' does not exist!");
   }
 
   /**
@@ -104,6 +130,9 @@ public final class MainAS2TestClient
   {
     // Must be first!
     Security.addProvider (new BouncyCastleProvider ());
+
+    // Enable or disable debug mode
+    GlobalDebug.setDebugModeDirect (false);
 
     IReadonlyParticipantIdentifier aReceiver;
     String sTestFilename;
@@ -153,7 +182,7 @@ public final class MainAS2TestClient
 
     if (sReceiverAddress == null || sReceiverID == null)
     {
-      System.out.println ("SMP lookup");
+      s_aLogger.info ("SMP lookup for " + aReceiver.getValue ());
       final SMPServiceCaller aSMPClient = new SMPServiceCaller (aReceiver, ESML.PRODUCTION);
 
       final EndpointType aEndpoint = aSMPClient.getEndpoint (aReceiver, DOCTYPE, PROCESS, TRANSPORT_PROFILE);
@@ -166,8 +195,8 @@ public final class MainAS2TestClient
         aReceiverCertificate = SMPServiceCallerReadonly.getEndpointCertificate (aEndpoint);
       if (sReceiverID == null)
         sReceiverID = _getCN (aReceiverCertificate);
-      System.out.println ("Receiver URL: " + sReceiverAddress);
-      System.out.println ("Receiver DN:  " + sReceiverID);
+      s_aLogger.info ("Receiver URL: " + sReceiverAddress);
+      s_aLogger.info ("Receiver DN:  " + sReceiverID);
     }
 
     if (sReceiverKeyAlias == null)
@@ -211,6 +240,10 @@ public final class MainAS2TestClient
     // 4. send message
     final AS2ClientRequest aRequest = new AS2ClientRequest ("OpenPEPPOL AS2 message");
     aRequest.setData (aBAOS.toByteArray ());
-    new AS2Client ().sendSynchronous (aSettings, aRequest);
+    final AS2ClientResponse aResponse = new AS2Client ().sendSynchronous (aSettings, aRequest);
+    if (aResponse.hasException ())
+      s_aLogger.info (aResponse.getAsString ());
+
+    s_aLogger.info ("Done");
   }
 }
