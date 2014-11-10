@@ -7,6 +7,7 @@ This AS2 client is based on my [as2-lib](https://github.com/phax/as2-lib) librar
 
 A keystore in the format PKCS12 must be available.
 By default it is expected to be called `client-certs.p12` residing in the `as2-client-data` folder. It must contain one certificate, namely your PEPPOL AP certificate.
+
 To convert a JKS keystore to a PKCS12 keystore you can e.g. use [Portecle](http://portecle.sourceforge.net/) - a user friendly GUI application for creating, managing and examining keystores, keys, certificates, certificate requests, certificate revocation lists and more.
 
 The main class is `MainAS2TestClient` and you need to adopt the constants on top to make it work.
@@ -16,6 +17,23 @@ The main class is `MainAS2TestClient` and you need to adopt the constants on top
   * **SENDER_EMAIL** your email address for out of band resolutions.
   * **SENDER_KEY_ALIAS** the alias name of your PEPPOL-AP-certificate within the PKCS12 keystore. Ideally this is the same value as **SENDER_AS2_ID** 
 
+#Sending a document
+
+Before being ready to send a document, the recipient participant identifier as well as the test document must be selected. This happens currently directly in the `main` method and you have to choose the recipient you want.
+
+The test files reside in the `src/main/resources/xml` folder and are referenced via classpath relative lookups.
+
+## Usage of a proxy server
+
+To use a proxy server, add the following items to the `config.properties` configuration file (of course with adopted values): 
+```
+http.proxyHost=1.2.3.4
+http.proxyPort=8080
+https.proxyHost=1.2.3.4
+https.proxyPort=8080
+```
+
+If you need a username and password for your proxy see [here](http://rolandtapken.de/blog/2012-04/java-process-httpproxyuser-and-httpproxypassword) for a guideline.
 
 ---
 

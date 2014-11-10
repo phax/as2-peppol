@@ -95,6 +95,7 @@ public final class MainAS2TestClient
     for (final String sProperty : new String [] { "java.net.useSystemProxies",
                                                  "http.proxyHost",
                                                  "http.proxyPort",
+                                                 "http.nonProxyHosts",
                                                  "https.proxyHost",
                                                  "https.proxyPort" })
     {
@@ -183,25 +184,33 @@ public final class MainAS2TestClient
     if (sReceiverAddress == null || sReceiverID == null)
     {
       s_aLogger.info ("SMP lookup for " + aReceiver.getValue ());
-      final SMPServiceCaller aSMPClient = new SMPServiceCaller (aReceiver, ESML.PRODUCTION);
 
+      // Query SMP
+      final SMPServiceCaller aSMPClient = new SMPServiceCaller (aReceiver, ESML.PRODUCTION);
       final EndpointType aEndpoint = aSMPClient.getEndpoint (aReceiver, DOCTYPE, PROCESS, TRANSPORT_PROFILE);
       if (aEndpoint == null)
         throw new NullPointerException ("Failed to resolve endpoint for docType/process");
 
+      // Extract from SMP response
       if (sReceiverAddress == null)
         sReceiverAddress = SMPServiceCallerReadonly.getEndpointAddress (aEndpoint);
       if (aReceiverCertificate == null)
         aReceiverCertificate = SMPServiceCallerReadonly.getEndpointCertificate (aEndpoint);
       if (sReceiverID == null)
         sReceiverID = _getCN (aReceiverCertificate);
+
+      // SMP lookup done
       s_aLogger.info ("Receiver URL: " + sReceiverAddress);
       s_aLogger.info ("Receiver DN:  " + sReceiverID);
     }
 
     if (sReceiverKeyAlias == null)
+    {
+      // No key alias is specified, so use the same as the receiver ID
       sReceiverKeyAlias = sReceiverID;
+    }
 
+    // Start client configuration
     final AS2ClientSettings aSettings = new AS2ClientSettings ();
     aSettings.setKeyStore (new File (PKCS12_CERTSTORE_PATH), PKCS12_CERTSTORE_PASSWORD);
 
