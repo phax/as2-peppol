@@ -3,6 +3,9 @@
 An example AS2 client to easily send AS2 messages to PEPPOL.
 This AS2 client is based on my [as2-lib](https://github.com/phax/as2-lib) library.
 
+Please have a look at the [PEPPOL practical AP guide](http://peppol.helger.com/public/?menuitem=docs-setup-ap)
+for a detailed description on how it works and how it fits in the overall PEPPOL transport infrastructure.
+
 #Configuration
 
 A keystore in the format PKCS12 must be available.
