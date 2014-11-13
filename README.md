@@ -3,6 +3,8 @@
 An example AS2 client to easily send AS2 messages to PEPPOL.
 This AS2 client is based on my [as2-lib](https://github.com/phax/as2-lib) library.
 
+When you are looking for a PEPPOL AS2 server component you may have a look at my [as2-peppol-server](https://github.com/phax/as2-peppol-server) project.
+
 Please have a look at the [PEPPOL practical AP guide](http://peppol.helger.com/public/?menuitem=docs-setup-ap)
 for a detailed description on how it works and how it fits in the overall PEPPOL transport infrastructure.
 
