@@ -231,7 +231,7 @@ public final class MainAS2TestClient
     aSettings.setReceiverData (sReceiverID, sReceiverKeyAlias, sReceiverAddress);
     aSettings.setReceiverCertificate (aReceiverCertificate);
 
-    // AS2 stuff
+    // AS2 stuff - no need to change anything in this block
     aSettings.setPartnershipName (aSettings.getSenderAS2ID () + "_" + aSettings.getReceiverAS2ID ());
     aSettings.setMDNOptions ("signed-receipt-protocol=required, pkcs7-signature; signed-receipt-micalg=required, sha1");
     aSettings.setEncryptAndSign (null, ECryptoAlgorithm.DIGEST_SHA1);
