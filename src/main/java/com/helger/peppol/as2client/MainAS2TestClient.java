@@ -48,20 +48,18 @@ import com.helger.commons.exceptions.InitializationException;
 import com.helger.commons.io.resource.ClassPathResource;
 import com.helger.commons.io.streams.NonBlockingByteArrayOutputStream;
 import com.helger.commons.xml.serialize.DOMReader;
+import com.helger.peppol.identifier.IReadonlyParticipantIdentifier;
+import com.helger.peppol.identifier.doctype.EPredefinedDocumentTypeIdentifier;
+import com.helger.peppol.identifier.doctype.SimpleDocumentTypeIdentifier;
+import com.helger.peppol.identifier.participant.SimpleParticipantIdentifier;
+import com.helger.peppol.identifier.process.EPredefinedProcessIdentifier;
+import com.helger.peppol.identifier.process.SimpleProcessIdentifier;
 import com.helger.peppol.sbdh.DocumentData;
 import com.helger.peppol.sbdh.write.DocumentDataWriter;
-
-import eu.europa.ec.cipa.busdox.identifier.IReadonlyParticipantIdentifier;
-import eu.europa.ec.cipa.peppol.identifier.doctype.EPredefinedDocumentTypeIdentifier;
-import eu.europa.ec.cipa.peppol.identifier.doctype.SimpleDocumentTypeIdentifier;
-import eu.europa.ec.cipa.peppol.identifier.participant.SimpleParticipantIdentifier;
-import eu.europa.ec.cipa.peppol.identifier.process.EPredefinedProcessIdentifier;
-import eu.europa.ec.cipa.peppol.identifier.process.SimpleProcessIdentifier;
-import eu.europa.ec.cipa.peppol.sml.ESML;
-import eu.europa.ec.cipa.peppol.utils.ConfigFile;
-import eu.europa.ec.cipa.smp.client.ESMPTransportProfile;
-import eu.europa.ec.cipa.smp.client.SMPServiceCaller;
-import eu.europa.ec.cipa.smp.client.SMPServiceCallerReadonly;
+import com.helger.peppol.sml.ESML;
+import com.helger.peppol.smp.ESMPTransportProfile;
+import com.helger.peppol.smpclient.CSMPClient;
+import com.helger.peppol.smpclient.SMPClientReadonly;
 
 /**
  * Main class to send AS2 messages.
@@ -100,7 +98,7 @@ public final class MainAS2TestClient
                                                  "https.proxyHost",
                                                  "https.proxyPort" })
     {
-      final String sConfigValue = ConfigFile.getInstance ().getString (sProperty);
+      final String sConfigValue = CSMPClient.getConfigFile ().getString (sProperty);
       if (sConfigValue != null)
       {
         System.setProperty (sProperty, sConfigValue);
@@ -203,16 +201,16 @@ public final class MainAS2TestClient
       s_aLogger.info ("SMP lookup for " + aReceiver.getValue ());
 
       // Query SMP
-      final SMPServiceCaller aSMPClient = new SMPServiceCaller (aReceiver, ESML.PRODUCTION);
+      final SMPClientReadonly aSMPClient = new SMPClientReadonly (aReceiver, ESML.PRODUCTION);
       final EndpointType aEndpoint = aSMPClient.getEndpoint (aReceiver, DOCTYPE, PROCESS, TRANSPORT_PROFILE);
       if (aEndpoint == null)
         throw new NullPointerException ("Failed to resolve endpoint for docType/process");
 
       // Extract from SMP response
       if (sReceiverAddress == null)
-        sReceiverAddress = SMPServiceCallerReadonly.getEndpointAddress (aEndpoint);
+        sReceiverAddress = SMPClientReadonly.getEndpointAddress (aEndpoint);
       if (aReceiverCertificate == null)
-        aReceiverCertificate = SMPServiceCallerReadonly.getEndpointCertificate (aEndpoint);
+        aReceiverCertificate = SMPClientReadonly.getEndpointCertificate (aEndpoint);
       if (sReceiverID == null)
         sReceiverID = _getCN (aReceiverCertificate);
 
