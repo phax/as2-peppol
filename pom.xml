@@ -92,7 +92,7 @@
       <groupId>com.helger</groupId>
       <artifactId>as2-lib</artifactId>
       <version>1.0.7</version>
-    </dependency>  
+    </dependency>
     <dependency>
       <groupId>com.helger</groupId>
       <artifactId>peppol-sbdh</artifactId>
