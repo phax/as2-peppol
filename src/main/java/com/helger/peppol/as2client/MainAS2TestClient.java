@@ -91,7 +91,8 @@ public final class MainAS2TestClient
   {
     // Set Proxy Settings from property file. See:
     // http://download.oracle.com/javase/6/docs/technotes/guides/net/proxies.html
-    for (final String sProperty : new String [] { "java.net.useSystemProxies",
+    for (final String sProperty : new String [] { "javax.net.debug",
+                                                 "java.net.useSystemProxies",
                                                  "http.proxyHost",
                                                  "http.proxyPort",
                                                  "http.nonProxyHosts",
