@@ -58,7 +58,7 @@ import com.helger.peppol.sbdh.DocumentData;
 import com.helger.peppol.sbdh.write.DocumentDataWriter;
 import com.helger.peppol.sml.ESML;
 import com.helger.peppol.smp.ESMPTransportProfile;
-import com.helger.peppol.smpclient.CSMPClient;
+import com.helger.peppol.smpclient.SMPClientConfiguration;
 import com.helger.peppol.smpclient.SMPClientReadonly;
 
 /**
@@ -90,7 +90,7 @@ public final class MainAS2TestClient
   static
   {
     // Set Proxy Settings from property file.
-    CSMPClient.getConfigFile ().applyAllNetworkSystemProperties ();
+    SMPClientConfiguration.getConfigFile ().applyAllNetworkSystemProperties ();
 
     // Sanity check
     if (!new File (PKCS12_CERTSTORE_PATH).exists ())
