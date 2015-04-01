@@ -179,13 +179,13 @@ public final class MainAS2TestClient
       aReceiver = SimpleParticipantIdentifier.createWithDefaultScheme ("9914:atu66313919");
       sTestFilename = "xml/as2-test-at-gov.xml";
     }
-    if (false)
+    if (true)
     {
       // BRZ test endpoint
       aReceiver = SimpleParticipantIdentifier.createWithDefaultScheme ("9915:test");
       sTestFilename = "xml/as2-test-at-gov.xml";
     }
-    if (true)
+    if (false)
     {
       // localhost test endpoint
       aReceiver = SimpleParticipantIdentifier.createWithDefaultScheme ("9915:test");
