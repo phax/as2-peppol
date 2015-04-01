@@ -89,23 +89,8 @@ public final class MainAS2TestClient
 
   static
   {
-    // Set Proxy Settings from property file. See:
-    // http://download.oracle.com/javase/6/docs/technotes/guides/net/proxies.html
-    for (final String sProperty : new String [] { "javax.net.debug",
-                                                 "java.net.useSystemProxies",
-                                                 "http.proxyHost",
-                                                 "http.proxyPort",
-                                                 "http.nonProxyHosts",
-                                                 "https.proxyHost",
-                                                 "https.proxyPort" })
-    {
-      final String sConfigValue = CSMPClient.getConfigFile ().getString (sProperty);
-      if (sConfigValue != null)
-      {
-        System.setProperty (sProperty, sConfigValue);
-        s_aLogger.info ("Set proxy property: " + sProperty + "=" + sConfigValue);
-      }
-    }
+    // Set Proxy Settings from property file.
+    CSMPClient.getConfigFile ().applyAllNetworkSystemProperties ();
 
     // Sanity check
     if (!new File (PKCS12_CERTSTORE_PATH).exists ())
