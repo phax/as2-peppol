@@ -41,7 +41,7 @@ import com.helger.as2lib.client.AS2Client;
 import com.helger.as2lib.client.AS2ClientRequest;
 import com.helger.as2lib.client.AS2ClientResponse;
 import com.helger.as2lib.client.AS2ClientSettings;
-import com.helger.as2lib.crypto.ECryptoAlgorithm;
+import com.helger.as2lib.crypto.ECryptoAlgorithmSign;
 import com.helger.as2lib.disposition.DispositionOptions;
 import com.helger.commons.GlobalDebug;
 import com.helger.commons.exceptions.InitializationException;
@@ -224,11 +224,11 @@ public final class MainAS2TestClient
 
     // AS2 stuff - no need to change anything in this block
     aSettings.setPartnershipName (aSettings.getSenderAS2ID () + "_" + aSettings.getReceiverAS2ID ());
-    aSettings.setMDNOptions (new DispositionOptions ().setMICAlg (ECryptoAlgorithm.DIGEST_SHA512)
+    aSettings.setMDNOptions (new DispositionOptions ().setMICAlg (ECryptoAlgorithmSign.DIGEST_SHA512)
                                                       .setMICAlgImportance (DispositionOptions.IMPORTANCE_REQUIRED)
                                                       .setProtocol (DispositionOptions.PROTOCOL_PKCS7_SIGNATURE)
                                                       .setProtocolImportance (DispositionOptions.IMPORTANCE_REQUIRED));
-    aSettings.setEncryptAndSign (null, ECryptoAlgorithm.DIGEST_SHA512);
+    aSettings.setEncryptAndSign (null, ECryptoAlgorithmSign.DIGEST_SHA512);
     aSettings.setMessageIDFormat ("OpenPEPPOL-$date.ddMMyyyyHHmmssZ$-$rand.1234$@$msg.sender.as2_id$_$msg.receiver.as2_id$");
 
     // Build message
