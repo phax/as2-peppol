@@ -43,11 +43,11 @@ import com.helger.as2lib.client.AS2ClientResponse;
 import com.helger.as2lib.client.AS2ClientSettings;
 import com.helger.as2lib.crypto.ECryptoAlgorithmSign;
 import com.helger.as2lib.disposition.DispositionOptions;
-import com.helger.commons.GlobalDebug;
-import com.helger.commons.exceptions.InitializationException;
+import com.helger.commons.debug.GlobalDebug;
+import com.helger.commons.exception.InitializationException;
 import com.helger.commons.io.resource.ClassPathResource;
-import com.helger.commons.io.streams.NonBlockingByteArrayOutputStream;
-import com.helger.commons.xml.serialize.DOMReader;
+import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
+import com.helger.commons.xml.serialize.read.DOMReader;
 import com.helger.peppol.identifier.IReadonlyParticipantIdentifier;
 import com.helger.peppol.identifier.doctype.EPredefinedDocumentTypeIdentifier;
 import com.helger.peppol.identifier.doctype.SimpleDocumentTypeIdentifier;
@@ -187,7 +187,7 @@ public final class MainAS2TestClient
       s_aLogger.info ("SMP lookup for " + aReceiver.getValue ());
 
       // Query SMP
-      final SMPClientReadonly aSMPClient = new SMPClientReadonly (aReceiver, ESML.PRODUCTION);
+      final SMPClientReadonly aSMPClient = new SMPClientReadonly (aReceiver, ESML.DIGIT_PRODUCTION);
       final EndpointType aEndpoint = aSMPClient.getEndpoint (aReceiver, DOCTYPE, PROCESS, TRANSPORT_PROFILE);
       if (aEndpoint == null)
         throw new NullPointerException ("Failed to resolve endpoint for docType/process");
