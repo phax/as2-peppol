@@ -33,7 +33,6 @@ import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.busdox.servicemetadata.publishing._1.EndpointType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.unece.cefact.namespaces.sbdh.SBDMarshaller;
 import org.unece.cefact.namespaces.sbdh.StandardBusinessDocument;
 import org.w3c.dom.Document;
 
@@ -60,6 +59,7 @@ import com.helger.peppol.sml.ESML;
 import com.helger.peppol.smp.ESMPTransportProfile;
 import com.helger.peppol.smpclient.SMPClientConfiguration;
 import com.helger.peppol.smpclient.SMPClientReadonly;
+import com.helger.sbdh.SBDMarshaller;
 
 /**
  * Main class to send AS2 messages.
