@@ -47,7 +47,7 @@ import com.helger.commons.exception.InitializationException;
 import com.helger.commons.io.resource.ClassPathResource;
 import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
 import com.helger.commons.xml.serialize.read.DOMReader;
-import com.helger.peppol.identifier.IReadonlyParticipantIdentifier;
+import com.helger.peppol.identifier.IParticipantIdentifier;
 import com.helger.peppol.identifier.doctype.EPredefinedDocumentTypeIdentifier;
 import com.helger.peppol.identifier.doctype.SimpleDocumentTypeIdentifier;
 import com.helger.peppol.identifier.participant.SimpleParticipantIdentifier;
@@ -58,7 +58,7 @@ import com.helger.peppol.sbdh.write.DocumentDataWriter;
 import com.helger.peppol.sml.ESML;
 import com.helger.peppol.smp.ESMPTransportProfile;
 import com.helger.peppol.smpclient.SMPClientConfiguration;
-import com.helger.peppol.smpclient.SMPClientReadonly;
+import com.helger.peppol.smpclient.SMPClientReadOnly;
 import com.helger.sbdh.SBDMarshaller;
 
 /**
@@ -120,7 +120,7 @@ public final class MainAS2TestClient
     // Enable or disable debug mode
     GlobalDebug.setDebugModeDirect (false);
 
-    IReadonlyParticipantIdentifier aReceiver;
+    IParticipantIdentifier aReceiver;
     String sTestFilename;
     String sReceiverID = null;
     String sReceiverKeyAlias = null;
@@ -187,16 +187,16 @@ public final class MainAS2TestClient
       s_aLogger.info ("SMP lookup for " + aReceiver.getValue ());
 
       // Query SMP
-      final SMPClientReadonly aSMPClient = new SMPClientReadonly (aReceiver, ESML.DIGIT_PRODUCTION);
+      final SMPClientReadOnly aSMPClient = new SMPClientReadOnly (aReceiver, ESML.DIGIT_PRODUCTION);
       final EndpointType aEndpoint = aSMPClient.getEndpoint (aReceiver, DOCTYPE, PROCESS, TRANSPORT_PROFILE);
       if (aEndpoint == null)
         throw new NullPointerException ("Failed to resolve endpoint for docType/process");
 
       // Extract from SMP response
       if (sReceiverAddress == null)
-        sReceiverAddress = SMPClientReadonly.getEndpointAddress (aEndpoint);
+        sReceiverAddress = SMPClientReadOnly.getEndpointAddress (aEndpoint);
       if (aReceiverCertificate == null)
-        aReceiverCertificate = SMPClientReadonly.getEndpointCertificate (aEndpoint);
+        aReceiverCertificate = SMPClientReadOnly.getEndpointCertificate (aEndpoint);
       if (sReceiverID == null)
         sReceiverID = _getCN (aReceiverCertificate);
 
