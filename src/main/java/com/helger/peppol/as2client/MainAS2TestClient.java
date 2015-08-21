@@ -224,11 +224,11 @@ public final class MainAS2TestClient
 
     // AS2 stuff - no need to change anything in this block
     aSettings.setPartnershipName (aSettings.getSenderAS2ID () + "_" + aSettings.getReceiverAS2ID ());
-    aSettings.setMDNOptions (new DispositionOptions ().setMICAlg (ECryptoAlgorithmSign.DIGEST_SHA512)
+    aSettings.setMDNOptions (new DispositionOptions ().setMICAlg (ECryptoAlgorithmSign.DIGEST_SHA_512)
                                                       .setMICAlgImportance (DispositionOptions.IMPORTANCE_REQUIRED)
                                                       .setProtocol (DispositionOptions.PROTOCOL_PKCS7_SIGNATURE)
                                                       .setProtocolImportance (DispositionOptions.IMPORTANCE_REQUIRED));
-    aSettings.setEncryptAndSign (null, ECryptoAlgorithmSign.DIGEST_SHA512);
+    aSettings.setEncryptAndSign (null, ECryptoAlgorithmSign.DIGEST_SHA_512);
     aSettings.setMessageIDFormat ("OpenPEPPOL-$date.ddMMyyyyHHmmssZ$-$rand.1234$@$msg.sender.as2_id$_$msg.receiver.as2_id$");
 
     // Build message
