@@ -198,7 +198,7 @@ public final class MainAS2TestClient
     if (sTestFilename == null)
       throw new IllegalStateException ("No test filename present!");
 
-    final ECryptoAlgorithmSign eSigningAlgo = ECryptoAlgorithmSign.DIGEST_SHA1;
+    final ECryptoAlgorithmSign eSigningAlgo = ECryptoAlgorithmSign.DIGEST_SHA_256;
 
     // Start client configuration
     final AS2ClientSettings aSettings = new AS2ClientSettings ();
