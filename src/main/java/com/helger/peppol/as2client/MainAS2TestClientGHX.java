@@ -19,17 +19,10 @@ package com.helger.peppol.as2client;
 import java.io.File;
 import java.net.URI;
 import java.security.Security;
-import java.security.cert.CertificateEncodingException;
 import java.security.cert.X509Certificate;
 
-import javax.annotation.Nonnull;
 import javax.xml.transform.stream.StreamResult;
 
-import org.bouncycastle.asn1.x500.RDN;
-import org.bouncycastle.asn1.x500.X500Name;
-import org.bouncycastle.asn1.x500.style.BCStyle;
-import org.bouncycastle.asn1.x500.style.IETFUtils;
-import org.bouncycastle.cert.jcajce.JcaX509CertificateHolder;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -96,20 +89,6 @@ public final class MainAS2TestClientGHX
       throw new InitializationException ("The PKCS12 key store file '" + PKCS12_CERTSTORE_PATH + "' does not exist!");
   }
 
-  /**
-   * @param aCert
-   *        Source certificate. May not be <code>null</code>.
-   * @return The common name of the certificate subject
-   * @throws CertificateEncodingException
-   */
-  @Nonnull
-  private static String _getCN (@Nonnull final X509Certificate aCert) throws CertificateEncodingException
-  {
-    final X500Name x500name = new JcaX509CertificateHolder (aCert).getSubject ();
-    final RDN cn = x500name.getRDNs (BCStyle.CN)[0];
-    return IETFUtils.valueToString (cn.getFirst ().getValue ());
-  }
-
   @SuppressWarnings ("null")
   public static void main (final String [] args) throws Exception
   {
@@ -155,7 +134,7 @@ public final class MainAS2TestClientGHX
       if (aReceiverCertificate == null)
         aReceiverCertificate = SMPClientReadOnly.getEndpointCertificate (aEndpoint);
       if (sReceiverID == null)
-        sReceiverID = _getCN (aReceiverCertificate);
+        sReceiverID = AS2ClientHelper.getSubjectCommonName (aReceiverCertificate);
 
       // SMP lookup done
       s_aLogger.info ("Receiver URL: " + sReceiverAddress);
@@ -171,6 +150,8 @@ public final class MainAS2TestClientGHX
     if (sTestFilename == null)
       throw new IllegalStateException ("No test filename present!");
 
+    final ECryptoAlgorithmSign eSigningAlgo = ECryptoAlgorithmSign.DIGEST_SHA1;
+
     // Start client configuration
     final AS2ClientSettings aSettings = new AS2ClientSettings ();
     aSettings.setKeyStore (new File (PKCS12_CERTSTORE_PATH), PKCS12_CERTSTORE_PASSWORD);
@@ -184,11 +165,11 @@ public final class MainAS2TestClientGHX
 
     // AS2 stuff - no need to change anything in this block
     aSettings.setPartnershipName (aSettings.getSenderAS2ID () + "_" + aSettings.getReceiverAS2ID ());
-    aSettings.setMDNOptions (new DispositionOptions ().setMICAlg (ECryptoAlgorithmSign.DIGEST_SHA1)
+    aSettings.setMDNOptions (new DispositionOptions ().setMICAlg (eSigningAlgo)
                                                       .setMICAlgImportance (DispositionOptions.IMPORTANCE_REQUIRED)
                                                       .setProtocol (DispositionOptions.PROTOCOL_PKCS7_SIGNATURE)
                                                       .setProtocolImportance (DispositionOptions.IMPORTANCE_REQUIRED));
-    aSettings.setEncryptAndSign (null, ECryptoAlgorithmSign.DIGEST_SHA1);
+    aSettings.setEncryptAndSign (null, eSigningAlgo);
     aSettings.setMessageIDFormat ("OpenPEPPOL-$date.ddMMyyyyHHmmssZ$-$rand.1234$@$msg.sender.as2_id$_$msg.receiver.as2_id$");
 
     // Build message
