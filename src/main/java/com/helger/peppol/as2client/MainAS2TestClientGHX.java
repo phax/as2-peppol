@@ -48,14 +48,11 @@ import com.helger.commons.io.resource.ClassPathResource;
 import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
 import com.helger.commons.xml.serialize.read.DOMReader;
 import com.helger.peppol.identifier.IParticipantIdentifier;
-import com.helger.peppol.identifier.doctype.EPredefinedDocumentTypeIdentifier;
 import com.helger.peppol.identifier.doctype.SimpleDocumentTypeIdentifier;
 import com.helger.peppol.identifier.participant.SimpleParticipantIdentifier;
-import com.helger.peppol.identifier.process.EPredefinedProcessIdentifier;
 import com.helger.peppol.identifier.process.SimpleProcessIdentifier;
 import com.helger.peppol.sbdh.DocumentData;
 import com.helger.peppol.sbdh.write.DocumentDataWriter;
-import com.helger.peppol.sml.ESML;
 import com.helger.peppol.smp.ESMPTransportProfile;
 import com.helger.peppol.smp.EndpointType;
 import com.helger.peppol.smp.ISMPTransportProfile;
@@ -68,7 +65,7 @@ import com.helger.sbdh.SBDMarshaller;
  *
  * @author Philip Helger
  */
-public final class MainAS2TestClient
+public final class MainAS2TestClientGHX
 {
   /** The file path to the PKCS12 key store */
   private static final String PKCS12_CERTSTORE_PATH = "as2-client-data/client-certs.p12";
@@ -81,13 +78,13 @@ public final class MainAS2TestClient
   /** Your AS2 key alias in the PKCS12 key store */
   private static final String SENDER_KEY_ALIAS = "APP_1000000004";
   /** The PEPPOL document type to use. */
-  private static final SimpleDocumentTypeIdentifier DOCTYPE = EPredefinedDocumentTypeIdentifier.INVOICE_T010_BIS4A_V20.getAsDocumentTypeIdentifier ();
+  private static final SimpleDocumentTypeIdentifier DOCTYPE = SimpleDocumentTypeIdentifier.createWithDefaultScheme ("abc");
   /** The PEPPOL process to use. */
-  private static final SimpleProcessIdentifier PROCESS = EPredefinedProcessIdentifier.BIS4A_V20.getAsProcessIdentifier ();
+  private static final SimpleProcessIdentifier PROCESS = SimpleProcessIdentifier.createWithDefaultScheme ("123");
   /** The PEPPOL transport profile to use */
   private static final ISMPTransportProfile TRANSPORT_PROFILE = ESMPTransportProfile.TRANSPORT_PROFILE_AS2;
 
-  private static final Logger s_aLogger = LoggerFactory.getLogger (MainAS2TestClient.class);
+  private static final Logger s_aLogger = LoggerFactory.getLogger (MainAS2TestClientGHX.class);
 
   static
   {
@@ -122,63 +119,17 @@ public final class MainAS2TestClient
     // Enable or disable debug mode
     GlobalDebug.setDebugModeDirect (false);
 
-    IParticipantIdentifier aReceiver = null;
-    String sTestFilename = null;
     String sReceiverID = null;
     String sReceiverKeyAlias = null;
     String sReceiverAddress = null;
     X509Certificate aReceiverCertificate = null;
 
-    if (false)
-    {
-      // mysupply test client
-      aReceiver = SimpleParticipantIdentifier.createWithDefaultScheme ("0088:5798009883995");
-      sTestFilename = "xml/as2-mysupply_TEST_NO.xml";
-    }
-    if (false)
-    {
-      // DIFI test endpoint
-      aReceiver = SimpleParticipantIdentifier.createWithDefaultScheme ("9908:810418052");
-      sTestFilename = "xml/as2-pagero.xml";
-    }
-    if (false)
-    {
-      // Pagero test participant 9908:222222222
-      aReceiver = SimpleParticipantIdentifier.createWithDefaultScheme ("9908:222222222");
-      sTestFilename = "xml/as2-pagero.xml";
-    }
-    if (false)
-    {
-      // Unit4 test participant 9908:810017902
-      aReceiver = SimpleParticipantIdentifier.createWithDefaultScheme ("9908:810017902");
-      sTestFilename = "xml/as2-pagero.xml";
-    }
-    if (false)
-    {
-      // Unit4 debug test endpoint
-      aReceiver = SimpleParticipantIdentifier.createWithDefaultScheme ("9908:810017902");
-      sTestFilename = "xml/as2-pagero.xml";
-      // Override since not in SMP
-      sReceiverAddress = "https://ap-test.unit4.com/oxalis/as2";
-    }
-    if (false)
-    {
-      // DERWID test endpoint
-      aReceiver = SimpleParticipantIdentifier.createWithDefaultScheme ("9914:atu66313919");
-      sTestFilename = "xml/as2-test-at-gov.xml";
-    }
-    if (false)
-    {
-      // BRZ test endpoint
-      aReceiver = SimpleParticipantIdentifier.createWithDefaultScheme ("9915:test");
-      sTestFilename = "xml/as2-test-at-gov.xml";
-    }
+    // localhost test endpoint
+    final IParticipantIdentifier aReceiver = SimpleParticipantIdentifier.createWithDefaultScheme ("9915:test");
+    final String sTestFilename = "xml/as2-test-at-gov.xml";
+    // Avoid SMP lookup
     if (true)
     {
-      // localhost test endpoint
-      aReceiver = SimpleParticipantIdentifier.createWithDefaultScheme ("9915:test");
-      sTestFilename = "xml/as2-test-at-gov.xml";
-      // Avoid SMP lookup
       sReceiverAddress = "http://localhost:8080/as2";
       sReceiverID = "APP_1000000004";
       sReceiverKeyAlias = "APP_1000000004";
@@ -193,8 +144,7 @@ public final class MainAS2TestClient
       s_aLogger.info ("SMP lookup for " + aReceiver.getValue ());
 
       // Query SMP
-      final SMPClientReadOnly aSMPClient = true ? new SMPClientReadOnly (URI.create ("http://127.0.0.1"))
-                                                : new SMPClientReadOnly (aReceiver, ESML.DIGIT_PRODUCTION);
+      final SMPClientReadOnly aSMPClient = new SMPClientReadOnly (URI.create ("http://127.0.0.1"));
       final EndpointType aEndpoint = aSMPClient.getEndpoint (aReceiver, DOCTYPE, PROCESS, TRANSPORT_PROFILE);
       if (aEndpoint == null)
         throw new NullPointerException ("Failed to resolve endpoint for docType/process");
