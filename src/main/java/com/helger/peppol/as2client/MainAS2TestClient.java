@@ -17,7 +17,6 @@
 package com.helger.peppol.as2client;
 
 import java.io.File;
-import java.net.URI;
 import java.security.Security;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.X509Certificate;
@@ -193,8 +192,7 @@ public final class MainAS2TestClient
       s_aLogger.info ("SMP lookup for " + aReceiver.getValue ());
 
       // Query SMP
-      final SMPClientReadOnly aSMPClient = true ? new SMPClientReadOnly (URI.create ("http://127.0.0.1"))
-                                                : new SMPClientReadOnly (aReceiver, ESML.DIGIT_PRODUCTION);
+      final SMPClientReadOnly aSMPClient = new SMPClientReadOnly (aReceiver, ESML.DIGIT_PRODUCTION);
       final EndpointType aEndpoint = aSMPClient.getEndpoint (aReceiver, DOCTYPE, PROCESS, TRANSPORT_PROFILE);
       if (aEndpoint == null)
         throw new NullPointerException ("Failed to resolve endpoint for docType/process");

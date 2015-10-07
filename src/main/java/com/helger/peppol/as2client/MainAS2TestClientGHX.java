@@ -127,9 +127,9 @@ public final class MainAS2TestClientGHX
     // localhost test endpoint
     final IParticipantIdentifier aReceiver = SimpleParticipantIdentifier.createWithDefaultScheme ("9915:test");
     final String sTestFilename = "xml/as2-test-at-gov.xml";
-    // Avoid SMP lookup
     if (true)
     {
+      // Avoid SMP lookup
       sReceiverAddress = "http://localhost:8080/as2";
       sReceiverID = "APP_1000000004";
       sReceiverKeyAlias = "APP_1000000004";
