@@ -54,7 +54,8 @@ import com.helger.sbdh.SBDMarshaller;
 /**
  * A builder class for easy usage of the AS2 client for sending messages to a
  * PEPPOL participant. After building use the {@link #sendSynchronous()} message
- * to trigger the sending.
+ * to trigger the sending. All parameters that not explicitly have a default
+ * value must be set otherwise the verification process will fail.
  *
  * @author Philip Helger
  */

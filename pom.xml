@@ -117,7 +117,7 @@
             <exclude>src/main/resources/xml/**</exclude>
             <exclude>**/LICENSE</exclude>
             <exclude>**/NOTICE</exclude>
-            <exclude>**/*.p12</exclude>
+            <exclude>as2-client-data/**</exclude>
           </excludes>
         </configuration>
       </plugin>
