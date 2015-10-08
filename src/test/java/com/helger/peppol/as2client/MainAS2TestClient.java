@@ -58,6 +58,8 @@ public final class MainAS2TestClient
   private static final String SENDER_EMAIL = "peppol@example.org";
   /** Your AS2 key alias in the PKCS12 key store */
   private static final String SENDER_KEY_ALIAS = "APP_1000000004";
+  /** The PEPPOL sender participant ID */
+  private static final SimpleParticipantIdentifier SENDER_PEPPOL_ID = SimpleParticipantIdentifier.createWithDefaultScheme ("9999:test-sender");
   /** The PEPPOL document type to use. */
   private static final SimpleDocumentTypeIdentifier DOCTYPE = EPredefinedDocumentTypeIdentifier.INVOICE_T010_BIS4A_V20.getAsDocumentTypeIdentifier ();
   /** The PEPPOL process to use. */
@@ -71,17 +73,17 @@ public final class MainAS2TestClient
   {
     // Set Proxy Settings from property file.
     SMPClientConfiguration.getConfigFile ().applyAllNetworkSystemProperties ();
-  }
 
-  @SuppressWarnings ("null")
-  public static void main (final String [] args) throws Exception
-  {
     // Must be first!
     Security.addProvider (new BouncyCastleProvider ());
 
     // Enable or disable debug mode
     GlobalDebug.setDebugModeDirect (false);
+  }
 
+  @SuppressWarnings ("null")
+  public static void main (final String [] args) throws Exception
+  {
     IParticipantIdentifier aReceiver = null;
     String sTestFilename = null;
     String sReceiverID = null;
@@ -179,7 +181,6 @@ public final class MainAS2TestClient
 
     final AS2ClientResponse aResponse = new AS2ClientBuilder ().setPKCS12KeyStore (new File (PKCS12_CERTSTORE_PATH),
                                                                                    PKCS12_CERTSTORE_PASSWORD)
-                                                               .setAS2Subject ("OpenPEPPOL AS2 message")
                                                                .setSenderAS2ID (SENDER_AS2_ID)
                                                                .setSenderAS2Email (SENDER_EMAIL)
                                                                .setSenderAS2KeyAlias (SENDER_KEY_ALIAS)
@@ -189,7 +190,7 @@ public final class MainAS2TestClient
                                                                .setReceiverCertificate (aReceiverCertificate)
                                                                .setAS2SigningAlgorithm (ECryptoAlgorithmSign.DIGEST_SHA_256)
                                                                .setBusinessDocument (new ClassPathResource (sTestFilename))
-                                                               .setPeppolSenderID (aReceiver)
+                                                               .setPeppolSenderID (SENDER_PEPPOL_ID)
                                                                .setPeppolReceiverID (aReceiver)
                                                                .setPeppolDocumentTypeID (DOCTYPE)
                                                                .setPeppolProcessID (PROCESS)

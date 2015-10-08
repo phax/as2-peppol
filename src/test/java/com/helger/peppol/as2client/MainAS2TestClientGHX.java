@@ -21,37 +21,24 @@ import java.net.URI;
 import java.security.Security;
 import java.security.cert.X509Certificate;
 
-import javax.xml.transform.stream.StreamResult;
-
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.unece.cefact.namespaces.sbdh.StandardBusinessDocument;
-import org.w3c.dom.Document;
 
-import com.helger.as2lib.client.AS2Client;
-import com.helger.as2lib.client.AS2ClientRequest;
 import com.helger.as2lib.client.AS2ClientResponse;
-import com.helger.as2lib.client.AS2ClientSettings;
 import com.helger.as2lib.crypto.ECryptoAlgorithmSign;
-import com.helger.as2lib.disposition.DispositionOptions;
 import com.helger.commons.debug.GlobalDebug;
 import com.helger.commons.exception.InitializationException;
 import com.helger.commons.io.resource.ClassPathResource;
-import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
-import com.helger.commons.xml.serialize.read.DOMReader;
 import com.helger.peppol.identifier.IParticipantIdentifier;
 import com.helger.peppol.identifier.doctype.SimpleDocumentTypeIdentifier;
 import com.helger.peppol.identifier.participant.SimpleParticipantIdentifier;
 import com.helger.peppol.identifier.process.SimpleProcessIdentifier;
-import com.helger.peppol.sbdh.DocumentData;
-import com.helger.peppol.sbdh.write.DocumentDataWriter;
 import com.helger.peppol.smp.ESMPTransportProfile;
 import com.helger.peppol.smp.EndpointType;
 import com.helger.peppol.smp.ISMPTransportProfile;
 import com.helger.peppol.smpclient.SMPClientConfiguration;
 import com.helger.peppol.smpclient.SMPClientReadOnly;
-import com.helger.sbdh.SBDMarshaller;
 
 /**
  * Main class to send AS2 messages.
@@ -70,6 +57,8 @@ public final class MainAS2TestClientGHX
   private static final String SENDER_EMAIL = "peppol@example.org";
   /** Your AS2 key alias in the PKCS12 key store */
   private static final String SENDER_KEY_ALIAS = "APP_1000000004";
+  /** The PEPPOL sender participant ID */
+  private static final SimpleParticipantIdentifier SENDER_PEPPOL_ID = SimpleParticipantIdentifier.createWithDefaultScheme ("9999:test-sender");
   /** The PEPPOL document type to use. */
   private static final SimpleDocumentTypeIdentifier DOCTYPE = SimpleDocumentTypeIdentifier.createWithDefaultScheme ("abc");
   /** The PEPPOL process to use. */
@@ -150,53 +139,24 @@ public final class MainAS2TestClientGHX
     if (sTestFilename == null)
       throw new IllegalStateException ("No test filename present!");
 
-    final ECryptoAlgorithmSign eSigningAlgo = ECryptoAlgorithmSign.DIGEST_SHA1;
-
-    // Start client configuration
-    final AS2ClientSettings aSettings = new AS2ClientSettings ();
-    aSettings.setKeyStore (new File (PKCS12_CERTSTORE_PATH), PKCS12_CERTSTORE_PASSWORD);
-
-    // Fixed sender
-    aSettings.setSenderData (SENDER_AS2_ID, SENDER_EMAIL, SENDER_KEY_ALIAS);
-
-    // Dynamic receiver
-    aSettings.setReceiverData (sReceiverID, sReceiverKeyAlias, sReceiverAddress);
-    aSettings.setReceiverCertificate (aReceiverCertificate);
-
-    // AS2 stuff - no need to change anything in this block
-    aSettings.setPartnershipName (aSettings.getSenderAS2ID () + "_" + aSettings.getReceiverAS2ID ());
-    aSettings.setMDNOptions (new DispositionOptions ().setMICAlg (eSigningAlgo)
-                                                      .setMICAlgImportance (DispositionOptions.IMPORTANCE_REQUIRED)
-                                                      .setProtocol (DispositionOptions.PROTOCOL_PKCS7_SIGNATURE)
-                                                      .setProtocolImportance (DispositionOptions.IMPORTANCE_REQUIRED));
-    aSettings.setEncryptAndSign (null, eSigningAlgo);
-    aSettings.setMessageIDFormat ("OpenPEPPOL-$date.ddMMyyyyHHmmssZ$-$rand.1234$@$msg.sender.as2_id$_$msg.receiver.as2_id$");
-
-    // Build message
-
-    // 1. read XML
-    final Document aTestXML = DOMReader.readXMLDOM (new ClassPathResource (sTestFilename));
-
-    // 2. build SBD data
-    final DocumentData aDD = DocumentData.create (aTestXML.getDocumentElement ());
-    aDD.setSenderWithDefaultScheme (aReceiver.getValue ());
-    aDD.setReceiver (aReceiver.getScheme (), aReceiver.getValue ());
-    aDD.setDocumentType (DOCTYPE.getScheme (), DOCTYPE.getValue ());
-    aDD.setProcess (PROCESS.getScheme (), PROCESS.getValue ());
-
-    // 3. build SBD
-    final StandardBusinessDocument aSBD = new DocumentDataWriter ().createStandardBusinessDocument (aDD);
-    final NonBlockingByteArrayOutputStream aBAOS = new NonBlockingByteArrayOutputStream ();
-    if (new SBDMarshaller ().write (aSBD, new StreamResult (aBAOS)).isFailure ())
-      throw new IllegalStateException ("Failed to serialize SBD!");
-    aBAOS.close ();
-
-    // 4. send message
-    final AS2ClientRequest aRequest = new AS2ClientRequest ("OpenPEPPOL AS2 message");
-    aRequest.setData (aBAOS.toByteArray ());
-    final AS2ClientResponse aResponse = new AS2Client ().sendSynchronous (aSettings, aRequest);
+    final AS2ClientResponse aResponse = new AS2ClientBuilder ().setPKCS12KeyStore (new File (PKCS12_CERTSTORE_PATH),
+                                                                                   PKCS12_CERTSTORE_PASSWORD)
+                                                               .setSenderAS2ID (SENDER_AS2_ID)
+                                                               .setSenderAS2Email (SENDER_EMAIL)
+                                                               .setSenderAS2KeyAlias (SENDER_KEY_ALIAS)
+                                                               .setReceiverAS2ID (sReceiverID)
+                                                               .setReceiverAS2KeyAlias (sReceiverKeyAlias)
+                                                               .setReceiverAS2Url (sReceiverAddress)
+                                                               .setReceiverCertificate (aReceiverCertificate)
+                                                               .setAS2SigningAlgorithm (ECryptoAlgorithmSign.DIGEST_SHA_256)
+                                                               .setBusinessDocument (new ClassPathResource (sTestFilename))
+                                                               .setPeppolSenderID (SENDER_PEPPOL_ID)
+                                                               .setPeppolReceiverID (aReceiver)
+                                                               .setPeppolDocumentTypeID (DOCTYPE)
+                                                               .setPeppolProcessID (PROCESS)
+                                                               .sendSynchronous ();
     if (aResponse.hasException ())
-      s_aLogger.info (aResponse.getAsString ());
+      s_aLogger.warn (aResponse.getAsString ());
 
     s_aLogger.info ("Done");
   }
