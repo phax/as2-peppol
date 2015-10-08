@@ -14,7 +14,7 @@ import org.bouncycastle.cert.jcajce.JcaX509CertificateHolder;
 
 /**
  * Common functionality for AS2 clients
- * 
+ *
  * @author Philip Helger
  */
 @Immutable
@@ -28,6 +28,7 @@ public final class AS2ClientHelper
    *        Source certificate. May not be <code>null</code>.
    * @return The common name of the certificate subject
    * @throws CertificateEncodingException
+   *         In case of an internal error
    */
   @Nonnull
   public static String getSubjectCommonName (@Nonnull final X509Certificate aCert) throws CertificateEncodingException
