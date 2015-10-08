@@ -84,6 +84,16 @@ public class AS2ClientBuilder
   public AS2ClientBuilder ()
   {}
 
+  /**
+   * Set the message handler to be used by the {@link #verifyContent()} method.
+   * By default an instance of {@link DefaultAS2ClientBuilderMessageHandler} is
+   * used so this method should only be called if you have special auditing
+   * requirements.
+   *
+   * @param aMessageHandler
+   *        The message handler to be used. May not be <code>null</code>.
+   * @return this for chaining
+   */
   @Nonnull
   public AS2ClientBuilder setMessageHandler (@Nonnull final IAS2ClientBuilderMessageHandler aMessageHandler)
   {
@@ -91,6 +101,20 @@ public class AS2ClientBuilder
     return this;
   }
 
+  /**
+   * Set the key store file and password for the AS2 client. The key store must
+   * be an existing file of type PKCS12 containing at least the key alias of the
+   * sender (see {@link #setSenderAS2ID(String)}). The key store file must be
+   * writable as dynamically certificates of partners are added.
+   *
+   * @param aKeyStoreFile
+   *        The existing key store file. Must exist and may not be
+   *        <code>null</code>.
+   * @param sKeyStorePassword
+   *        The password to the key store. May not be <code>null</code> but
+   *        empty.
+   * @return this for chaining
+   */
   @Nonnull
   public AS2ClientBuilder setPKCS12KeyStore (@Nullable final File aKeyStoreFile,
                                              @Nullable final String sKeyStorePassword)
