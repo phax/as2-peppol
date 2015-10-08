@@ -36,7 +36,9 @@ import com.helger.as2lib.crypto.ECryptoAlgorithmSign;
 import com.helger.as2lib.disposition.DispositionOptions;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.email.EmailAddressHelper;
+import com.helger.commons.io.resource.FileSystemResource;
 import com.helger.commons.io.resource.IReadableResource;
+import com.helger.commons.io.resource.inmemory.ReadableResourceByteArray;
 import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
 import com.helger.commons.string.StringHelper;
 import com.helger.commons.url.URLHelper;
@@ -59,10 +61,14 @@ import com.helger.sbdh.SBDMarshaller;
 @NotThreadSafe
 public class AS2ClientBuilder
 {
+  public static final String DEFAULT_AS2_SUBJECT = "OpenPEPPOL AS2 message";
+  public static final ECryptoAlgorithmSign DEFAULT_SIGNING_ALGORITHM = ECryptoAlgorithmSign.DIGEST_SHA1;
+  public static final String DEFAULT_AS2_MESSAGE_ID_FORMAT = "OpenPEPPOL-$date.ddMMyyyyHHmmssZ$-$rand.1234$@$msg.sender.as2_id$_$msg.receiver.as2_id$";
+
   private IAS2ClientBuilderMessageHandler m_aMessageHandler = new DefaultAS2ClientBuilderMessageHandler ();
   private File m_aKeyStoreFile;
   private String m_sKeyStorePassword;
-  private String m_sAS2Subject = "OpenPEPPOL AS2 message";
+  private String m_sAS2Subject = DEFAULT_AS2_SUBJECT;
   private String m_sSenderAS2ID;
   private String m_sSenderAS2Email;
   private String m_sSenderAS2KeyAlias;
@@ -70,8 +76,8 @@ public class AS2ClientBuilder
   private String m_sReceiverAS2KeyAlias;
   private String m_sReceiverAS2Url;
   private X509Certificate m_aReceiverCert;
-  private ECryptoAlgorithmSign m_eSigningAlgo = ECryptoAlgorithmSign.DIGEST_SHA1;
-  private String m_sMessageIDFormat = "OpenPEPPOL-$date.ddMMyyyyHHmmssZ$-$rand.1234$@$msg.sender.as2_id$_$msg.receiver.as2_id$";
+  private ECryptoAlgorithmSign m_eSigningAlgo = DEFAULT_SIGNING_ALGORITHM;
+  private String m_sMessageIDFormat = DEFAULT_AS2_MESSAGE_ID_FORMAT;
   private IReadableResource m_aBusinessDocument;
   private IParticipantIdentifier m_aPeppolSenderID;
   private IParticipantIdentifier m_aPeppolReceiverID;
@@ -83,6 +89,16 @@ public class AS2ClientBuilder
    */
   public AS2ClientBuilder ()
   {}
+
+  /**
+   * @return The internal message handler. Only required for derived classes
+   *         that want to add additional verification mechanisms.
+   */
+  @Nonnull
+  protected final IAS2ClientBuilderMessageHandler getMessageHandler ()
+  {
+    return m_aMessageHandler;
+  }
 
   /**
    * Set the message handler to be used by the {@link #verifyContent()} method.
@@ -124,6 +140,14 @@ public class AS2ClientBuilder
     return this;
   }
 
+  /**
+   * Set the subject for the AS2 message. By default
+   * {@value #DEFAULT_AS2_SUBJECT} is used so you don't need to set it.
+   *
+   * @param sAS2Subject
+   *        The new AS2 subject. May not be <code>null</code>.
+   * @return this for chaining
+   */
   @Nonnull
   public AS2ClientBuilder setAS2Subject (@Nullable final String sAS2Subject)
   {
@@ -131,6 +155,15 @@ public class AS2ClientBuilder
     return this;
   }
 
+  /**
+   * Set the AS2 sender ID (your ID). It is mapped to the "AS2-From" header. For
+   * PEPPOL the AS2 sender ID must be the common name (CN) of the sender's AP
+   * certificate subject. Therefore it usually starts with "APP_".
+   *
+   * @param sSenderAS2ID
+   *        The AS2 sender ID to be used. May not be <code>null</code>.
+   * @return this for chaining
+   */
   @Nonnull
   public AS2ClientBuilder setSenderAS2ID (@Nullable final String sSenderAS2ID)
   {
@@ -138,6 +171,15 @@ public class AS2ClientBuilder
     return this;
   }
 
+  /**
+   * Set the email address of the sender. This is required for the AS2 protocol
+   * but not (to my knowledge) used in PEPPOL.
+   *
+   * @param sSenderAS2Email
+   *        The email address of the sender. May not be <code>null</code> and
+   *        must be a valid email address.
+   * @return this for chaining
+   */
   @Nonnull
   public AS2ClientBuilder setSenderAS2Email (@Nullable final String sSenderAS2Email)
   {
@@ -145,6 +187,17 @@ public class AS2ClientBuilder
     return this;
   }
 
+  /**
+   * Set the key alias of the sender's key in the key store (see
+   * {@link #setPKCS12KeyStore(File, String)}). For PEPPOL the key alias of the
+   * sender should be identical to the AS2 sender ID (
+   * {@link #setSenderAS2ID(String)}), so it should also start with "APP_" (I
+   * think case insensitive for PKCS12 key stores).
+   *
+   * @param sSenderAS2KeyAlias
+   *        The sender key alias to be used. May not be <code>null</code>.
+   * @return this for chaining
+   */
   @Nonnull
   public AS2ClientBuilder setSenderAS2KeyAlias (@Nullable final String sSenderAS2KeyAlias)
   {
@@ -152,6 +205,16 @@ public class AS2ClientBuilder
     return this;
   }
 
+  /**
+   * Set the AS2 receiver ID (recipient ID). It is mapped to the "AS2-To"
+   * header. For PEPPOL the AS2 receiver ID must be the common name (CN) of the
+   * receiver's AP certificate subject (as determined by the SMP query).
+   * Therefore it usually starts with "APP_".
+   *
+   * @param sReceiverAS2ID
+   *        The AS2 receiver ID to be used. May not be <code>null</code>.
+   * @return this for chaining
+   */
   @Nonnull
   public AS2ClientBuilder setReceiverAS2ID (@Nullable final String sReceiverAS2ID)
   {
@@ -159,6 +222,17 @@ public class AS2ClientBuilder
     return this;
   }
 
+  /**
+   * Set the key alias of the receiver's key in the key store (see
+   * {@link #setPKCS12KeyStore(File, String)}). For PEPPOL the key alias of the
+   * receiver should be identical to the AS2 receiver ID (
+   * {@link #setReceiverAS2ID(String)}), so it should also start with "APP_" (I
+   * think case insensitive for PKCS12 key stores).
+   *
+   * @param sReceiverAS2KeyAlias
+   *        The receiver key alias to be used. May not be <code>null</code>.
+   * @return this for chaining
+   */
   @Nonnull
   public AS2ClientBuilder setReceiverAS2KeyAlias (@Nullable final String sReceiverAS2KeyAlias)
   {
@@ -166,6 +240,15 @@ public class AS2ClientBuilder
     return this;
   }
 
+  /**
+   * Set the AS2 endpoint URL of the receiver. This URL should be determined by
+   * an SMP query.
+   *
+   * @param sReceiverAS2Url
+   *        The AS2 endpoint URL of the receiver. This must be a valid URL. May
+   *        not be <code>null</code>.
+   * @return this for chaining
+   */
   @Nonnull
   public AS2ClientBuilder setReceiverAS2Url (@Nullable final String sReceiverAS2Url)
   {
@@ -173,6 +256,13 @@ public class AS2ClientBuilder
     return this;
   }
 
+  /**
+   * Set the public certificate of the receiver as determined by the SMP query.
+   *
+   * @param aReceiverCert
+   *        The receiver certificate. May not be <code>null</code>.
+   * @return this for chaining
+   */
   @Nonnull
   public AS2ClientBuilder setReceiverCertificate (@Nullable final X509Certificate aReceiverCert)
   {
@@ -180,6 +270,16 @@ public class AS2ClientBuilder
     return this;
   }
 
+  /**
+   * Set the algorithm to be used to sign AS2 messages. By default
+   * {@link #DEFAULT_SIGNING_ALGORITHM} is used. An encryption algorithm cannot
+   * be set because according to the PEPPOL AS2 specification the AS2 messages
+   * may not be encrypted on a business level.
+   *
+   * @param eSigningAlgo
+   *        The signing algorithm to be used. May not be <code>null</code>.
+   * @return this for chaining
+   */
   @Nonnull
   public AS2ClientBuilder setAS2SigningAlgorithm (@Nullable final ECryptoAlgorithmSign eSigningAlgo)
   {
@@ -187,6 +287,16 @@ public class AS2ClientBuilder
     return this;
   }
 
+  /**
+   * Set the abstract format for AS2 message IDs. By default
+   * {@link #DEFAULT_AS2_MESSAGE_ID_FORMAT} is used so there is no need to
+   * change it. The replacement of placeholders depends on the underlying AS2
+   * library.
+   *
+   * @param sMessageIDFormat
+   *        The message ID format to be used. May not be <code>null</code>.
+   * @return this for chaining
+   */
   @Nonnull
   public AS2ClientBuilder setAS2MessageIDFormat (@Nullable final String sMessageIDFormat)
   {
@@ -194,6 +304,48 @@ public class AS2ClientBuilder
     return this;
   }
 
+  /**
+   * Set the resource that represents the main business document to be
+   * transmitted. It must be an XML document - other documents are not supported
+   * by PEPPOL. This should NOT be the SBDH as this is added internally.
+   *
+   * @param aBusinessDocument
+   *        The file containing the business document to be set. May not be
+   *        <code>null</code>.
+   * @return this for chaining
+   */
+  @Nonnull
+  public AS2ClientBuilder setBusinessDocument (@Nonnull final File aBusinessDocument)
+  {
+    return setBusinessDocument (new FileSystemResource (aBusinessDocument));
+  }
+
+  /**
+   * Set the resource that represents the main business document to be
+   * transmitted. It must be an XML document - other documents are not supported
+   * by PEPPOL. This should NOT be the SBDH as this is added internally.
+   *
+   * @param aBusinessDocument
+   *        The byte array content of the business document to be set. May not
+   *        be <code>null</code>.
+   * @return this for chaining
+   */
+  @Nonnull
+  public AS2ClientBuilder setBusinessDocument (@Nonnull final byte [] aBusinessDocument)
+  {
+    return setBusinessDocument (new ReadableResourceByteArray (aBusinessDocument));
+  }
+
+  /**
+   * Set the resource that represents the main business document to be
+   * transmitted. It must be an XML document - other documents are not supported
+   * by PEPPOL. This should NOT be the SBDH as this is added internally.
+   *
+   * @param aBusinessDocument
+   *        The resource pointing to the business document to be set. May not be
+   *        <code>null</code>.
+   * @return this for chaining
+   */
   @Nonnull
   public AS2ClientBuilder setBusinessDocument (@Nullable final IReadableResource aBusinessDocument)
   {
@@ -201,6 +353,13 @@ public class AS2ClientBuilder
     return this;
   }
 
+  /**
+   * Set the PEPPOL sender ID. This is your PEPPOL participant ID.
+   *
+   * @param aPeppolSenderID
+   *        The sender PEPPOL participant ID. May not be <code>null</code>.
+   * @return this for chaining
+   */
   @Nonnull
   public AS2ClientBuilder setPeppolSenderID (@Nullable final IParticipantIdentifier aPeppolSenderID)
   {
@@ -208,6 +367,14 @@ public class AS2ClientBuilder
     return this;
   }
 
+  /**
+   * Set the PEPPOL receiver ID. This is the PEPPOL participant ID of the
+   * recipient.
+   *
+   * @param aPeppolReceiverID
+   *        The receiver PEPPOL participant ID. May not be <code>null</code>.
+   * @return this for chaining
+   */
   @Nonnull
   public AS2ClientBuilder setPeppolReceiverID (@Nullable final IParticipantIdentifier aPeppolReceiverID)
   {
@@ -215,6 +382,14 @@ public class AS2ClientBuilder
     return this;
   }
 
+  /**
+   * Set the PEPPOL document type identifier for the exchanged business
+   * document.
+   *
+   * @param aPeppolDocumentTypeID
+   *        The PEPPOL document type identifier. May not be <code>null</code>.
+   * @return this for chaining
+   */
   @Nonnull
   public AS2ClientBuilder setPeppolDocumentTypeID (@Nullable final IDocumentTypeIdentifier aPeppolDocumentTypeID)
   {
@@ -222,6 +397,13 @@ public class AS2ClientBuilder
     return this;
   }
 
+  /**
+   * Set the PEPPOL process identifier for the exchanged business document.
+   *
+   * @param aPeppolProcessID
+   *        The PEPPOL process identifier. May not be <code>null</code>.
+   * @return this for chaining
+   */
   @Nonnull
   public AS2ClientBuilder setPeppolProcessID (@Nullable final IProcessIdentifier aPeppolProcessID)
   {
@@ -229,6 +411,17 @@ public class AS2ClientBuilder
     return this;
   }
 
+  /**
+   * Verify the content of all contained fields so that all know issues are
+   * captured before sending. This method is automatically called before the
+   * message is send (see {@link #sendSynchronous()}). All verification warnings
+   * and errors are handled via the message handler.
+   *
+   * @throws AS2ClientBuilderException
+   *         In case the message handler throws an exception in case of an
+   *         error.
+   * @see #setMessageHandler(IAS2ClientBuilderMessageHandler)
+   */
   public void verifyContent () throws AS2ClientBuilderException
   {
     if (m_aKeyStoreFile == null)
@@ -361,29 +554,31 @@ public class AS2ClientBuilder
                                 "' is using a non-standard scheme!");
   }
 
+  /**
+   * This is the main sending routine. It performs the following steps:
+   * <ol>
+   * <li>Verify that all required parameters are present and valid -
+   * {@link #verifyContent()}</li>
+   * <li>The business document is read as XML. In case of an error, an exception
+   * is thrown.</li>
+   * <li>The Standard Business Document (SBD) is created, all PEPPOL required
+   * fields are set and the business document is embedded.</li>
+   * <li>The SBD is serialized and send via AS2</li>
+   * <li>The AS2 response incl. the MDN is returned for further evaluation.</li>
+   * </ol>
+   *
+   * @return The AS2 response returned by the AS2 sender. This is never
+   *         <code>null</code>.
+   * @throws AS2ClientBuilderException
+   *         In case the the business document is invalid XML or in case
+   *         {@link #verifyContent()} throws an exception because of invalid or
+   *         incomplete settings.
+   */
   @Nonnull
   public AS2ClientResponse sendSynchronous () throws AS2ClientBuilderException
   {
+    // Verify the whole data set
     verifyContent ();
-
-    final AS2ClientSettings aSettings = new AS2ClientSettings ();
-    // Key store
-    aSettings.setKeyStore (m_aKeyStoreFile, m_sKeyStorePassword);
-    // Fixed sender
-    aSettings.setSenderData (m_sSenderAS2ID, m_sSenderAS2Email, m_sSenderAS2KeyAlias);
-
-    // Dynamic receiver
-    aSettings.setReceiverData (m_sReceiverAS2ID, m_sReceiverAS2KeyAlias, m_sReceiverAS2Url);
-    aSettings.setReceiverCertificate (m_aReceiverCert);
-
-    // AS2 stuff - no need to change anything in this block
-    aSettings.setPartnershipName (aSettings.getSenderAS2ID () + "-" + aSettings.getReceiverAS2ID ());
-    aSettings.setMDNOptions (new DispositionOptions ().setMICAlg (m_eSigningAlgo)
-                                                      .setMICAlgImportance (DispositionOptions.IMPORTANCE_REQUIRED)
-                                                      .setProtocol (DispositionOptions.PROTOCOL_PKCS7_SIGNATURE)
-                                                      .setProtocolImportance (DispositionOptions.IMPORTANCE_REQUIRED));
-    aSettings.setEncryptAndSign (null, m_eSigningAlgo);
-    aSettings.setMessageIDFormat (m_sMessageIDFormat);
 
     // Build message
 
@@ -395,7 +590,10 @@ public class AS2ClientBuilder
     }
     catch (final SAXException ex)
     {
-      throw new AS2ClientBuilderException ("Failed to read business document as XML", ex);
+      throw new AS2ClientBuilderException ("Failed to read business document '" +
+                                           m_aBusinessDocument.getPath () +
+                                           "' as XML",
+                                           ex);
     }
 
     // 2. build SBD data
@@ -413,9 +611,31 @@ public class AS2ClientBuilder
     aBAOS.close ();
 
     // 4. send message
+    // Start building the AS2 client settings
+    final AS2ClientSettings aAS2ClientSettings = new AS2ClientSettings ();
+    // Key store
+    aAS2ClientSettings.setKeyStore (m_aKeyStoreFile, m_sKeyStorePassword);
+    // Fixed sender
+    aAS2ClientSettings.setSenderData (m_sSenderAS2ID, m_sSenderAS2Email, m_sSenderAS2KeyAlias);
+
+    // Dynamic receiver
+    aAS2ClientSettings.setReceiverData (m_sReceiverAS2ID, m_sReceiverAS2KeyAlias, m_sReceiverAS2Url);
+    aAS2ClientSettings.setReceiverCertificate (m_aReceiverCert);
+
+    // AS2 stuff - no need to change anything in this block
+    aAS2ClientSettings.setPartnershipName (aAS2ClientSettings.getSenderAS2ID () +
+                                           "-" +
+                                           aAS2ClientSettings.getReceiverAS2ID ());
+    aAS2ClientSettings.setMDNOptions (new DispositionOptions ().setMICAlg (m_eSigningAlgo)
+                                                               .setMICAlgImportance (DispositionOptions.IMPORTANCE_REQUIRED)
+                                                               .setProtocol (DispositionOptions.PROTOCOL_PKCS7_SIGNATURE)
+                                                               .setProtocolImportance (DispositionOptions.IMPORTANCE_REQUIRED));
+    aAS2ClientSettings.setEncryptAndSign (null, m_eSigningAlgo);
+    aAS2ClientSettings.setMessageIDFormat (m_sMessageIDFormat);
+
     final AS2ClientRequest aRequest = new AS2ClientRequest (m_sAS2Subject);
     aRequest.setData (aBAOS.toByteArray ());
-    final AS2ClientResponse aResponse = new AS2Client ().sendSynchronous (aSettings, aRequest);
+    final AS2ClientResponse aResponse = new AS2Client ().sendSynchronous (aAS2ClientSettings, aRequest);
     return aResponse;
   }
 }
