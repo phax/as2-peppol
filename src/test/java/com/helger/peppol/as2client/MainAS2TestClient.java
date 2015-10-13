@@ -18,7 +18,6 @@ package com.helger.peppol.as2client;
 
 import java.io.File;
 import java.security.Security;
-import java.security.cert.X509Certificate;
 
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.slf4j.Logger;
@@ -35,9 +34,6 @@ import com.helger.peppol.identifier.participant.SimpleParticipantIdentifier;
 import com.helger.peppol.identifier.process.EPredefinedProcessIdentifier;
 import com.helger.peppol.identifier.process.SimpleProcessIdentifier;
 import com.helger.peppol.sml.ESML;
-import com.helger.peppol.smp.ESMPTransportProfile;
-import com.helger.peppol.smp.EndpointType;
-import com.helger.peppol.smp.ISMPTransportProfile;
 import com.helger.peppol.smpclient.SMPClientConfiguration;
 import com.helger.peppol.smpclient.SMPClientReadOnly;
 
@@ -46,7 +42,7 @@ import com.helger.peppol.smpclient.SMPClientReadOnly;
  *
  * @author Philip Helger
  */
-public final class MainAS2TestClient
+public class MainAS2TestClient
 {
   /** The file path to the PKCS12 key store */
   private static final String PKCS12_CERTSTORE_PATH = "as2-client-data/client-certs.p12";
@@ -64,8 +60,6 @@ public final class MainAS2TestClient
   private static final SimpleDocumentTypeIdentifier DOCTYPE = EPredefinedDocumentTypeIdentifier.INVOICE_T010_BIS4A_V20.getAsDocumentTypeIdentifier ();
   /** The PEPPOL process to use. */
   private static final SimpleProcessIdentifier PROCESS = EPredefinedProcessIdentifier.BIS4A_V20.getAsProcessIdentifier ();
-  /** The PEPPOL transport profile to use */
-  private static final ISMPTransportProfile TRANSPORT_PROFILE = ESMPTransportProfile.TRANSPORT_PROFILE_AS2;
 
   private static final Logger s_aLogger = LoggerFactory.getLogger (MainAS2TestClient.class);
 
@@ -81,7 +75,6 @@ public final class MainAS2TestClient
     GlobalDebug.setDebugModeDirect (false);
   }
 
-  @SuppressWarnings ("null")
   public static void main (final String [] args) throws Exception
   {
     IParticipantIdentifier aReceiver = null;
@@ -89,7 +82,6 @@ public final class MainAS2TestClient
     String sReceiverID = null;
     String sReceiverKeyAlias = null;
     String sReceiverAddress = null;
-    X509Certificate aReceiverCertificate = null;
 
     if (false)
     {
@@ -146,40 +138,9 @@ public final class MainAS2TestClient
       sReceiverKeyAlias = "APP_1000000004";
     }
 
-    if (sReceiverAddress == null || sReceiverID == null)
-    {
-      // Fallback
-      if (aReceiver == null)
-        throw new IllegalStateException ("Receiver ID must be present!");
-
-      s_aLogger.info ("SMP lookup for " + aReceiver.getValue ());
-
-      // Query SMP
-      final SMPClientReadOnly aSMPClient = new SMPClientReadOnly (aReceiver, ESML.DIGIT_PRODUCTION);
-      final EndpointType aEndpoint = aSMPClient.getEndpoint (aReceiver, DOCTYPE, PROCESS, TRANSPORT_PROFILE);
-      if (aEndpoint == null)
-        throw new NullPointerException ("Failed to resolve endpoint for docType/process");
-
-      // Extract from SMP response
-      if (sReceiverAddress == null)
-        sReceiverAddress = SMPClientReadOnly.getEndpointAddress (aEndpoint);
-      if (aReceiverCertificate == null)
-        aReceiverCertificate = SMPClientReadOnly.getEndpointCertificate (aEndpoint);
-      if (sReceiverID == null)
-        sReceiverID = AS2ClientHelper.getSubjectCommonName (aReceiverCertificate);
-
-      // SMP lookup done
-      s_aLogger.info ("Receiver URL: " + sReceiverAddress);
-      s_aLogger.info ("Receiver DN:  " + sReceiverID);
-    }
-
-    if (sReceiverKeyAlias == null)
-    {
-      // No key alias is specified, so use the same as the receiver ID
-      sReceiverKeyAlias = sReceiverID;
-    }
-
-    final AS2ClientResponse aResponse = new AS2ClientBuilder ().setPKCS12KeyStore (new File (PKCS12_CERTSTORE_PATH),
+    final AS2ClientResponse aResponse = new AS2ClientBuilder ().setSMPClient (new SMPClientReadOnly (aReceiver,
+                                                                                                     ESML.DIGIT_PRODUCTION))
+                                                               .setPKCS12KeyStore (new File (PKCS12_CERTSTORE_PATH),
                                                                                    PKCS12_CERTSTORE_PASSWORD)
                                                                .setSenderAS2ID (SENDER_AS2_ID)
                                                                .setSenderAS2Email (SENDER_EMAIL)
@@ -187,7 +148,6 @@ public final class MainAS2TestClient
                                                                .setReceiverAS2ID (sReceiverID)
                                                                .setReceiverAS2KeyAlias (sReceiverKeyAlias)
                                                                .setReceiverAS2Url (sReceiverAddress)
-                                                               .setReceiverCertificate (aReceiverCertificate)
                                                                .setAS2SigningAlgorithm (ECryptoAlgorithmSign.DIGEST_SHA_256)
                                                                .setBusinessDocument (new ClassPathResource (sTestFilename))
                                                                .setPeppolSenderID (SENDER_PEPPOL_ID)

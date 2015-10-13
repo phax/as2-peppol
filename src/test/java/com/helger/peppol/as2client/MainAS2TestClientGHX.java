@@ -19,7 +19,6 @@ package com.helger.peppol.as2client;
 import java.io.File;
 import java.net.URI;
 import java.security.Security;
-import java.security.cert.X509Certificate;
 
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.slf4j.Logger;
@@ -28,15 +27,11 @@ import org.slf4j.LoggerFactory;
 import com.helger.as2lib.client.AS2ClientResponse;
 import com.helger.as2lib.crypto.ECryptoAlgorithmSign;
 import com.helger.commons.debug.GlobalDebug;
-import com.helger.commons.exception.InitializationException;
 import com.helger.commons.io.resource.ClassPathResource;
 import com.helger.peppol.identifier.IParticipantIdentifier;
 import com.helger.peppol.identifier.doctype.SimpleDocumentTypeIdentifier;
 import com.helger.peppol.identifier.participant.SimpleParticipantIdentifier;
 import com.helger.peppol.identifier.process.SimpleProcessIdentifier;
-import com.helger.peppol.smp.ESMPTransportProfile;
-import com.helger.peppol.smp.EndpointType;
-import com.helger.peppol.smp.ISMPTransportProfile;
 import com.helger.peppol.smpclient.SMPClientConfiguration;
 import com.helger.peppol.smpclient.SMPClientReadOnly;
 
@@ -63,8 +58,6 @@ public final class MainAS2TestClientGHX
   private static final SimpleDocumentTypeIdentifier DOCTYPE = SimpleDocumentTypeIdentifier.createWithDefaultScheme ("abc");
   /** The PEPPOL process to use. */
   private static final SimpleProcessIdentifier PROCESS = SimpleProcessIdentifier.createWithDefaultScheme ("123");
-  /** The PEPPOL transport profile to use */
-  private static final ISMPTransportProfile TRANSPORT_PROFILE = ESMPTransportProfile.TRANSPORT_PROFILE_AS2;
 
   private static final Logger s_aLogger = LoggerFactory.getLogger (MainAS2TestClientGHX.class);
 
@@ -73,28 +66,23 @@ public final class MainAS2TestClientGHX
     // Set Proxy Settings from property file.
     SMPClientConfiguration.getConfigFile ().applyAllNetworkSystemProperties ();
 
-    // Sanity check
-    if (!new File (PKCS12_CERTSTORE_PATH).exists ())
-      throw new InitializationException ("The PKCS12 key store file '" + PKCS12_CERTSTORE_PATH + "' does not exist!");
-  }
-
-  @SuppressWarnings ("null")
-  public static void main (final String [] args) throws Exception
-  {
     // Must be first!
     Security.addProvider (new BouncyCastleProvider ());
 
     // Enable or disable debug mode
     GlobalDebug.setDebugModeDirect (false);
+  }
 
+  public static void main (final String [] args) throws Exception
+  {
     String sReceiverID = null;
     String sReceiverKeyAlias = null;
     String sReceiverAddress = null;
-    X509Certificate aReceiverCertificate = null;
 
     // localhost test endpoint
     final IParticipantIdentifier aReceiver = SimpleParticipantIdentifier.createWithDefaultScheme ("9915:test");
     final String sTestFilename = "xml/as2-test-at-gov.xml";
+
     if (true)
     {
       // Avoid SMP lookup
@@ -103,43 +91,8 @@ public final class MainAS2TestClientGHX
       sReceiverKeyAlias = "APP_1000000004";
     }
 
-    if (sReceiverAddress == null || sReceiverID == null)
-    {
-      // Fallback
-      if (aReceiver == null)
-        throw new IllegalStateException ("Receiver ID must be present!");
-
-      s_aLogger.info ("SMP lookup for " + aReceiver.getValue ());
-
-      // Query SMP
-      final SMPClientReadOnly aSMPClient = new SMPClientReadOnly (URI.create ("http://127.0.0.1"));
-      final EndpointType aEndpoint = aSMPClient.getEndpoint (aReceiver, DOCTYPE, PROCESS, TRANSPORT_PROFILE);
-      if (aEndpoint == null)
-        throw new NullPointerException ("Failed to resolve endpoint for docType/process");
-
-      // Extract from SMP response
-      if (sReceiverAddress == null)
-        sReceiverAddress = SMPClientReadOnly.getEndpointAddress (aEndpoint);
-      if (aReceiverCertificate == null)
-        aReceiverCertificate = SMPClientReadOnly.getEndpointCertificate (aEndpoint);
-      if (sReceiverID == null)
-        sReceiverID = AS2ClientHelper.getSubjectCommonName (aReceiverCertificate);
-
-      // SMP lookup done
-      s_aLogger.info ("Receiver URL: " + sReceiverAddress);
-      s_aLogger.info ("Receiver DN:  " + sReceiverID);
-    }
-
-    if (sReceiverKeyAlias == null)
-    {
-      // No key alias is specified, so use the same as the receiver ID
-      sReceiverKeyAlias = sReceiverID;
-    }
-
-    if (sTestFilename == null)
-      throw new IllegalStateException ("No test filename present!");
-
-    final AS2ClientResponse aResponse = new AS2ClientBuilder ().setPKCS12KeyStore (new File (PKCS12_CERTSTORE_PATH),
+    final AS2ClientResponse aResponse = new AS2ClientBuilder ().setSMPClient (new SMPClientReadOnly (URI.create ("http://127.0.0.1")))
+                                                               .setPKCS12KeyStore (new File (PKCS12_CERTSTORE_PATH),
                                                                                    PKCS12_CERTSTORE_PASSWORD)
                                                                .setSenderAS2ID (SENDER_AS2_ID)
                                                                .setSenderAS2Email (SENDER_EMAIL)
@@ -147,7 +100,6 @@ public final class MainAS2TestClientGHX
                                                                .setReceiverAS2ID (sReceiverID)
                                                                .setReceiverAS2KeyAlias (sReceiverKeyAlias)
                                                                .setReceiverAS2Url (sReceiverAddress)
-                                                               .setReceiverCertificate (aReceiverCertificate)
                                                                .setAS2SigningAlgorithm (ECryptoAlgorithmSign.DIGEST_SHA_256)
                                                                .setBusinessDocument (new ClassPathResource (sTestFilename))
                                                                .setPeppolSenderID (SENDER_PEPPOL_ID)

@@ -17,13 +17,17 @@
 package com.helger.peppol.as2client;
 
 import java.io.File;
+import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.annotation.OverridingMethodsMustInvokeSuper;
 import javax.annotation.concurrent.NotThreadSafe;
 import javax.xml.transform.stream.StreamResult;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.unece.cefact.namespaces.sbdh.StandardBusinessDocument;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
@@ -49,6 +53,10 @@ import com.helger.peppol.identifier.IProcessIdentifier;
 import com.helger.peppol.identifier.IdentifierHelper;
 import com.helger.peppol.sbdh.DocumentData;
 import com.helger.peppol.sbdh.write.DocumentDataWriter;
+import com.helger.peppol.smp.ESMPTransportProfile;
+import com.helger.peppol.smp.EndpointType;
+import com.helger.peppol.smpclient.SMPClientReadOnly;
+import com.helger.peppol.smpclient.exception.SMPClientException;
 import com.helger.sbdh.SBDMarshaller;
 
 /**
@@ -65,6 +73,8 @@ public class AS2ClientBuilder
   public static final String DEFAULT_AS2_SUBJECT = "OpenPEPPOL AS2 message";
   public static final ECryptoAlgorithmSign DEFAULT_SIGNING_ALGORITHM = ECryptoAlgorithmSign.DIGEST_SHA1;
   public static final String DEFAULT_AS2_MESSAGE_ID_FORMAT = "OpenPEPPOL-$date.ddMMyyyyHHmmssZ$-$rand.1234$@$msg.sender.as2_id$_$msg.receiver.as2_id$";
+
+  private static final Logger s_aLogger = LoggerFactory.getLogger (AS2ClientBuilder.class);
 
   private IAS2ClientBuilderMessageHandler m_aMessageHandler = new DefaultAS2ClientBuilderMessageHandler ();
   private File m_aKeyStoreFile;
@@ -84,6 +94,7 @@ public class AS2ClientBuilder
   private IParticipantIdentifier m_aPeppolReceiverID;
   private IDocumentTypeIdentifier m_aPeppolDocumentTypeID;
   private IProcessIdentifier m_aPeppolProcessID;
+  private SMPClientReadOnly m_aSMPClient;
 
   /**
    * Default constructor.
@@ -413,6 +424,164 @@ public class AS2ClientBuilder
   }
 
   /**
+   * Set the SMP client to be used. The SMP client can help to automatically
+   * determine the following fields:
+   * <ul>
+   * <li>Receiver AS2 endpoint URL - {@link #setReceiverAS2Url(String)}</li>
+   * <li>Receiver certificate - {@link #setReceiverCertificate(X509Certificate)}
+   * </li>
+   * <li>Receiver AS2 ID - {@link #setReceiverAS2ID(String)}</li>
+   * </ul>
+   * so that you need to call this method only if you did not set these values
+   * previously. If any of the values mentioned above is already set, it's value
+   * is not touched!
+   * <p>
+   * As a prerequisite to performing an SMP lookup, at least the following
+   * properties must be set:
+   * <ul>
+   * <li>The PEPPOL receiver participant ID -
+   * {@link #setPeppolReceiverID(IParticipantIdentifier)}</li>
+   * <li>The PEPPOL document type ID -
+   * {@link #setPeppolDocumentTypeID(IDocumentTypeIdentifier)}</li>
+   * <li>The PEPPOL process ID - {@link #setPeppolProcessID(IProcessIdentifier)}
+   * </li>
+   * </ul>
+   *
+   * @param aSMPClient
+   *        The SMP client to be used. May be <code>null</code> to indicate no
+   *        SMP lookup necessary.
+   * @return this for chaining
+   */
+  @Nonnull
+  public AS2ClientBuilder setSMPClient (@Nullable final SMPClientReadOnly aSMPClient)
+  {
+    m_aSMPClient = aSMPClient;
+    return this;
+  }
+
+  /**
+   * This method is responsible for performing the SMP client lookup if an SMP
+   * client was specified via {@link #setSMPClient(SMPClientReadOnly)}. If any
+   * of the prerequisites mentioned there is not fulfilled a warning is emitted
+   * via the {@link #getMessageHandler()} and nothing happens. If all fields to
+   * be determined by the SMP are already no SMP lookup is performed either. If
+   * the SMP lookup fails, a warning is emitted and nothing happens.
+   *
+   * @throws AS2ClientBuilderException
+   *         In case SMP client lookup triggers an unrecoverable error via the
+   *         message handler
+   */
+  protected void performSMPClientLookup () throws AS2ClientBuilderException
+  {
+    if (m_aSMPClient != null)
+    {
+      // Check pre-requisites
+      if (m_aPeppolReceiverID == null)
+        getMessageHandler ().warn ("Cannot perform SMP lookup because the PEPPOL receiver ID is missing");
+      else
+        if (m_aPeppolDocumentTypeID == null)
+          getMessageHandler ().warn ("Cannot perform SMP lookup because the PEPPOL document type ID is missing");
+        else
+          if (m_aPeppolProcessID == null)
+            getMessageHandler ().warn ("Cannot perform SMP lookup because the PEPPOL process ID is missing");
+          else
+          {
+            // All prerequisites are matched
+
+            // Check if all fields to be determined are present, to avoid
+            // unnecessary lookup calls.
+            if (m_sReceiverAS2Url == null || m_aReceiverCert == null || m_sReceiverAS2ID == null)
+            {
+              // Perform the lookup.
+              EndpointType aEndpoint = null;
+              try
+              {
+                if (s_aLogger.isDebugEnabled ())
+                  s_aLogger.debug ("Performing SMP lookup for receiver '" +
+                                   IdentifierHelper.getIdentifierURIEncoded (m_aPeppolReceiverID) +
+                                   "' on document type '" +
+                                   IdentifierHelper.getIdentifierURIEncoded (m_aPeppolDocumentTypeID) +
+                                   "' and process ID '" +
+                                   IdentifierHelper.getIdentifierURIEncoded (m_aPeppolProcessID) +
+                                   "' using transport profile for AS2");
+
+                aEndpoint = m_aSMPClient.getEndpoint (m_aPeppolReceiverID,
+                                                      m_aPeppolDocumentTypeID,
+                                                      m_aPeppolProcessID,
+                                                      ESMPTransportProfile.TRANSPORT_PROFILE_AS2);
+              }
+              catch (final SMPClientException ex)
+              {
+                if (s_aLogger.isDebugEnabled ())
+                  s_aLogger.debug ("Error querying SMP", ex);
+                // Fall through
+              }
+
+              // Interpret the result
+              if (aEndpoint == null)
+              {
+                // No such SMP entry
+                getMessageHandler ().warn ("Failed to perform SMP lookup for receiver '" +
+                                           IdentifierHelper.getIdentifierURIEncoded (m_aPeppolReceiverID) +
+                                           "' on document type '" +
+                                           IdentifierHelper.getIdentifierURIEncoded (m_aPeppolDocumentTypeID) +
+                                           "' and process ID '" +
+                                           IdentifierHelper.getIdentifierURIEncoded (m_aPeppolProcessID) +
+                                           "' using transport profile for AS2");
+              }
+              else
+              {
+                // Extract from SMP response
+                if (m_sReceiverAS2Url == null)
+                  m_sReceiverAS2Url = SMPClientReadOnly.getEndpointAddress (aEndpoint);
+                if (m_aReceiverCert == null)
+                  try
+                  {
+                    m_aReceiverCert = SMPClientReadOnly.getEndpointCertificate (aEndpoint);
+                  }
+                  catch (final CertificateException ex)
+                  {
+                    getMessageHandler ().error ("Failed to build X.509 certificate from SMP client response", ex);
+                  }
+                if (m_sReceiverAS2ID == null)
+                  try
+                  {
+                    m_sReceiverAS2ID = AS2ClientHelper.getSubjectCommonName (m_aReceiverCert);
+                  }
+                  catch (final CertificateException ex)
+                  {
+                    getMessageHandler ().error ("Failed to get the Receiver AS ID from the provided certificate", ex);
+                  }
+              }
+            }
+            else
+            {
+              if (s_aLogger.isDebugEnabled ())
+                s_aLogger.debug ("Not performing SMP lookup because all target fields are already set!");
+            }
+          }
+    }
+  }
+
+  /**
+   * Certain values can by convention be derived from other values. This happens
+   * inside this method. There is no need to call this method manually, it is
+   * called automatically before {@link #verifyContent()} is called.
+   */
+  @OverridingMethodsMustInvokeSuper
+  protected void setDefaultDerivedValues ()
+  {
+    if (m_sReceiverAS2KeyAlias == null)
+    {
+      // No key alias is specified, so use the same as the receiver ID (which
+      // may be null)
+      m_sReceiverAS2KeyAlias = m_sReceiverAS2ID;
+      if (s_aLogger.isDebugEnabled ())
+        s_aLogger.debug ("The receiver AS2 key alias was defaulted to the AS2 receiver ID");
+    }
+  }
+
+  /**
    * Verify the content of all contained fields so that all know issues are
    * captured before sending. This method is automatically called before the
    * message is send (see {@link #sendSynchronous()}). All verification warnings
@@ -578,6 +747,12 @@ public class AS2ClientBuilder
   @Nonnull
   public AS2ClientResponse sendSynchronous () throws AS2ClientBuilderException
   {
+    // Perform SMP client lookup
+    performSMPClientLookup ();
+
+    // Set derivable values
+    setDefaultDerivedValues ();
+
     // Verify the whole data set
     verifyContent ();
 
