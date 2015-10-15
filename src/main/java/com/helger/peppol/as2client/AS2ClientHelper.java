@@ -28,6 +28,8 @@ import org.bouncycastle.asn1.x500.style.BCStyle;
 import org.bouncycastle.asn1.x500.style.IETFUtils;
 import org.bouncycastle.cert.jcajce.JcaX509CertificateHolder;
 
+import com.helger.commons.ValueEnforcer;
+
 /**
  * Common functionality for AS2 clients
  *
@@ -49,6 +51,7 @@ public final class AS2ClientHelper
   @Nonnull
   public static String getSubjectCommonName (@Nonnull final X509Certificate aCert) throws CertificateEncodingException
   {
+    ValueEnforcer.notNull (aCert, "Certificate");
     final X500Name x500name = new JcaX509CertificateHolder (aCert).getSubject ();
     final RDN cn = x500name.getRDNs (BCStyle.CN)[0];
     return IETFUtils.valueToString (cn.getFirst ().getValue ());
