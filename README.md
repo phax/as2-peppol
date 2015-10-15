@@ -17,12 +17,12 @@ By default it is expected to be called `client-certs.p12` residing in the `as2-c
 
 To convert a JKS keystore to a PKCS12 keystore you can e.g. use [Portecle](http://portecle.sourceforge.net/) - a user friendly GUI application for creating, managing and examining keystores, keys, certificates, certificate requests, certificate revocation lists and more.
 
-The main class is `MainAS2TestClient` and you need to adopt the constants on top to make it work.
+A test class is `MainAS2TestClient` and you need to adopt the constants on top to make it work.
   * **PKCS12_CERTSTORE_PATH** file path to the PKCS12 keystore
   * **PKCS12_CERTSTORE_PASSWORD** password to access the PKCS12 keystore
   * **SENDER_AS2_ID** your AS2-from ID. Must match the OpenPEPPOL requirements (AP certificate CN name - e.g. `APP_1000000001`).
   * **SENDER_EMAIL** your email address for out of band resolutions.
-  * **SENDER_KEY_ALIAS** the alias name of your PEPPOL-AP-certificate within the PKCS12 keystore. Ideally this is the same value as **SENDER_AS2_ID** 
+  * **SENDER_KEY_ALIAS** the alias name of your PEPPOL-AP-certificate within the PKCS12 keystore. This should be the same value as **SENDER_AS2_ID** 
 
 #Sending a document
 
@@ -32,7 +32,7 @@ The test files reside in the `src/main/resources/xml` folder and are referenced 
 
 ## Usage of a proxy server
 
-To use a proxy server, add the following items to the `config.properties` configuration file (of course with adopted values): 
+To use a proxy server, add the following items to the `smp-client.properties` configuration file (of course with adopted values): 
 ```
 http.proxyHost=1.2.3.4
 http.proxyPort=8080
