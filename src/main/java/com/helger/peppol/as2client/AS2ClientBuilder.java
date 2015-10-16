@@ -41,6 +41,8 @@ import com.helger.as2lib.crypto.ECryptoAlgorithmSign;
 import com.helger.as2lib.disposition.DispositionOptions;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.email.EmailAddressHelper;
+import com.helger.commons.factory.FactoryNewInstance;
+import com.helger.commons.factory.IFactory;
 import com.helger.commons.io.resource.FileSystemResource;
 import com.helger.commons.io.resource.IReadableResource;
 import com.helger.commons.io.resource.inmemory.ReadableResourceByteArray;
@@ -97,6 +99,7 @@ public class AS2ClientBuilder
   private IDocumentTypeIdentifier m_aPeppolDocumentTypeID;
   private IProcessIdentifier m_aPeppolProcessID;
   private SMPClientReadOnly m_aSMPClient;
+  private IFactory <AS2Client> m_aAS2ClientFactory = FactoryNewInstance.create (AS2Client.class, true);
 
   /**
    * Default constructor.
@@ -477,6 +480,22 @@ public class AS2ClientBuilder
   }
 
   /**
+   * Set the factory to create {@link AS2Client} objects internally. Overwrite
+   * this if you need a proxy in the AS2Client object. By default a new instance
+   * of AS2Client is created so you don't need to call this method.
+   *
+   * @param aAS2ClientFactory
+   *        The factory to be used. May not be <code>null</code>.
+   * @return this for chaining
+   */
+  @Nonnull
+  public AS2ClientBuilder setAS2ClientFactory (@Nonnull final IFactory <AS2Client> aAS2ClientFactory)
+  {
+    m_aAS2ClientFactory = ValueEnforcer.notNull (aAS2ClientFactory, "AS2ClientFactory");
+    return this;
+  }
+
+  /**
    * This method is responsible for performing the SMP client lookup if an SMP
    * client was specified via {@link #setSMPClient(SMPClientReadOnly)}. If any
    * of the prerequisites mentioned there is not fulfilled a warning is emitted
@@ -842,7 +861,9 @@ public class AS2ClientBuilder
 
     final AS2ClientRequest aRequest = new AS2ClientRequest (m_sAS2Subject);
     aRequest.setData (aBAOS.toByteArray ());
-    final AS2ClientResponse aResponse = new AS2Client ().sendSynchronous (aAS2ClientSettings, aRequest);
+
+    final AS2Client aAS2Client = m_aAS2ClientFactory.create ();
+    final AS2ClientResponse aResponse = aAS2Client.sendSynchronous (aAS2ClientSettings, aRequest);
     return aResponse;
   }
 }
