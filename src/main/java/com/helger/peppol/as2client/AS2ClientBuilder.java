@@ -30,6 +30,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.unece.cefact.namespaces.sbdh.StandardBusinessDocument;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
 import com.helger.as2lib.client.AS2Client;
@@ -89,7 +90,8 @@ public class AS2ClientBuilder
   private X509Certificate m_aReceiverCert;
   private ECryptoAlgorithmSign m_eSigningAlgo = DEFAULT_SIGNING_ALGORITHM;
   private String m_sMessageIDFormat = DEFAULT_AS2_MESSAGE_ID_FORMAT;
-  private IReadableResource m_aBusinessDocument;
+  private IReadableResource m_aBusinessDocumentRes;
+  private Element m_aBusinessDocumentElement;
   private IParticipantIdentifier m_aPeppolSenderID;
   private IParticipantIdentifier m_aPeppolReceiverID;
   private IDocumentTypeIdentifier m_aPeppolDocumentTypeID;
@@ -322,7 +324,7 @@ public class AS2ClientBuilder
    * by PEPPOL. This should NOT be the SBDH as this is added internally.
    *
    * @param aBusinessDocument
-   *        The file containing the business document to be set. May not be
+   *        The file containing the business document to be set. May be
    *        <code>null</code>.
    * @return this for chaining
    */
@@ -338,8 +340,8 @@ public class AS2ClientBuilder
    * by PEPPOL. This should NOT be the SBDH as this is added internally.
    *
    * @param aBusinessDocument
-   *        The byte array content of the business document to be set. May not
-   *        be <code>null</code>.
+   *        The byte array content of the business document to be set. May be
+   *        <code>null</code>.
    * @return this for chaining
    */
   @Nonnull
@@ -354,14 +356,29 @@ public class AS2ClientBuilder
    * by PEPPOL. This should NOT be the SBDH as this is added internally.
    *
    * @param aBusinessDocument
-   *        The resource pointing to the business document to be set. May not be
+   *        The resource pointing to the business document to be set. May be
    *        <code>null</code>.
    * @return this for chaining
    */
   @Nonnull
   public AS2ClientBuilder setBusinessDocument (@Nullable final IReadableResource aBusinessDocument)
   {
-    m_aBusinessDocument = aBusinessDocument;
+    m_aBusinessDocumentRes = aBusinessDocument;
+    return this;
+  }
+
+  /**
+   * Set the W3C Element that represents the main business document to be
+   * transmitted. This should NOT be the SBDH as this is added internally.
+   *
+   * @param aBusinessDocument
+   *        The business document to be set. May be <code>null</code>.
+   * @return this for chaining
+   */
+  @Nonnull
+  public AS2ClientBuilder setBusinessDocument (@Nullable final Element aBusinessDocument)
+  {
+    m_aBusinessDocumentElement = aBusinessDocument;
     return this;
   }
 
@@ -683,12 +700,12 @@ public class AS2ClientBuilder
     if (StringHelper.hasNoText (m_sMessageIDFormat))
       m_aMessageHandler.error ("The AS2 message ID format is missing.");
 
-    if (m_aBusinessDocument == null)
+    if (m_aBusinessDocumentRes == null && m_aBusinessDocumentElement == null)
       m_aMessageHandler.error ("The XML business document to be send is missing.");
     else
-      if (!m_aBusinessDocument.exists ())
+      if (m_aBusinessDocumentRes != null && !m_aBusinessDocumentRes.exists ())
         m_aMessageHandler.error ("The XML business document to be send '" +
-                                 m_aBusinessDocument.getPath () +
+                                 m_aBusinessDocumentRes.getPath () +
                                  "' does not exist.");
 
     if (m_aPeppolSenderID == null)
@@ -758,22 +775,36 @@ public class AS2ClientBuilder
 
     // Build message
 
-    // 1. read XML
-    Document aXMLDocument = null;
-    try
+    // 1. read business document
+    Element aXML = null;
+    if (m_aBusinessDocumentRes != null)
     {
-      aXMLDocument = DOMReader.readXMLDOM (m_aBusinessDocument);
+      try
+      {
+        final Document aXMLDocument = DOMReader.readXMLDOM (m_aBusinessDocumentRes);
+        if (aXMLDocument == null)
+          throw new AS2ClientBuilderException ("Failed to read business document '" +
+                                               m_aBusinessDocumentRes.getPath () +
+                                               "' as XML");
+        aXML = aXMLDocument.getDocumentElement ();
+      }
+      catch (final SAXException ex)
+      {
+        throw new AS2ClientBuilderException ("Failed to read business document '" +
+                                             m_aBusinessDocumentRes.getPath () +
+                                             "' as XML",
+                                             ex);
+      }
     }
-    catch (final SAXException ex)
+    else
     {
-      throw new AS2ClientBuilderException ("Failed to read business document '" +
-                                           m_aBusinessDocument.getPath () +
-                                           "' as XML",
-                                           ex);
+      aXML = m_aBusinessDocumentElement;
     }
+    if (aXML == null)
+      throw new AS2ClientBuilderException ("No XML business content present!");
 
     // 2. build SBD data
-    final PeppolSBDHDocument aDD = PeppolSBDHDocument.create (aXMLDocument.getDocumentElement ());
+    final PeppolSBDHDocument aDD = PeppolSBDHDocument.create (aXML);
     aDD.setSenderWithDefaultScheme (m_aPeppolSenderID.getValue ());
     aDD.setReceiver (m_aPeppolReceiverID.getScheme (), m_aPeppolReceiverID.getValue ());
     aDD.setDocumentType (m_aPeppolDocumentTypeID.getScheme (), m_aPeppolDocumentTypeID.getValue ());
