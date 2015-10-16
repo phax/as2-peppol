@@ -51,8 +51,8 @@ import com.helger.peppol.identifier.IDocumentTypeIdentifier;
 import com.helger.peppol.identifier.IParticipantIdentifier;
 import com.helger.peppol.identifier.IProcessIdentifier;
 import com.helger.peppol.identifier.IdentifierHelper;
-import com.helger.peppol.sbdh.DocumentData;
-import com.helger.peppol.sbdh.write.DocumentDataWriter;
+import com.helger.peppol.sbdh.PeppolSBDHDocument;
+import com.helger.peppol.sbdh.write.PeppolSBDHDocumentWriter;
 import com.helger.peppol.smp.ESMPTransportProfile;
 import com.helger.peppol.smp.EndpointType;
 import com.helger.peppol.smpclient.SMPClientReadOnly;
@@ -773,14 +773,14 @@ public class AS2ClientBuilder
     }
 
     // 2. build SBD data
-    final DocumentData aDD = DocumentData.create (aXMLDocument.getDocumentElement ());
+    final PeppolSBDHDocument aDD = PeppolSBDHDocument.create (aXMLDocument.getDocumentElement ());
     aDD.setSenderWithDefaultScheme (m_aPeppolSenderID.getValue ());
     aDD.setReceiver (m_aPeppolReceiverID.getScheme (), m_aPeppolReceiverID.getValue ());
     aDD.setDocumentType (m_aPeppolDocumentTypeID.getScheme (), m_aPeppolDocumentTypeID.getValue ());
     aDD.setProcess (m_aPeppolProcessID.getScheme (), m_aPeppolProcessID.getValue ());
 
     // 3. build SBD
-    final StandardBusinessDocument aSBD = new DocumentDataWriter ().createStandardBusinessDocument (aDD);
+    final StandardBusinessDocument aSBD = new PeppolSBDHDocumentWriter ().createStandardBusinessDocument (aDD);
     final NonBlockingByteArrayOutputStream aBAOS = new NonBlockingByteArrayOutputStream ();
     if (new SBDMarshaller ().write (aSBD, new StreamResult (aBAOS)).isFailure ())
       throw new AS2ClientBuilderException ("Failed to serialize SBD!");
