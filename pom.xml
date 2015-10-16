@@ -24,7 +24,7 @@
     <version>1.4.1</version>
   </parent>
   <artifactId>as2-peppol-client</artifactId>
-  <version>1.0.0</version>
+  <version>1.0.1-SNAPSHOT</version>
   <name>as2-peppol-client</name>
   <packaging>bundle</packaging>
   <description>A simple AS2 client to send PEPPOL messages</description>
@@ -43,7 +43,7 @@
     <connection>scm:git:git@github.com:phax/as2-peppol-client.git</connection>
     <developerConnection>scm:git:git@github.com:phax/as2-peppol-client.git</developerConnection>
     <url>http://github.com/phax/as2-peppol-client</url>
-    <tag>as2-peppol-client-1.0.0</tag>
+    <tag>HEAD</tag>
   </scm>
 
   <organization>
