@@ -16,8 +16,7 @@
     limitations under the License.
 
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>com.helger</groupId>
@@ -25,7 +24,7 @@
     <version>1.4.1</version>
   </parent>
   <artifactId>as2-peppol-client</artifactId>
-  <version>1.0.0-SNAPSHOT</version>
+  <version>1.0.0</version>
   <name>as2-peppol-client</name>
   <packaging>bundle</packaging>
   <description>A simple AS2 client to send PEPPOL messages</description>
@@ -44,7 +43,7 @@
     <connection>scm:git:git@github.com:phax/as2-peppol-client.git</connection>
     <developerConnection>scm:git:git@github.com:phax/as2-peppol-client.git</developerConnection>
     <url>http://github.com/phax/as2-peppol-client</url>
-    <tag>HEAD</tag>
+    <tag>as2-peppol-client-1.0.0</tag>
   </scm>
 
   <organization>
