@@ -40,6 +40,7 @@ import com.helger.as2lib.client.AS2ClientSettings;
 import com.helger.as2lib.crypto.ECryptoAlgorithmSign;
 import com.helger.as2lib.disposition.DispositionOptions;
 import com.helger.commons.ValueEnforcer;
+import com.helger.commons.charset.CCharset;
 import com.helger.commons.email.EmailAddressHelper;
 import com.helger.commons.factory.FactoryNewInstance;
 import com.helger.commons.factory.IFactory;
@@ -860,7 +861,9 @@ public class AS2ClientBuilder
     aAS2ClientSettings.setMessageIDFormat (m_sMessageIDFormat);
 
     final AS2ClientRequest aRequest = new AS2ClientRequest (m_sAS2Subject);
-    aRequest.setData (aBAOS.toByteArray ());
+    // Using a String is better when having a
+    // com.sun.xml.ws.encoding.XmlDataContentHandler installed!
+    aRequest.setData (aBAOS.getAsString (CCharset.CHARSET_UTF_8_OBJ), CCharset.CHARSET_UTF_8_OBJ);
 
     final AS2Client aAS2Client = m_aAS2ClientFactory.create ();
     final AS2ClientResponse aResponse = aAS2Client.sendSynchronous (aAS2ClientSettings, aRequest);
