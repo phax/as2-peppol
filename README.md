@@ -43,12 +43,12 @@ https.proxyPort=8080
 If you need a username and password for your proxy see [here](http://rolandtapken.de/blog/2012-04/java-process-httpproxyuser-and-httpproxypassword) for a guideline.
 
 #Maven usage
-Add the following to your pom.xml to use this artifact:
+Add the following to your `pom.xml` to use this artifact:
 ```
 <dependency>
   <groupId>com.helger</groupId>
   <artifactId>as2-peppol-client</artifactId>
-  <version>1.0.1</version>
+  <version>1.0.2</version>
 </dependency>
 ```
 
