@@ -19,6 +19,7 @@ package com.helger.peppol.as2client;
 import java.io.File;
 import java.security.Security;
 
+import org.apache.http.HttpHost;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,10 +57,6 @@ public class MainAS2TestClient
   private static final String SENDER_KEY_ALIAS = "APP_1000000004";
   /** The PEPPOL sender participant ID */
   private static final SimpleParticipantIdentifier SENDER_PEPPOL_ID = SimpleParticipantIdentifier.createWithDefaultScheme ("9999:test-sender");
-  /** The PEPPOL document type to use. */
-  private static final SimpleDocumentTypeIdentifier DOCTYPE = EPredefinedDocumentTypeIdentifier.INVOICE_T010_BIS4A_V20.getAsDocumentTypeIdentifier ();
-  /** The PEPPOL process to use. */
-  private static final SimpleProcessIdentifier PROCESS = EPredefinedProcessIdentifier.BIS4A_V20.getAsProcessIdentifier ();
 
   private static final Logger s_aLogger = LoggerFactory.getLogger (MainAS2TestClient.class);
 
@@ -77,11 +74,22 @@ public class MainAS2TestClient
 
   public static void main (final String [] args) throws Exception
   {
+    /** The PEPPOL document type to use. */
+    SimpleDocumentTypeIdentifier aDocTypeID = EPredefinedDocumentTypeIdentifier.INVOICE_T010_BIS4A_V20.getAsDocumentTypeIdentifier ();
+    /** The PEPPOL process to use. */
+    SimpleProcessIdentifier aProcessID = EPredefinedProcessIdentifier.BIS4A_V20.getAsProcessIdentifier ();
     IParticipantIdentifier aReceiver = null;
     String sTestFilename = null;
     String sReceiverID = null;
     String sReceiverKeyAlias = null;
     String sReceiverAddress = null;
+    ESML eSML = ESML.DIGIT_PRODUCTION;
+
+    HttpHost aProxy = null;
+    final String sProxyHost = SMPClientConfiguration.getConfigFile ().getString ("http.proxyHost");
+    final int nProxyPort = SMPClientConfiguration.getConfigFile ().getInt ("http.proxyPort", 0);
+    if (sProxyHost != null && nProxyPort > 0)
+      aProxy = new HttpHost (sProxyHost, nProxyPort);
 
     if (false)
     {
@@ -123,6 +131,15 @@ public class MainAS2TestClient
     }
     if (true)
     {
+      // CONSIP test endpoint
+      aReceiver = SimpleParticipantIdentifier.createWithDefaultScheme ("9907:consiptestap2");
+      aDocTypeID = SimpleDocumentTypeIdentifier.createWithDefaultScheme ("urn:oasis:names:specification:ubl:schema:xsd:Order-2::Order##urn:www.cenbii.eu:transaction:biitrns001:ver2.0:extended:urn:www.peppol.eu:bis:peppol3a:ver2.0::2.1");
+      aProcessID = SimpleProcessIdentifier.createWithDefaultScheme ("urn:www.cenbii.eu:profile:bii03:ver2.0");
+      eSML = ESML.DIGIT_TEST;
+      sTestFilename = "xml/as2-order.xml";
+    }
+    if (false)
+    {
       // BRZ test endpoint
       aReceiver = SimpleParticipantIdentifier.createWithDefaultScheme ("9915:test");
       sTestFilename = "xml/as2-test-at-gov.xml";
@@ -138,10 +155,10 @@ public class MainAS2TestClient
       sReceiverKeyAlias = "APP_1000000004";
     }
 
-    final AS2ClientResponse aResponse = new AS2ClientBuilder ().setSMPClient (new SMPClientReadOnly (aReceiver,
-                                                                                                     ESML.DIGIT_PRODUCTION))
-                                                               .setPKCS12KeyStore (new File (PKCS12_CERTSTORE_PATH),
-                                                                                   PKCS12_CERTSTORE_PASSWORD)
+    final SMPClientReadOnly aSMPClient = new SMPClientReadOnly (aReceiver, eSML);
+    aSMPClient.setProxy (aProxy);
+    final AS2ClientResponse aResponse = new AS2ClientBuilder ().setSMPClient (aSMPClient)
+                                                               .setPKCS12KeyStore (new File (PKCS12_CERTSTORE_PATH), PKCS12_CERTSTORE_PASSWORD)
                                                                .setSenderAS2ID (SENDER_AS2_ID)
                                                                .setSenderAS2Email (SENDER_EMAIL)
                                                                .setSenderAS2KeyAlias (SENDER_KEY_ALIAS)
@@ -152,8 +169,8 @@ public class MainAS2TestClient
                                                                .setBusinessDocument (new ClassPathResource (sTestFilename))
                                                                .setPeppolSenderID (SENDER_PEPPOL_ID)
                                                                .setPeppolReceiverID (aReceiver)
-                                                               .setPeppolDocumentTypeID (DOCTYPE)
-                                                               .setPeppolProcessID (PROCESS)
+                                                               .setPeppolDocumentTypeID (aDocTypeID)
+                                                               .setPeppolProcessID (aProcessID)
                                                                .sendSynchronous ();
     if (aResponse.hasException ())
       s_aLogger.warn (aResponse.getAsString ());

@@ -59,6 +59,7 @@ import com.helger.peppol.sbdh.PeppolSBDHDocument;
 import com.helger.peppol.sbdh.write.PeppolSBDHDocumentWriter;
 import com.helger.peppol.smp.ESMPTransportProfile;
 import com.helger.peppol.smp.EndpointType;
+import com.helger.peppol.smp.SignedServiceMetadataType;
 import com.helger.peppol.smpclient.SMPClientReadOnly;
 import com.helger.peppol.smpclient.exception.SMPClientException;
 import com.helger.sbdh.SBDMarshaller;
@@ -529,7 +530,7 @@ public class AS2ClientBuilder
             if (m_sReceiverAS2Url == null || m_aReceiverCert == null || m_sReceiverAS2ID == null)
             {
               // Perform the lookup.
-              EndpointType aEndpoint = null;
+              SignedServiceMetadataType aServiceMetadata = null;
               try
               {
                 if (s_aLogger.isDebugEnabled ())
@@ -541,16 +542,20 @@ public class AS2ClientBuilder
                                    IdentifierHelper.getIdentifierURIEncoded (m_aPeppolProcessID) +
                                    "' using transport profile for AS2");
 
-                aEndpoint = m_aSMPClient.getEndpoint (m_aPeppolReceiverID,
-                                                      m_aPeppolDocumentTypeID,
-                                                      m_aPeppolProcessID,
-                                                      ESMPTransportProfile.TRANSPORT_PROFILE_AS2);
+                aServiceMetadata = m_aSMPClient.getServiceRegistrationOrNull (m_aPeppolReceiverID, m_aPeppolDocumentTypeID);
               }
               catch (final SMPClientException ex)
               {
                 if (s_aLogger.isDebugEnabled ())
                   s_aLogger.debug ("Error querying SMP", ex);
                 // Fall through
+              }
+
+              EndpointType aEndpoint = null;
+              if (aServiceMetadata != null)
+              {
+                // Try to extract the endpoint from the service metadata
+                aEndpoint = m_aSMPClient.getEndpoint (aServiceMetadata, m_aPeppolProcessID, ESMPTransportProfile.TRANSPORT_PROFILE_AS2);
               }
 
               // Interpret the result
@@ -563,7 +568,9 @@ public class AS2ClientBuilder
                                            IdentifierHelper.getIdentifierURIEncoded (m_aPeppolDocumentTypeID) +
                                            "' and process ID '" +
                                            IdentifierHelper.getIdentifierURIEncoded (m_aPeppolProcessID) +
-                                           "' using transport profile for AS2");
+                                           "' using transport profile for AS2. " +
+                                           (aServiceMetadata != null ? "The service metadata was gathered successfully."
+                                                                     : "Failed to get the service metadata."));
               }
               else
               {
