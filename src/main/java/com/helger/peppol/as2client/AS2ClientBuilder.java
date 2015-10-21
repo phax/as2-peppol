@@ -62,6 +62,7 @@ import com.helger.peppol.smp.EndpointType;
 import com.helger.peppol.smp.SignedServiceMetadataType;
 import com.helger.peppol.smpclient.SMPClientReadOnly;
 import com.helger.peppol.smpclient.exception.SMPClientException;
+import com.helger.peppol.smpclient.exception.SMPClientNotFoundException;
 import com.helger.sbdh.SBDMarshaller;
 
 /**
@@ -542,12 +543,22 @@ public class AS2ClientBuilder
                                    IdentifierHelper.getIdentifierURIEncoded (m_aPeppolProcessID) +
                                    "' using transport profile for AS2");
 
-                aServiceMetadata = m_aSMPClient.getServiceRegistrationOrNull (m_aPeppolReceiverID, m_aPeppolDocumentTypeID);
+                aServiceMetadata = m_aSMPClient.getServiceRegistration (m_aPeppolReceiverID, m_aPeppolDocumentTypeID);
+              }
+              catch (final SMPClientNotFoundException ex)
+              {
+                if (s_aLogger.isDebugEnabled ())
+                  s_aLogger.debug ("No such SMP service registration", ex);
+                else
+                  s_aLogger.warn ("No such SMP service registration: " + ex.getMessage ());
+                // Fall through
               }
               catch (final SMPClientException ex)
               {
                 if (s_aLogger.isDebugEnabled ())
-                  s_aLogger.debug ("Error querying SMP", ex);
+                  s_aLogger.debug ("Error querying the SMP", ex);
+                else
+                  s_aLogger.warn ("Error querying the SMP: " + ex.getMessage ());
                 // Fall through
               }
 
