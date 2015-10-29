@@ -152,7 +152,8 @@ public class AS2ClientBuilder
    * @return this for chaining
    */
   @Nonnull
-  public AS2ClientBuilder setPKCS12KeyStore (@Nullable final File aKeyStoreFile, @Nullable final String sKeyStorePassword)
+  public AS2ClientBuilder setPKCS12KeyStore (@Nullable final File aKeyStoreFile,
+                                             @Nullable final String sKeyStorePassword)
   {
     m_aKeyStoreFile = aKeyStoreFile;
     m_sKeyStorePassword = sKeyStorePassword;
@@ -566,7 +567,9 @@ public class AS2ClientBuilder
               if (aServiceMetadata != null)
               {
                 // Try to extract the endpoint from the service metadata
-                aEndpoint = m_aSMPClient.getEndpoint (aServiceMetadata, m_aPeppolProcessID, ESMPTransportProfile.TRANSPORT_PROFILE_AS2);
+                aEndpoint = SMPClientReadOnly.getEndpoint (aServiceMetadata,
+                                                           m_aPeppolProcessID,
+                                                           ESMPTransportProfile.TRANSPORT_PROFILE_AS2);
               }
 
               // Interpret the result
@@ -653,7 +656,9 @@ public class AS2ClientBuilder
     else
     {
       if (!m_aKeyStoreFile.exists ())
-        m_aMessageHandler.error ("The provided AS2 key store '" + m_aKeyStoreFile.getAbsolutePath () + "' does not exist.");
+        m_aMessageHandler.error ("The provided AS2 key store '" +
+                                 m_aKeyStoreFile.getAbsolutePath () +
+                                 "' does not exist.");
       else
         if (!m_aKeyStoreFile.isFile ())
           m_aMessageHandler.error ("The provided AS2 key store '" +
@@ -676,13 +681,17 @@ public class AS2ClientBuilder
       m_aMessageHandler.error ("The AS2 sender ID is missing");
     else
       if (!m_sSenderAS2ID.startsWith ("APP_"))
-        m_aMessageHandler.warn ("The AS2 sender ID '" + m_sSenderAS2ID + "' should start with 'APP_' as required by the PEPPOL specification");
+        m_aMessageHandler.warn ("The AS2 sender ID '" +
+                                m_sSenderAS2ID +
+                                "' should start with 'APP_' as required by the PEPPOL specification");
 
     if (StringHelper.hasNoText (m_sSenderAS2Email))
       m_aMessageHandler.error ("The AS2 sender email address is missing");
     else
       if (!EmailAddressHelper.isValid (m_sSenderAS2Email))
-        m_aMessageHandler.warn ("The AS2 sender email address '" + m_sSenderAS2Email + "' seems to be an invalid email address.");
+        m_aMessageHandler.warn ("The AS2 sender email address '" +
+                                m_sSenderAS2Email +
+                                "' seems to be an invalid email address.");
 
     if (StringHelper.hasNoText (m_sSenderAS2KeyAlias))
       m_aMessageHandler.error ("The AS2 sender key alias is missing");
@@ -703,7 +712,9 @@ public class AS2ClientBuilder
       m_aMessageHandler.error ("The AS2 receiver ID is missing");
     else
       if (!m_sReceiverAS2ID.startsWith ("APP_"))
-        m_aMessageHandler.warn ("The AS2 receiver ID '" + m_sReceiverAS2ID + "' should start with 'APP_' as required by the PEPPOL specification");
+        m_aMessageHandler.warn ("The AS2 receiver ID '" +
+                                m_sReceiverAS2ID +
+                                "' should start with 'APP_' as required by the PEPPOL specification");
 
     if (StringHelper.hasNoText (m_sReceiverAS2KeyAlias))
       m_aMessageHandler.error ("The AS2 receiver key alias is missing");
@@ -739,7 +750,9 @@ public class AS2ClientBuilder
       m_aMessageHandler.error ("The XML business document to be send is missing.");
     else
       if (m_aBusinessDocumentRes != null && !m_aBusinessDocumentRes.exists ())
-        m_aMessageHandler.error ("The XML business document to be send '" + m_aBusinessDocumentRes.getPath () + "' does not exist.");
+        m_aMessageHandler.error ("The XML business document to be send '" +
+                                 m_aBusinessDocumentRes.getPath () +
+                                 "' does not exist.");
 
     if (m_aPeppolSenderID == null)
       m_aMessageHandler.error ("The PEPPOL sender participant ID is missing");
@@ -816,12 +829,17 @@ public class AS2ClientBuilder
       {
         final Document aXMLDocument = DOMReader.readXMLDOM (m_aBusinessDocumentRes);
         if (aXMLDocument == null)
-          throw new AS2ClientBuilderException ("Failed to read business document '" + m_aBusinessDocumentRes.getPath () + "' as XML");
+          throw new AS2ClientBuilderException ("Failed to read business document '" +
+                                               m_aBusinessDocumentRes.getPath () +
+                                               "' as XML");
         aXML = aXMLDocument.getDocumentElement ();
       }
       catch (final SAXException ex)
       {
-        throw new AS2ClientBuilderException ("Failed to read business document '" + m_aBusinessDocumentRes.getPath () + "' as XML", ex);
+        throw new AS2ClientBuilderException ("Failed to read business document '" +
+                                             m_aBusinessDocumentRes.getPath () +
+                                             "' as XML",
+                                             ex);
       }
     }
     else
@@ -858,7 +876,9 @@ public class AS2ClientBuilder
     aAS2ClientSettings.setReceiverCertificate (m_aReceiverCert);
 
     // AS2 stuff - no need to change anything in this block
-    aAS2ClientSettings.setPartnershipName (aAS2ClientSettings.getSenderAS2ID () + "-" + aAS2ClientSettings.getReceiverAS2ID ());
+    aAS2ClientSettings.setPartnershipName (aAS2ClientSettings.getSenderAS2ID () +
+                                           "-" +
+                                           aAS2ClientSettings.getReceiverAS2ID ());
     aAS2ClientSettings.setMDNOptions (new DispositionOptions ().setMICAlg (m_eSigningAlgo)
                                                                .setMICAlgImportance (DispositionOptions.IMPORTANCE_REQUIRED)
                                                                .setProtocol (DispositionOptions.PROTOCOL_PKCS7_SIGNATURE)
