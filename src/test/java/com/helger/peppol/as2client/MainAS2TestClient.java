@@ -129,7 +129,7 @@ public class MainAS2TestClient
       aReceiver = SimpleParticipantIdentifier.createWithDefaultScheme ("9914:atu66313919");
       sTestFilename = "xml/as2-test-at-gov.xml";
     }
-    if (true)
+    if (false)
     {
       // CONSIP test endpoint
       aReceiver = SimpleParticipantIdentifier.createWithDefaultScheme ("9907:consiptestap2");
@@ -138,7 +138,7 @@ public class MainAS2TestClient
       eSML = ESML.DIGIT_TEST;
       sTestFilename = "xml/as2-order.xml";
     }
-    if (false)
+    if (true)
     {
       // BRZ test endpoint
       aReceiver = SimpleParticipantIdentifier.createWithDefaultScheme ("9915:test");
@@ -155,8 +155,7 @@ public class MainAS2TestClient
       sReceiverKeyAlias = "APP_1000000004";
     }
 
-    final SMPClientReadOnly aSMPClient = new SMPClientReadOnly (aReceiver, eSML);
-    aSMPClient.setProxy (aProxy);
+    final SMPClientReadOnly aSMPClient = new SMPClientReadOnly (aReceiver, eSML).setProxy (aProxy);
     final AS2ClientResponse aResponse = new AS2ClientBuilder ().setSMPClient (aSMPClient)
                                                                .setPKCS12KeyStore (new File (PKCS12_CERTSTORE_PATH), PKCS12_CERTSTORE_PASSWORD)
                                                                .setSenderAS2ID (SENDER_AS2_ID)
@@ -165,7 +164,7 @@ public class MainAS2TestClient
                                                                .setReceiverAS2ID (sReceiverID)
                                                                .setReceiverAS2KeyAlias (sReceiverKeyAlias)
                                                                .setReceiverAS2Url (sReceiverAddress)
-                                                               .setAS2SigningAlgorithm (ECryptoAlgorithmSign.DIGEST_SHA_256)
+                                                               .setAS2SigningAlgorithm (ECryptoAlgorithmSign.DIGEST_SHA1)
                                                                .setBusinessDocument (new ClassPathResource (sTestFilename))
                                                                .setPeppolSenderID (SENDER_PEPPOL_ID)
                                                                .setPeppolReceiverID (aReceiver)
