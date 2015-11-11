@@ -144,7 +144,7 @@ public class MainAS2TestClient
       aReceiver = SimpleParticipantIdentifier.createWithDefaultScheme ("9915:test");
       sTestFilename = "xml/as2-test-at-gov.xml";
     }
-    if (false)
+    if (true)
     {
       // localhost test endpoint
       aReceiver = SimpleParticipantIdentifier.createWithDefaultScheme ("9915:test");

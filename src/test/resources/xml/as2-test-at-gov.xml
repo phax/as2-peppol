@@ -17,7 +17,7 @@
   <cbc:UBLVersionID>2.0</cbc:UBLVersionID>
   <cbc:CustomizationID>urn:www.cenbii.eu:transaction:biicoretrdm010:ver1.0</cbc:CustomizationID>
   <cbc:ProfileID>urn:www.cenbii.eu:profile:bii04:ver1.0</cbc:ProfileID>
-  <cbc:ID>TOSL108</cbc:ID>
+  <cbc:ID>as2-peppol-client-demo AT</cbc:ID>
   <cbc:IssueDate>2015-01-15</cbc:IssueDate>
   <cbc:InvoiceTypeCode listAgencyID="6" listID="UN/ECE 1001 Subset">380</cbc:InvoiceTypeCode>
   <cbc:Note languageID="en">Ordered in our booth at the convention.</cbc:Note>

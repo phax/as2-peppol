@@ -9,7 +9,7 @@
   <cbc:CustomizationID>urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0:#urn:www.peppol.eu:bis:peppol5a:ver1.0#urn:www.difi.no:ehf:kreditnota:ver1
   </cbc:CustomizationID>
   <cbc:ProfileID>urn:www.cenbii.eu:profile:bii05:ver1.0</cbc:ProfileID>
-  <cbc:ID>123458</cbc:ID>
+  <cbc:ID>as2-peppol-client-demo Pagero</cbc:ID>
   <cbc:IssueDate>2009-11-12</cbc:IssueDate>
   <cbc:DocumentCurrencyCode listAgencyID="6" listID="ISO 4217 Alpha">NOK</cbc:DocumentCurrencyCode>
   <cac:OrderReference>

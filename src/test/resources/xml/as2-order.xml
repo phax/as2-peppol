@@ -6,7 +6,7 @@
    <cbc:UBLVersionID>2.1</cbc:UBLVersionID>
   <cbc:CustomizationID>urn:www.cenbii.eu:transaction:biitrns001:ver2.0:extended:urn:www.peppol.eu:bis:peppol03a:ver2.0</cbc:CustomizationID>
   <cbc:ProfileID>urn:www.cenbii.eu:profile:bii03:ver2.0</cbc:ProfileID>
-  <cbc:ID>1</cbc:ID>
+  <cbc:ID>as2-peppol-client-demo order</cbc:ID>
   <cbc:IssueDate>2013-07-01</cbc:IssueDate>
   <cbc:IssueTime>05:10:10</cbc:IssueTime>
    <cbc:DocumentCurrencyCode listID="ISO4217">EUR</cbc:DocumentCurrencyCode>

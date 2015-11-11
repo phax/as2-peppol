@@ -4,7 +4,7 @@
 	<cbc:UBLVersionID>2.1</cbc:UBLVersionID>
 	<cbc:CustomizationID>urn:www.cenbii.eu:transaction:biitrns010:ver2.0:extended:urn:www.peppol.eu:bis:peppol4a:ver2.0</cbc:CustomizationID>
 	<cbc:ProfileID>urn:www.cenbii.eu:profile:bii04:ver2.0</cbc:ProfileID>
-	<cbc:ID>TestInvoiceBIS2</cbc:ID>
+  <cbc:ID>as2-peppol-client-demo mysupply test</cbc:ID>
 	<cbc:IssueDate>2014-05-09</cbc:IssueDate>
 	<cbc:InvoiceTypeCode listID="UNCL1001">380</cbc:InvoiceTypeCode>
 	<cbc:DocumentCurrencyCode listID="ISO4217">DKK</cbc:DocumentCurrencyCode>
