@@ -129,6 +129,12 @@ public class MainAS2TestClient
       aReceiver = SimpleParticipantIdentifier.createWithDefaultScheme ("9914:atu66313919");
       sTestFilename = "xml/as2-test-at-gov.xml";
     }
+    if (true)
+    {
+      // TESISQUARE test endpoint
+      aReceiver = SimpleParticipantIdentifier.createWithDefaultScheme ("0088:0000000000003");
+      sTestFilename = "xml/as2-tesisquare_test_file_noheader.xml";
+    }
     if (false)
     {
       // CONSIP test endpoint
@@ -138,13 +144,13 @@ public class MainAS2TestClient
       eSML = ESML.DIGIT_TEST;
       sTestFilename = "xml/as2-order.xml";
     }
-    if (true)
+    if (false)
     {
       // BRZ test endpoint
       aReceiver = SimpleParticipantIdentifier.createWithDefaultScheme ("9915:test");
       sTestFilename = "xml/as2-test-at-gov.xml";
     }
-    if (true)
+    if (false)
     {
       // localhost test endpoint
       aReceiver = SimpleParticipantIdentifier.createWithDefaultScheme ("9915:test");
