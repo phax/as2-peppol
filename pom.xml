@@ -164,7 +164,7 @@
         <artifactId>license-maven-plugin</artifactId>
         <configuration>
           <excludes>
-            <exclude>src/main/resources/xml/**</exclude>
+            <exclude>src/test/resources/xml/**</exclude>
             <exclude>**/LICENSE</exclude>
             <exclude>**/NOTICE</exclude>
             <exclude>as2-client-data/**</exclude>
