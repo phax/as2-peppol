@@ -50,11 +50,11 @@ public class MainAS2TestClient
   /** The password to open the PKCS12 key store */
   private static final String PKCS12_CERTSTORE_PASSWORD = "peppol";
   /** Your AS2 sender ID */
-  private static final String SENDER_AS2_ID = "APP_1000000004";
+  private static final String SENDER_AS2_ID = "APP_1000000101";
   /** Your AS2 sender email address */
   private static final String SENDER_EMAIL = "peppol@example.org";
   /** Your AS2 key alias in the PKCS12 key store */
-  private static final String SENDER_KEY_ALIAS = "APP_1000000004";
+  private static final String SENDER_KEY_ALIAS = SENDER_AS2_ID;
   /** The PEPPOL sender participant ID */
   private static final SimpleParticipantIdentifier SENDER_PEPPOL_ID = SimpleParticipantIdentifier.createWithDefaultScheme ("9999:test-sender");
 
@@ -129,7 +129,7 @@ public class MainAS2TestClient
       aReceiver = SimpleParticipantIdentifier.createWithDefaultScheme ("9914:atu66313919");
       sTestFilename = "xml/as2-test-at-gov.xml";
     }
-    if (true)
+    if (false)
     {
       // TESISQUARE test endpoint
       aReceiver = SimpleParticipantIdentifier.createWithDefaultScheme ("0088:0000000000003");
@@ -144,7 +144,7 @@ public class MainAS2TestClient
       eSML = ESML.DIGIT_TEST;
       sTestFilename = "xml/as2-order.xml";
     }
-    if (false)
+    if (true)
     {
       // BRZ test endpoint
       aReceiver = SimpleParticipantIdentifier.createWithDefaultScheme ("9915:test");
@@ -157,13 +157,15 @@ public class MainAS2TestClient
       sTestFilename = "xml/as2-test-at-gov.xml";
       // Avoid SMP lookup
       sReceiverAddress = "http://localhost:8080/as2";
-      sReceiverID = "APP_1000000004";
-      sReceiverKeyAlias = "APP_1000000004";
+      sReceiverID = SENDER_AS2_ID;
+      sReceiverKeyAlias = SENDER_KEY_ALIAS;
     }
 
     final SMPClientReadOnly aSMPClient = new SMPClientReadOnly (aReceiver, eSML).setProxy (aProxy);
     final AS2ClientResponse aResponse = new AS2ClientBuilder ().setSMPClient (aSMPClient)
-                                                               .setPKCS12KeyStore (new File (PKCS12_CERTSTORE_PATH), PKCS12_CERTSTORE_PASSWORD)
+                                                               .setPKCS12KeyStore (new File (PKCS12_CERTSTORE_PATH),
+                                                                                   PKCS12_CERTSTORE_PASSWORD)
+                                                               .setSaveKeyStoreChangesToFile (false)
                                                                .setSenderAS2ID (SENDER_AS2_ID)
                                                                .setSenderAS2Email (SENDER_EMAIL)
                                                                .setSenderAS2KeyAlias (SENDER_KEY_ALIAS)

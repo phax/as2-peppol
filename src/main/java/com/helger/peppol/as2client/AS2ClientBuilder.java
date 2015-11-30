@@ -33,6 +33,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
+import com.helger.as2lib.cert.IStorableCertificateFactory;
 import com.helger.as2lib.client.AS2Client;
 import com.helger.as2lib.client.AS2ClientRequest;
 import com.helger.as2lib.client.AS2ClientResponse;
@@ -85,6 +86,7 @@ public class AS2ClientBuilder
   private IAS2ClientBuilderMessageHandler m_aMessageHandler = new DefaultAS2ClientBuilderMessageHandler ();
   private File m_aKeyStoreFile;
   private String m_sKeyStorePassword;
+  private boolean m_bSaveKeyStoreChangesToFile = IStorableCertificateFactory.DEFAULT_SAVE_CHANGES_TO_FILE;
   private String m_sAS2Subject = DEFAULT_AS2_SUBJECT;
   private String m_sSenderAS2ID;
   private String m_sSenderAS2Email;
@@ -157,6 +159,22 @@ public class AS2ClientBuilder
   {
     m_aKeyStoreFile = aKeyStoreFile;
     m_sKeyStorePassword = sKeyStorePassword;
+    return this;
+  }
+
+  /**
+   * Change the behavior if all changes to the keystore should trigger a saving
+   * to the original file.
+   *
+   * @param bSaveKeyStoreChangesToFile
+   *        <code>true</code> if key store changes should be written back to the
+   *        file, <code>false</code> if not.
+   * @return this for chaining
+   */
+  @Nonnull
+  public AS2ClientBuilder setSaveKeyStoreChangesToFile (final boolean bSaveKeyStoreChangesToFile)
+  {
+    m_bSaveKeyStoreChangesToFile = bSaveKeyStoreChangesToFile;
     return this;
   }
 
@@ -868,6 +886,8 @@ public class AS2ClientBuilder
     final AS2ClientSettings aAS2ClientSettings = new AS2ClientSettings ();
     // Key store
     aAS2ClientSettings.setKeyStore (m_aKeyStoreFile, m_sKeyStorePassword);
+    aAS2ClientSettings.setSaveKeyStoreChangesToFile (m_bSaveKeyStoreChangesToFile);
+
     // Fixed sender
     aAS2ClientSettings.setSenderData (m_sSenderAS2ID, m_sSenderAS2Email, m_sSenderAS2KeyAlias);
 
