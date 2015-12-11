@@ -16,8 +16,10 @@
  */
 package com.helger.peppol.as2client;
 
+import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.annotation.concurrent.NotThreadSafe;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,13 +31,24 @@ import org.slf4j.LoggerFactory;
  *
  * @author Philip Helger
  */
+@NotThreadSafe
 public class DefaultAS2ClientBuilderMessageHandler implements IAS2ClientBuilderMessageHandler
 {
   private static final Logger s_aLogger = LoggerFactory.getLogger (DefaultAS2ClientBuilderMessageHandler.class);
 
+  private int m_nWarn = 0;
+  private int m_nError = 0;
+
   public void warn (@Nonnull final String sMessage)
   {
+    m_nWarn++;
     s_aLogger.warn (sMessage);
+  }
+
+  @Nonnegative
+  public int getWarnCount ()
+  {
+    return m_nWarn;
   }
 
   public void error (@Nonnull final String sMessage) throws AS2ClientBuilderException
@@ -45,6 +58,13 @@ public class DefaultAS2ClientBuilderMessageHandler implements IAS2ClientBuilderM
 
   public void error (@Nonnull final String sMessage, @Nullable final Throwable aCause) throws AS2ClientBuilderException
   {
+    m_nError++;
     throw new AS2ClientBuilderException (sMessage, aCause);
+  }
+
+  @Nonnegative
+  public int getErrorCount ()
+  {
+    return m_nError;
   }
 }

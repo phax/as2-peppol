@@ -16,6 +16,7 @@
  */
 package com.helger.peppol.as2client;
 
+import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -33,6 +34,12 @@ public interface IAS2ClientBuilderMessageHandler
    *        The warning message. May not be <code>null</code>.
    */
   void warn (@Nonnull String sMessage);
+
+  /**
+   * @return The number of warnings logged in this handler. Must be &ge; 0.
+   */
+  @Nonnegative
+  int getWarnCount ();
 
   /**
    * Emit an error
@@ -55,4 +62,10 @@ public interface IAS2ClientBuilderMessageHandler
    *         In case the implementation wants to throw an exception
    */
   void error (@Nonnull String sMessage, @Nullable Throwable aCause) throws AS2ClientBuilderException;
+
+  /**
+   * @return The number of errors logged in this handler. Must be &ge; 0.
+   */
+  @Nonnegative
+  int getErrorCount ();
 }
