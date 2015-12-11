@@ -34,6 +34,7 @@ import com.helger.peppol.identifier.participant.SimpleParticipantIdentifier;
 import com.helger.peppol.identifier.process.SimpleProcessIdentifier;
 import com.helger.peppol.smpclient.SMPClientConfiguration;
 import com.helger.peppol.smpclient.SMPClientReadOnly;
+import com.helger.peppol.validation.domain.peppol.PeppolValidationKeys;
 
 /**
  * Main class to send AS2 messages.
@@ -106,6 +107,7 @@ public final class MainAS2TestClientGHX
                                                                .setPeppolReceiverID (aReceiver)
                                                                .setPeppolDocumentTypeID (DOCTYPE)
                                                                .setPeppolProcessID (PROCESS)
+                                                               .setValidationKey (PeppolValidationKeys.INVOICE_04_T10)
                                                                .sendSynchronous ();
     if (aResponse.hasException ())
       s_aLogger.warn (aResponse.getAsString ());

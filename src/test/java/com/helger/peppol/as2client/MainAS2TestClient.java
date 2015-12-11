@@ -37,6 +37,9 @@ import com.helger.peppol.identifier.process.SimpleProcessIdentifier;
 import com.helger.peppol.sml.ESML;
 import com.helger.peppol.smpclient.SMPClientConfiguration;
 import com.helger.peppol.smpclient.SMPClientReadOnly;
+import com.helger.peppol.validation.ValidationLayerResult;
+import com.helger.peppol.validation.domain.ValidationKey;
+import com.helger.peppol.validation.domain.peppol.PeppolValidationKeys;
 
 /**
  * Main class to send AS2 messages.
@@ -84,6 +87,7 @@ public class MainAS2TestClient
     String sReceiverKeyAlias = null;
     String sReceiverAddress = null;
     ESML eSML = ESML.DIGIT_PRODUCTION;
+    final ValidationKey aValidationKey = PeppolValidationKeys.INVOICE_04_T10;
 
     HttpHost aProxy = null;
     final String sProxyHost = SMPClientConfiguration.getConfigFile ().getString ("http.proxyHost");
@@ -162,26 +166,42 @@ public class MainAS2TestClient
     }
 
     final SMPClientReadOnly aSMPClient = new SMPClientReadOnly (aReceiver, eSML).setProxy (aProxy);
-    final AS2ClientResponse aResponse = new AS2ClientBuilder ().setSMPClient (aSMPClient)
-                                                               .setPKCS12KeyStore (new File (PKCS12_CERTSTORE_PATH),
-                                                                                   PKCS12_CERTSTORE_PASSWORD)
-                                                               .setSaveKeyStoreChangesToFile (false)
-                                                               .setSenderAS2ID (SENDER_AS2_ID)
-                                                               .setSenderAS2Email (SENDER_EMAIL)
-                                                               .setSenderAS2KeyAlias (SENDER_KEY_ALIAS)
-                                                               .setReceiverAS2ID (sReceiverID)
-                                                               .setReceiverAS2KeyAlias (sReceiverKeyAlias)
-                                                               .setReceiverAS2Url (sReceiverAddress)
-                                                               .setAS2SigningAlgorithm (ECryptoAlgorithmSign.DIGEST_SHA1)
-                                                               .setBusinessDocument (new ClassPathResource (sTestFilename))
-                                                               .setPeppolSenderID (SENDER_PEPPOL_ID)
-                                                               .setPeppolReceiverID (aReceiver)
-                                                               .setPeppolDocumentTypeID (aDocTypeID)
-                                                               .setPeppolProcessID (aProcessID)
-                                                               .sendSynchronous ();
-    if (aResponse.hasException ())
-      s_aLogger.warn (aResponse.getAsString ());
+    try
+    {
+      final AS2ClientResponse aResponse = new AS2ClientBuilder ().setSMPClient (aSMPClient)
+                                                                 .setPKCS12KeyStore (new File (PKCS12_CERTSTORE_PATH),
+                                                                                     PKCS12_CERTSTORE_PASSWORD)
+                                                                 .setSaveKeyStoreChangesToFile (false)
+                                                                 .setSenderAS2ID (SENDER_AS2_ID)
+                                                                 .setSenderAS2Email (SENDER_EMAIL)
+                                                                 .setSenderAS2KeyAlias (SENDER_KEY_ALIAS)
+                                                                 .setReceiverAS2ID (sReceiverID)
+                                                                 .setReceiverAS2KeyAlias (sReceiverKeyAlias)
+                                                                 .setReceiverAS2Url (sReceiverAddress)
+                                                                 .setAS2SigningAlgorithm (ECryptoAlgorithmSign.DIGEST_SHA1)
+                                                                 .setBusinessDocument (new ClassPathResource (sTestFilename))
+                                                                 .setPeppolSenderID (SENDER_PEPPOL_ID)
+                                                                 .setPeppolReceiverID (aReceiver)
+                                                                 .setPeppolDocumentTypeID (aDocTypeID)
+                                                                 .setPeppolProcessID (aProcessID)
+                                                                 .setValidationKey (aValidationKey)
+                                                                 .sendSynchronous ();
+      if (aResponse.hasException ())
+        s_aLogger.warn (aResponse.getAsString ());
 
-    s_aLogger.info ("Done");
+      s_aLogger.info ("Done");
+    }
+    catch (final AS2ClientBuilderValidationException ex)
+    {
+      for (final ValidationLayerResult aVLR : ex.getValidationResult ())
+        if (aVLR.isFailure ())
+          s_aLogger.error (aVLR.toString ());
+        else
+          s_aLogger.info (aVLR.toString ());
+    }
+    catch (final AS2ClientBuilderException ex)
+    {
+      ex.printStackTrace ();
+    }
   }
 }

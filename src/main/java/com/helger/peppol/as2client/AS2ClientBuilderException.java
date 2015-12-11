@@ -20,7 +20,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
- * Exception to be thrown from the {@link AS2ClientBuilder}.
+ * Generic exception to be thrown from the {@link AS2ClientBuilder}.
  *
  * @author Philip Helger
  */

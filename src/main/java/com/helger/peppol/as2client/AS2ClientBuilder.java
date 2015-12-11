@@ -24,6 +24,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.OverridingMethodsMustInvokeSuper;
 import javax.annotation.concurrent.NotThreadSafe;
+import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
 import org.slf4j.Logger;
@@ -41,6 +42,7 @@ import com.helger.as2lib.client.AS2ClientSettings;
 import com.helger.as2lib.crypto.ECryptoAlgorithmSign;
 import com.helger.as2lib.disposition.DispositionOptions;
 import com.helger.commons.ValueEnforcer;
+import com.helger.commons.annotation.OverrideOnDemand;
 import com.helger.commons.charset.CCharset;
 import com.helger.commons.email.EmailAddressHelper;
 import com.helger.commons.factory.FactoryNewInstance;
@@ -64,6 +66,10 @@ import com.helger.peppol.smp.SignedServiceMetadataType;
 import com.helger.peppol.smpclient.SMPClientReadOnly;
 import com.helger.peppol.smpclient.exception.SMPClientException;
 import com.helger.peppol.smpclient.exception.SMPClientNotFoundException;
+import com.helger.peppol.validation.UBLDocumentValidator;
+import com.helger.peppol.validation.ValidationLayerResultList;
+import com.helger.peppol.validation.domain.ValidationKey;
+import com.helger.peppol.validation.peppol.PeppolValidationConfiguration;
 import com.helger.sbdh.SBDMarshaller;
 
 /**
@@ -108,6 +114,7 @@ public class AS2ClientBuilder
   private IParticipantIdentifier m_aPeppolReceiverID;
   private IDocumentTypeIdentifier m_aPeppolDocumentTypeID;
   private IProcessIdentifier m_aPeppolProcessID;
+  private ValidationKey m_aValidationKey;
   private SMPClientReadOnly m_aSMPClient;
   private IFactory <AS2Client> m_aAS2ClientFactory = FactoryNewInstance.create (AS2Client.class, true);
 
@@ -470,6 +477,21 @@ public class AS2ClientBuilder
   }
 
   /**
+   * Set the validation key to be used for validating the business document
+   * before sending.
+   *
+   * @param aValidationKey
+   *        The validation key to be used. May not be <code>null</code>.
+   * @return this for chaining
+   */
+  @Nonnull
+  public AS2ClientBuilder setValidationKey (@Nullable final ValidationKey aValidationKey)
+  {
+    m_aValidationKey = aValidationKey;
+    return this;
+  }
+
+  /**
    * Set the SMP client to be used. The SMP client can help to automatically
    * determine the following fields:
    * <ul>
@@ -816,6 +838,35 @@ public class AS2ClientBuilder
         m_aMessageHandler.warn ("The PEPPOL process ID '" +
                                 IdentifierHelper.getIdentifierURIEncoded (m_aPeppolProcessID) +
                                 "' is using a non-standard scheme!");
+
+    if (m_aValidationKey == null)
+      m_aMessageHandler.warn ("The validation key determining the business document validation is missing. Therefore the outgoing business document is NOT validated!");
+
+    // Ensure that if a non-throwing message handler is installed, that the
+    // sending is not performed!
+    if (m_aMessageHandler.getErrorCount () > 0)
+      throw new AS2ClientBuilderException ("Not all required fields are present so the PEPPOL AS2 client call can NOT be performed. See the message handler for details!");
+  }
+
+  /**
+   * Perform the standard PEPPOL validation of the outgoing business document
+   * before sending takes place. In case validation fails, an exception is
+   * thrown. The validation is configured using the validation key. This method
+   * is only called, when a validation key was set.
+   *
+   * @param aXML
+   *        The DOM Element with the business document to be validated.
+   * @throws AS2ClientBuilderValidationException
+   *         In case validation failed.
+   * @see #setValidationKey(ValidationKey)
+   */
+  @OverrideOnDemand
+  protected void validateOutgoingBusinessDocument (@Nonnull final Element aXML) throws AS2ClientBuilderValidationException
+  {
+    final UBLDocumentValidator aValidator = new UBLDocumentValidator (PeppolValidationConfiguration.createDefault (m_aValidationKey));
+    final ValidationLayerResultList aValidationResult = aValidator.applyCompleteValidation (new DOMSource (aXML));
+    if (aValidationResult.containsAtLeastOneError ())
+      throw new AS2ClientBuilderValidationException (aValidationResult);
   }
 
   /**
@@ -880,21 +931,25 @@ public class AS2ClientBuilder
     if (aXML == null)
       throw new AS2ClientBuilderException ("No XML business content present!");
 
-    // 2. build SBD data
+    // 2. validate the business document
+    if (m_aValidationKey != null)
+      validateOutgoingBusinessDocument (aXML);
+
+    // 3. build SBD data
     final PeppolSBDHDocument aDD = PeppolSBDHDocument.create (aXML);
     aDD.setSenderWithDefaultScheme (m_aPeppolSenderID.getValue ());
     aDD.setReceiver (m_aPeppolReceiverID.getScheme (), m_aPeppolReceiverID.getValue ());
     aDD.setDocumentType (m_aPeppolDocumentTypeID.getScheme (), m_aPeppolDocumentTypeID.getValue ());
     aDD.setProcess (m_aPeppolProcessID.getScheme (), m_aPeppolProcessID.getValue ());
 
-    // 3. build SBD
+    // 4. build SBD
     final StandardBusinessDocument aSBD = new PeppolSBDHDocumentWriter ().createStandardBusinessDocument (aDD);
     final NonBlockingByteArrayOutputStream aBAOS = new NonBlockingByteArrayOutputStream ();
     if (new SBDMarshaller ().write (aSBD, new StreamResult (aBAOS)).isFailure ())
       throw new AS2ClientBuilderException ("Failed to serialize SBD!");
     aBAOS.close ();
 
-    // 4. send message
+    // 5. send message
     // Start building the AS2 client settings
     final AS2ClientSettings aAS2ClientSettings = new AS2ClientSettings ();
     // Key store
