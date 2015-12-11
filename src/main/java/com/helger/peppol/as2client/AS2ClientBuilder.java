@@ -77,9 +77,14 @@ import com.helger.sbdh.SBDMarshaller;
 @NotThreadSafe
 public class AS2ClientBuilder
 {
+  /** Default AS2 subject */
   public static final String DEFAULT_AS2_SUBJECT = "OpenPEPPOL AS2 message";
+  /** Default AS2 signing algorithm */
   public static final ECryptoAlgorithmSign DEFAULT_SIGNING_ALGORITHM = ECryptoAlgorithmSign.DIGEST_SHA1;
+  /** Default AS2 message ID format */
   public static final String DEFAULT_AS2_MESSAGE_ID_FORMAT = "OpenPEPPOL-$date.ddMMyyyyHHmmssZ$-$rand.1234$@$msg.sender.as2_id$_$msg.receiver.as2_id$";
+  /** PEPPOL prefix for AS2 ID and key aliases */
+  public static final String APP_PREFIX = "APP_";
 
   private static final Logger s_aLogger = LoggerFactory.getLogger (AS2ClientBuilder.class);
 
@@ -196,7 +201,7 @@ public class AS2ClientBuilder
   /**
    * Set the AS2 sender ID (your ID). It is mapped to the "AS2-From" header. For
    * PEPPOL the AS2 sender ID must be the common name (CN) of the sender's AP
-   * certificate subject. Therefore it usually starts with "APP_".
+   * certificate subject. Therefore it usually starts with {@value #APP_PREFIX}.
    *
    * @param sSenderAS2ID
    *        The AS2 sender ID to be used. May not be <code>null</code>.
@@ -698,10 +703,12 @@ public class AS2ClientBuilder
     if (StringHelper.hasNoText (m_sSenderAS2ID))
       m_aMessageHandler.error ("The AS2 sender ID is missing");
     else
-      if (!m_sSenderAS2ID.startsWith ("APP_"))
+      if (!m_sSenderAS2ID.startsWith (APP_PREFIX))
         m_aMessageHandler.warn ("The AS2 sender ID '" +
                                 m_sSenderAS2ID +
-                                "' should start with 'APP_' as required by the PEPPOL specification");
+                                "' should start with '" +
+                                APP_PREFIX +
+                                "' as required by the PEPPOL specification");
 
     if (StringHelper.hasNoText (m_sSenderAS2Email))
       m_aMessageHandler.error ("The AS2 sender email address is missing");
@@ -714,10 +721,12 @@ public class AS2ClientBuilder
     if (StringHelper.hasNoText (m_sSenderAS2KeyAlias))
       m_aMessageHandler.error ("The AS2 sender key alias is missing");
     else
-      if (!m_sSenderAS2KeyAlias.startsWith ("APP_"))
+      if (!m_sSenderAS2KeyAlias.startsWith (APP_PREFIX))
         m_aMessageHandler.warn ("The AS2 sender key alias '" +
                                 m_sSenderAS2KeyAlias +
-                                "' should start with 'APP_' for the use with the dynamic AS2 partnerships");
+                                "' should start with '" +
+                                APP_PREFIX +
+                                "' for the use with the dynamic AS2 partnerships");
       else
         if (m_sSenderAS2ID != null && !m_sSenderAS2ID.equals (m_sSenderAS2KeyAlias))
           m_aMessageHandler.warn ("The AS2 sender key alias ('" +
@@ -729,18 +738,22 @@ public class AS2ClientBuilder
     if (StringHelper.hasNoText (m_sReceiverAS2ID))
       m_aMessageHandler.error ("The AS2 receiver ID is missing");
     else
-      if (!m_sReceiverAS2ID.startsWith ("APP_"))
+      if (!m_sReceiverAS2ID.startsWith (APP_PREFIX))
         m_aMessageHandler.warn ("The AS2 receiver ID '" +
                                 m_sReceiverAS2ID +
-                                "' should start with 'APP_' as required by the PEPPOL specification");
+                                "' should start with '" +
+                                APP_PREFIX +
+                                "' as required by the PEPPOL specification");
 
     if (StringHelper.hasNoText (m_sReceiverAS2KeyAlias))
       m_aMessageHandler.error ("The AS2 receiver key alias is missing");
     else
-      if (!m_sReceiverAS2KeyAlias.startsWith ("APP_"))
+      if (!m_sReceiverAS2KeyAlias.startsWith (APP_PREFIX))
         m_aMessageHandler.warn ("The AS2 receiver key alias '" +
                                 m_sReceiverAS2KeyAlias +
-                                "' should start with 'APP_' for the use with the dynamic AS2 partnerships");
+                                "' should start with '" +
+                                APP_PREFIX +
+                                "' for the use with the dynamic AS2 partnerships");
       else
         if (m_sReceiverAS2ID != null && !m_sReceiverAS2ID.equals (m_sReceiverAS2KeyAlias))
           m_aMessageHandler.warn ("The AS2 receiver key alias ('" +
