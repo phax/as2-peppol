@@ -66,10 +66,10 @@ import com.helger.peppol.smp.SignedServiceMetadataType;
 import com.helger.peppol.smpclient.SMPClientReadOnly;
 import com.helger.peppol.smpclient.exception.SMPClientException;
 import com.helger.peppol.smpclient.exception.SMPClientNotFoundException;
-import com.helger.peppol.validation.UBLDocumentValidator;
-import com.helger.peppol.validation.ValidationLayerResultList;
-import com.helger.peppol.validation.domain.ValidationKey;
-import com.helger.peppol.validation.peppol.PeppolValidationConfiguration;
+import com.helger.peppol.validation.api.ValidationKey;
+import com.helger.peppol.validation.api.result.ValidationLayerResultList;
+import com.helger.peppol.validation.engine.UBLDocumentValidator;
+import com.helger.peppol.validation.engine.peppol.PeppolValidationConfiguration;
 import com.helger.sbdh.SBDMarshaller;
 
 /**

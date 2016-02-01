@@ -37,9 +37,9 @@ import com.helger.peppol.identifier.process.SimpleProcessIdentifier;
 import com.helger.peppol.sml.ESML;
 import com.helger.peppol.smpclient.SMPClientConfiguration;
 import com.helger.peppol.smpclient.SMPClientReadOnly;
-import com.helger.peppol.validation.ValidationLayerResult;
-import com.helger.peppol.validation.domain.ValidationKey;
-import com.helger.peppol.validation.domain.peppol.PeppolValidationKeys;
+import com.helger.peppol.validation.api.ValidationKey;
+import com.helger.peppol.validation.api.result.ValidationLayerResult;
+import com.helger.peppol.validation.engine.peppol.PeppolValidationKeys;
 
 /**
  * Main class to send AS2 messages.

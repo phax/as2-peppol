@@ -19,7 +19,7 @@ package com.helger.peppol.as2client;
 import javax.annotation.Nonnull;
 
 import com.helger.commons.ValueEnforcer;
-import com.helger.peppol.validation.ValidationLayerResultList;
+import com.helger.peppol.validation.api.result.ValidationLayerResultList;
 
 /**
  * Special {@link AS2ClientBuilderException} exception for validation errors.
