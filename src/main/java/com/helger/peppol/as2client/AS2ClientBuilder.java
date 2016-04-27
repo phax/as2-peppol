@@ -86,7 +86,7 @@ public class AS2ClientBuilder
   /** Default AS2 subject */
   public static final String DEFAULT_AS2_SUBJECT = "OpenPEPPOL AS2 message";
   /** Default AS2 signing algorithm */
-  public static final ECryptoAlgorithmSign DEFAULT_SIGNING_ALGORITHM = ECryptoAlgorithmSign.DIGEST_SHA1;
+  public static final ECryptoAlgorithmSign DEFAULT_SIGNING_ALGORITHM = ECryptoAlgorithmSign.DIGEST_SHA_1;
   /** Default AS2 message ID format */
   public static final String DEFAULT_AS2_MESSAGE_ID_FORMAT = "OpenPEPPOL-$date.ddMMyyyyHHmmssZ$-$rand.1234$@$msg.sender.as2_id$_$msg.receiver.as2_id$";
   /** PEPPOL prefix for AS2 ID and key aliases */

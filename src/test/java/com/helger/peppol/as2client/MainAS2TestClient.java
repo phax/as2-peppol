@@ -178,7 +178,7 @@ public class MainAS2TestClient
                                                                  .setReceiverAS2ID (sReceiverID)
                                                                  .setReceiverAS2KeyAlias (sReceiverKeyAlias)
                                                                  .setReceiverAS2Url (sReceiverAddress)
-                                                                 .setAS2SigningAlgorithm (ECryptoAlgorithmSign.DIGEST_SHA1)
+                                                                 .setAS2SigningAlgorithm (ECryptoAlgorithmSign.DIGEST_SHA_1)
                                                                  .setBusinessDocument (new ClassPathResource (sTestFilename))
                                                                  .setPeppolSenderID (SENDER_PEPPOL_ID)
                                                                  .setPeppolReceiverID (aReceiver)
