@@ -944,43 +944,44 @@ public class AS2ClientBuilder
 
     // 4. build SBD
     final StandardBusinessDocument aSBD = new PeppolSBDHDocumentWriter ().createStandardBusinessDocument (aDD);
-    final NonBlockingByteArrayOutputStream aBAOS = new NonBlockingByteArrayOutputStream ();
-    if (new SBDMarshaller ().write (aSBD, new StreamResult (aBAOS)).isFailure ())
-      throw new AS2ClientBuilderException ("Failed to serialize SBD!");
-    aBAOS.close ();
+    try (final NonBlockingByteArrayOutputStream aBAOS = new NonBlockingByteArrayOutputStream ())
+    {
+      if (new SBDMarshaller ().write (aSBD, new StreamResult (aBAOS)).isFailure ())
+        throw new AS2ClientBuilderException ("Failed to serialize SBD!");
 
-    // 5. send message
-    // Start building the AS2 client settings
-    final AS2ClientSettings aAS2ClientSettings = new AS2ClientSettings ();
-    // Key store
-    aAS2ClientSettings.setKeyStore (m_aKeyStoreFile, m_sKeyStorePassword);
-    aAS2ClientSettings.setSaveKeyStoreChangesToFile (m_bSaveKeyStoreChangesToFile);
+      // 5. send message
+      // Start building the AS2 client settings
+      final AS2ClientSettings aAS2ClientSettings = new AS2ClientSettings ();
+      // Key store
+      aAS2ClientSettings.setKeyStore (m_aKeyStoreFile, m_sKeyStorePassword);
+      aAS2ClientSettings.setSaveKeyStoreChangesToFile (m_bSaveKeyStoreChangesToFile);
 
-    // Fixed sender
-    aAS2ClientSettings.setSenderData (m_sSenderAS2ID, m_sSenderAS2Email, m_sSenderAS2KeyAlias);
+      // Fixed sender
+      aAS2ClientSettings.setSenderData (m_sSenderAS2ID, m_sSenderAS2Email, m_sSenderAS2KeyAlias);
 
-    // Dynamic receiver
-    aAS2ClientSettings.setReceiverData (m_sReceiverAS2ID, m_sReceiverAS2KeyAlias, m_sReceiverAS2Url);
-    aAS2ClientSettings.setReceiverCertificate (m_aReceiverCert);
+      // Dynamic receiver
+      aAS2ClientSettings.setReceiverData (m_sReceiverAS2ID, m_sReceiverAS2KeyAlias, m_sReceiverAS2Url);
+      aAS2ClientSettings.setReceiverCertificate (m_aReceiverCert);
 
-    // AS2 stuff - no need to change anything in this block
-    aAS2ClientSettings.setPartnershipName (aAS2ClientSettings.getSenderAS2ID () +
-                                           "-" +
-                                           aAS2ClientSettings.getReceiverAS2ID ());
-    aAS2ClientSettings.setMDNOptions (new DispositionOptions ().setMICAlg (m_eSigningAlgo)
-                                                               .setMICAlgImportance (DispositionOptions.IMPORTANCE_REQUIRED)
-                                                               .setProtocol (DispositionOptions.PROTOCOL_PKCS7_SIGNATURE)
-                                                               .setProtocolImportance (DispositionOptions.IMPORTANCE_REQUIRED));
-    aAS2ClientSettings.setEncryptAndSign (null, m_eSigningAlgo);
-    aAS2ClientSettings.setMessageIDFormat (m_sMessageIDFormat);
+      // AS2 stuff - no need to change anything in this block
+      aAS2ClientSettings.setPartnershipName (aAS2ClientSettings.getSenderAS2ID () +
+                                             "-" +
+                                             aAS2ClientSettings.getReceiverAS2ID ());
+      aAS2ClientSettings.setMDNOptions (new DispositionOptions ().setMICAlg (m_eSigningAlgo)
+                                                                 .setMICAlgImportance (DispositionOptions.IMPORTANCE_REQUIRED)
+                                                                 .setProtocol (DispositionOptions.PROTOCOL_PKCS7_SIGNATURE)
+                                                                 .setProtocolImportance (DispositionOptions.IMPORTANCE_REQUIRED));
+      aAS2ClientSettings.setEncryptAndSign (null, m_eSigningAlgo);
+      aAS2ClientSettings.setMessageIDFormat (m_sMessageIDFormat);
 
-    final AS2ClientRequest aRequest = new AS2ClientRequest (m_sAS2Subject);
-    // Using a String is better when having a
-    // com.sun.xml.ws.encoding.XmlDataContentHandler installed!
-    aRequest.setData (aBAOS.getAsString (CCharset.CHARSET_UTF_8_OBJ), CCharset.CHARSET_UTF_8_OBJ);
+      final AS2ClientRequest aRequest = new AS2ClientRequest (m_sAS2Subject);
+      // Using a String is better when having a
+      // com.sun.xml.ws.encoding.XmlDataContentHandler installed!
+      aRequest.setData (aBAOS.getAsString (CCharset.CHARSET_UTF_8_OBJ), CCharset.CHARSET_UTF_8_OBJ);
 
-    final AS2Client aAS2Client = m_aAS2ClientFactory.create ();
-    final AS2ClientResponse aResponse = aAS2Client.sendSynchronous (aAS2ClientSettings, aRequest);
-    return aResponse;
+      final AS2Client aAS2Client = m_aAS2ClientFactory.get ();
+      final AS2ClientResponse aResponse = aAS2Client.sendSynchronous (aAS2ClientSettings, aRequest);
+      return aResponse;
+    }
   }
 }
