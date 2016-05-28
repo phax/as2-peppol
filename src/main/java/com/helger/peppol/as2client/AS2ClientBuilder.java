@@ -54,10 +54,12 @@ import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
 import com.helger.commons.string.StringHelper;
 import com.helger.commons.url.URLHelper;
 import com.helger.commons.xml.serialize.read.DOMReader;
-import com.helger.peppol.identifier.IDocumentTypeIdentifier;
-import com.helger.peppol.identifier.IParticipantIdentifier;
-import com.helger.peppol.identifier.IProcessIdentifier;
 import com.helger.peppol.identifier.IdentifierHelper;
+import com.helger.peppol.identifier.generic.doctype.IDocumentTypeIdentifier;
+import com.helger.peppol.identifier.generic.participant.IParticipantIdentifier;
+import com.helger.peppol.identifier.generic.process.IProcessIdentifier;
+import com.helger.peppol.identifier.peppol.doctype.IPeppolDocumentTypeIdentifier;
+import com.helger.peppol.identifier.peppol.participant.IPeppolParticipantIdentifier;
 import com.helger.peppol.sbdh.PeppolSBDHDocument;
 import com.helger.peppol.sbdh.write.PeppolSBDHDocumentWriter;
 import com.helger.peppol.smp.ESMPTransportProfile;
@@ -810,7 +812,7 @@ public class AS2ClientBuilder
     if (m_aPeppolSenderID == null)
       m_aMessageHandler.error ("The PEPPOL sender participant ID is missing");
     else
-      if (!IdentifierHelper.hasDefaultParticipantIdentifierScheme (m_aPeppolSenderID))
+      if (!m_aPeppolSenderID.hasScheme (IPeppolParticipantIdentifier.DEFAULT_SCHEME))
         m_aMessageHandler.warn ("The PEPPOL sender participant ID '" +
                                 IdentifierHelper.getIdentifierURIEncoded (m_aPeppolSenderID) +
                                 "' is using a non-standard scheme!");
@@ -818,7 +820,7 @@ public class AS2ClientBuilder
     if (m_aPeppolReceiverID == null)
       m_aMessageHandler.error ("The PEPPOL receiver participant ID is missing");
     else
-      if (!IdentifierHelper.hasDefaultParticipantIdentifierScheme (m_aPeppolReceiverID))
+      if (!m_aPeppolReceiverID.hasScheme (IPeppolParticipantIdentifier.DEFAULT_SCHEME))
         m_aMessageHandler.warn ("The PEPPOL receiver participant ID '" +
                                 IdentifierHelper.getIdentifierURIEncoded (m_aPeppolReceiverID) +
                                 "' is using a non-standard scheme!");
@@ -826,7 +828,7 @@ public class AS2ClientBuilder
     if (m_aPeppolDocumentTypeID == null)
       m_aMessageHandler.error ("The PEPPOL document type ID is missing");
     else
-      if (!IdentifierHelper.hasDefaultDocumentTypeIdentifierScheme (m_aPeppolDocumentTypeID))
+      if (!m_aPeppolDocumentTypeID.hasScheme (IPeppolDocumentTypeIdentifier.DEFAULT_SCHEME))
         m_aMessageHandler.warn ("The PEPPOL document type ID '" +
                                 IdentifierHelper.getIdentifierURIEncoded (m_aPeppolDocumentTypeID) +
                                 "' is using a non-standard scheme!");
@@ -834,7 +836,7 @@ public class AS2ClientBuilder
     if (m_aPeppolProcessID == null)
       m_aMessageHandler.error ("The PEPPOL process ID is missing");
     else
-      if (!IdentifierHelper.hasDefaultProcessIdentifierScheme (m_aPeppolProcessID))
+      if (!m_aPeppolProcessID.hasScheme (IPeppolParticipantIdentifier.DEFAULT_SCHEME))
         m_aMessageHandler.warn ("The PEPPOL process ID '" +
                                 IdentifierHelper.getIdentifierURIEncoded (m_aPeppolProcessID) +
                                 "' is using a non-standard scheme!");
