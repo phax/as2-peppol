@@ -39,6 +39,8 @@ import com.helger.peppol.identifier.peppol.process.PeppolProcessIdentifier;
 import com.helger.peppol.sml.ESML;
 import com.helger.peppol.smpclient.SMPClientConfiguration;
 import com.helger.peppol.smpclient.SMPClientReadOnly;
+import com.helger.peppol.url.BDXURLProvider;
+import com.helger.peppol.url.IPeppolURLProvider;
 import com.helger.peppol.validation.api.ValidationKey;
 import com.helger.peppol.validation.api.result.ValidationLayerResult;
 import com.helger.peppol.validation.engine.peppol.PeppolValidationKeys;
@@ -62,6 +64,7 @@ public class MainAS2TestClient
   private static final String SENDER_KEY_ALIAS = SENDER_AS2_ID;
   /** The PEPPOL sender participant ID */
   private static final IParticipantIdentifier SENDER_PEPPOL_ID = PeppolParticipantIdentifier.createWithDefaultScheme ("9999:test-sender");
+  private static final IPeppolURLProvider URL_PROVIDER = new BDXURLProvider ();
 
   private static final Logger s_aLogger = LoggerFactory.getLogger (MainAS2TestClient.class);
 
@@ -167,7 +170,7 @@ public class MainAS2TestClient
       sReceiverKeyAlias = SENDER_KEY_ALIAS;
     }
 
-    final SMPClientReadOnly aSMPClient = new SMPClientReadOnly (aReceiver, eSML).setProxy (aProxy);
+    final SMPClientReadOnly aSMPClient = new SMPClientReadOnly (URL_PROVIDER, aReceiver, eSML).setProxy (aProxy);
     try
     {
       final AS2ClientResponse aResponse = new AS2ClientBuilder ().setSMPClient (aSMPClient)
