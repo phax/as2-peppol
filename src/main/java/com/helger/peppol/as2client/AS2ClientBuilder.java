@@ -53,7 +53,6 @@ import com.helger.commons.io.resource.inmemory.ReadableResourceByteArray;
 import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
 import com.helger.commons.string.StringHelper;
 import com.helger.commons.url.URLHelper;
-import com.helger.commons.xml.serialize.read.DOMReader;
 import com.helger.peppol.identifier.IdentifierHelper;
 import com.helger.peppol.identifier.generic.doctype.IDocumentTypeIdentifier;
 import com.helger.peppol.identifier.generic.participant.IParticipantIdentifier;
@@ -72,6 +71,7 @@ import com.helger.peppol.validation.api.result.ValidationLayerResultList;
 import com.helger.peppol.validation.engine.UBLDocumentValidator;
 import com.helger.peppol.validation.engine.peppol.PeppolValidationConfiguration;
 import com.helger.sbdh.SBDMarshaller;
+import com.helger.xml.serialize.read.DOMReader;
 
 /**
  * A builder class for easy usage of the AS2 client for sending messages to a
