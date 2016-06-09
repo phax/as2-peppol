@@ -904,8 +904,8 @@ public class AS2ClientBuilder
 
     // Build message
 
-    // 1. read business document
-    Element aXML = null;
+    // 1. read business document into memory - this may be a bottleneck!
+    Element aBusinessDocumentXML = null;
     if (m_aBusinessDocumentRes != null)
     {
       try
@@ -915,7 +915,7 @@ public class AS2ClientBuilder
           throw new AS2ClientBuilderException ("Failed to read business document '" +
                                                m_aBusinessDocumentRes.getPath () +
                                                "' as XML");
-        aXML = aXMLDocument.getDocumentElement ();
+        aBusinessDocumentXML = aXMLDocument.getDocumentElement ();
       }
       catch (final SAXException ex)
       {
@@ -927,17 +927,17 @@ public class AS2ClientBuilder
     }
     else
     {
-      aXML = m_aBusinessDocumentElement;
+      aBusinessDocumentXML = m_aBusinessDocumentElement;
     }
-    if (aXML == null)
+    if (aBusinessDocumentXML == null)
       throw new AS2ClientBuilderException ("No XML business content present!");
 
     // 2. validate the business document
     if (m_aValidationKey != null)
-      validateOutgoingBusinessDocument (aXML);
+      validateOutgoingBusinessDocument (aBusinessDocumentXML);
 
     // 3. build SBD data
-    final PeppolSBDHDocument aDD = PeppolSBDHDocument.create (aXML);
+    final PeppolSBDHDocument aDD = PeppolSBDHDocument.create (aBusinessDocumentXML);
     aDD.setSenderWithDefaultScheme (m_aPeppolSenderID.getValue ());
     aDD.setReceiver (m_aPeppolReceiverID.getScheme (), m_aPeppolReceiverID.getValue ());
     aDD.setDocumentType (m_aPeppolDocumentTypeID.getScheme (), m_aPeppolDocumentTypeID.getValue ());

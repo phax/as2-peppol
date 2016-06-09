@@ -28,6 +28,7 @@ import com.helger.as2lib.client.AS2ClientResponse;
 import com.helger.as2lib.crypto.ECryptoAlgorithmSign;
 import com.helger.commons.debug.GlobalDebug;
 import com.helger.commons.io.resource.ClassPathResource;
+import com.helger.commons.io.resource.IReadableResource;
 import com.helger.peppol.identifier.generic.doctype.IDocumentTypeIdentifier;
 import com.helger.peppol.identifier.generic.participant.IParticipantIdentifier;
 import com.helger.peppol.identifier.generic.process.IProcessIdentifier;
@@ -80,6 +81,7 @@ public class MainAS2TestClient
     GlobalDebug.setDebugModeDirect (false);
   }
 
+  @SuppressWarnings ("null")
   public static void main (final String [] args) throws Exception
   {
     /** The PEPPOL document type to use. */
@@ -88,11 +90,12 @@ public class MainAS2TestClient
     IProcessIdentifier aProcessID = EPredefinedProcessIdentifier.BIS4A_V20.getAsProcessIdentifier ();
     IParticipantIdentifier aReceiver = null;
     String sTestFilename = null;
+    IReadableResource aTestResource = null;
     String sReceiverID = null;
     String sReceiverKeyAlias = null;
     String sReceiverAddress = null;
     ESML eSML = ESML.DIGIT_PRODUCTION;
-    final ValidationKey aValidationKey = PeppolValidationKeys.INVOICE_04_T10;
+    ValidationKey aValidationKey = PeppolValidationKeys.INVOICE_04_T10;
 
     HttpHost aProxy = null;
     final String sProxyHost = SMPClientConfiguration.getConfigFile ().getString ("http.proxyHost");
@@ -169,6 +172,20 @@ public class MainAS2TestClient
       sReceiverID = SENDER_AS2_ID;
       sReceiverKeyAlias = SENDER_KEY_ALIAS;
     }
+    if (true)
+    {
+      // localhost test endpoint with 2 GB file
+      aReceiver = PeppolParticipantIdentifier.createWithDefaultScheme ("9915:test");
+      aTestResource = new GZIPResource (new ClassPathResource ("xml/as2-test-at-gov-2gb.gz"));
+      // Avoid SMP lookup
+      sReceiverAddress = "http://localhost:8080/as2";
+      sReceiverID = SENDER_AS2_ID;
+      sReceiverKeyAlias = SENDER_KEY_ALIAS;
+      aValidationKey = null;
+    }
+
+    if (aTestResource == null)
+      aTestResource = new ClassPathResource (sTestFilename);
 
     final SMPClientReadOnly aSMPClient = new SMPClientReadOnly (URL_PROVIDER, aReceiver, eSML).setProxy (aProxy);
     try
@@ -184,7 +201,7 @@ public class MainAS2TestClient
                                                                  .setReceiverAS2KeyAlias (sReceiverKeyAlias)
                                                                  .setReceiverAS2Url (sReceiverAddress)
                                                                  .setAS2SigningAlgorithm (ECryptoAlgorithmSign.DIGEST_SHA_1)
-                                                                 .setBusinessDocument (new ClassPathResource (sTestFilename))
+                                                                 .setBusinessDocument (aTestResource)
                                                                  .setPeppolSenderID (SENDER_PEPPOL_ID)
                                                                  .setPeppolReceiverID (aReceiver)
                                                                  .setPeppolDocumentTypeID (aDocTypeID)
