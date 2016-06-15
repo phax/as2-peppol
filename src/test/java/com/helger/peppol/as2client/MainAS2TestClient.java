@@ -98,8 +98,8 @@ public class MainAS2TestClient
     ValidationKey aValidationKey = PeppolValidationKeys.INVOICE_04_T10;
 
     HttpHost aProxy = null;
-    final String sProxyHost = SMPClientConfiguration.getConfigFile ().getString ("http.proxyHost");
-    final int nProxyPort = SMPClientConfiguration.getConfigFile ().getInt ("http.proxyPort", 0);
+    final String sProxyHost = SMPClientConfiguration.getConfigFile ().getAsString ("http.proxyHost");
+    final int nProxyPort = SMPClientConfiguration.getConfigFile ().getAsInt ("http.proxyPort", 0);
     if (sProxyHost != null && nProxyPort > 0)
       aProxy = new HttpHost (sProxyHost, nProxyPort);
 
