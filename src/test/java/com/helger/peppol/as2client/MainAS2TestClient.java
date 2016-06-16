@@ -38,6 +38,7 @@ import com.helger.peppol.identifier.peppol.participant.PeppolParticipantIdentifi
 import com.helger.peppol.identifier.peppol.process.EPredefinedProcessIdentifier;
 import com.helger.peppol.identifier.peppol.process.PeppolProcessIdentifier;
 import com.helger.peppol.sml.ESML;
+import com.helger.peppol.sml.ISMLInfo;
 import com.helger.peppol.smpclient.SMPClientConfiguration;
 import com.helger.peppol.smpclient.SMPClientReadOnly;
 import com.helger.peppol.url.BDXURLProvider;
@@ -94,7 +95,7 @@ public class MainAS2TestClient
     String sReceiverID = null;
     String sReceiverKeyAlias = null;
     String sReceiverAddress = null;
-    ESML eSML = ESML.DIGIT_PRODUCTION;
+    ISMLInfo aSML = ESML.DIGIT_PRODUCTION;
     ValidationKey aValidationKey = PeppolValidationKeys.INVOICE_04_T10;
 
     HttpHost aProxy = null;
@@ -153,10 +154,10 @@ public class MainAS2TestClient
       aReceiver = PeppolParticipantIdentifier.createWithDefaultScheme ("9907:consiptestap2");
       aDocTypeID = PeppolDocumentTypeIdentifier.createWithDefaultScheme ("urn:oasis:names:specification:ubl:schema:xsd:Order-2::Order##urn:www.cenbii.eu:transaction:biitrns001:ver2.0:extended:urn:www.peppol.eu:bis:peppol3a:ver2.0::2.1");
       aProcessID = PeppolProcessIdentifier.createWithDefaultScheme ("urn:www.cenbii.eu:profile:bii03:ver2.0");
-      eSML = ESML.DIGIT_TEST;
+      aSML = ESML.DIGIT_TEST;
       sTestFilename = "xml/as2-order.xml";
     }
-    if (true)
+    if (false)
     {
       // BRZ test endpoint
       aReceiver = PeppolParticipantIdentifier.createWithDefaultScheme ("9915:test");
@@ -172,7 +173,7 @@ public class MainAS2TestClient
       sReceiverID = SENDER_AS2_ID;
       sReceiverKeyAlias = SENDER_KEY_ALIAS;
     }
-    if (true)
+    if (false)
     {
       // localhost test endpoint with 2 GB file
       aReceiver = PeppolParticipantIdentifier.createWithDefaultScheme ("9915:test");
@@ -183,11 +184,19 @@ public class MainAS2TestClient
       sReceiverKeyAlias = SENDER_KEY_ALIAS;
       aValidationKey = null;
     }
+    if (true)
+    {
+      // ESPAP test endpoint
+      aReceiver = PeppolParticipantIdentifier.createWithDefaultScheme ("9946:espap");
+      sTestFilename = "xml/as2-test-at-gov.xml";
+      aSML = ESML.DIGIT_TEST;
+      aValidationKey = null;
+    }
 
     if (aTestResource == null)
       aTestResource = new ClassPathResource (sTestFilename);
 
-    final SMPClientReadOnly aSMPClient = new SMPClientReadOnly (URL_PROVIDER, aReceiver, eSML).setProxy (aProxy);
+    final SMPClientReadOnly aSMPClient = new SMPClientReadOnly (URL_PROVIDER, aReceiver, aSML).setProxy (aProxy);
     try
     {
       final AS2ClientResponse aResponse = new AS2ClientBuilder ().setSMPClient (aSMPClient)

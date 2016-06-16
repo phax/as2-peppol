@@ -835,7 +835,7 @@ public class AS2ClientBuilder
     if (m_aPeppolProcessID == null)
       m_aMessageHandler.error ("The PEPPOL process ID is missing");
     else
-      if (!m_aPeppolProcessID.hasScheme (PeppolIdentifierHelper.DEFAULT_PARTICIPANT_SCHEME))
+      if (!m_aPeppolProcessID.hasScheme (PeppolIdentifierHelper.DEFAULT_PROCESS_SCHEME))
         m_aMessageHandler.warn ("The PEPPOL process ID '" +
                                 IdentifierHelper.getIdentifierURIEncoded (m_aPeppolProcessID) +
                                 "' is using a non-standard scheme!");
