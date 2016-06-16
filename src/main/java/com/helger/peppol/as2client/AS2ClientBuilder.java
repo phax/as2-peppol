@@ -53,7 +53,6 @@ import com.helger.commons.io.resource.inmemory.ReadableResourceByteArray;
 import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
 import com.helger.commons.string.StringHelper;
 import com.helger.commons.url.URLHelper;
-import com.helger.peppol.identifier.IdentifierHelper;
 import com.helger.peppol.identifier.generic.doctype.IDocumentTypeIdentifier;
 import com.helger.peppol.identifier.generic.participant.IParticipantIdentifier;
 import com.helger.peppol.identifier.generic.process.IProcessIdentifier;
@@ -583,11 +582,11 @@ public class AS2ClientBuilder
               {
                 if (s_aLogger.isDebugEnabled ())
                   s_aLogger.debug ("Performing SMP lookup for receiver '" +
-                                   IdentifierHelper.getIdentifierURIEncoded (m_aPeppolReceiverID) +
+                                   m_aPeppolReceiverID.getURIEncoded () +
                                    "' on document type '" +
-                                   IdentifierHelper.getIdentifierURIEncoded (m_aPeppolDocumentTypeID) +
+                                   m_aPeppolDocumentTypeID.getURIEncoded () +
                                    "' and process ID '" +
-                                   IdentifierHelper.getIdentifierURIEncoded (m_aPeppolProcessID) +
+                                   m_aPeppolProcessID.getURIEncoded () +
                                    "' using transport profile for AS2");
 
                 aServiceMetadata = m_aSMPClient.getServiceRegistration (m_aPeppolReceiverID, m_aPeppolDocumentTypeID);
@@ -623,11 +622,11 @@ public class AS2ClientBuilder
               {
                 // No such SMP entry
                 getMessageHandler ().warn ("Failed to perform SMP lookup for receiver '" +
-                                           IdentifierHelper.getIdentifierURIEncoded (m_aPeppolReceiverID) +
+                                           m_aPeppolReceiverID.getURIEncoded () +
                                            "' on document type '" +
-                                           IdentifierHelper.getIdentifierURIEncoded (m_aPeppolDocumentTypeID) +
+                                           m_aPeppolDocumentTypeID.getURIEncoded () +
                                            "' and process ID '" +
-                                           IdentifierHelper.getIdentifierURIEncoded (m_aPeppolProcessID) +
+                                           m_aPeppolProcessID.getURIEncoded () +
                                            "' using transport profile for AS2. " +
                                            (aServiceMetadata != null ? "The service metadata was gathered successfully."
                                                                      : "Failed to get the service metadata."));
@@ -813,7 +812,7 @@ public class AS2ClientBuilder
     else
       if (!m_aPeppolSenderID.hasScheme (PeppolIdentifierHelper.DEFAULT_PARTICIPANT_SCHEME))
         m_aMessageHandler.warn ("The PEPPOL sender participant ID '" +
-                                IdentifierHelper.getIdentifierURIEncoded (m_aPeppolSenderID) +
+                                m_aPeppolSenderID.getURIEncoded () +
                                 "' is using a non-standard scheme!");
 
     if (m_aPeppolReceiverID == null)
@@ -821,7 +820,7 @@ public class AS2ClientBuilder
     else
       if (!m_aPeppolReceiverID.hasScheme (PeppolIdentifierHelper.DEFAULT_PARTICIPANT_SCHEME))
         m_aMessageHandler.warn ("The PEPPOL receiver participant ID '" +
-                                IdentifierHelper.getIdentifierURIEncoded (m_aPeppolReceiverID) +
+                                m_aPeppolReceiverID.getURIEncoded () +
                                 "' is using a non-standard scheme!");
 
     if (m_aPeppolDocumentTypeID == null)
@@ -829,7 +828,7 @@ public class AS2ClientBuilder
     else
       if (!m_aPeppolDocumentTypeID.hasScheme (PeppolIdentifierHelper.DEFAULT_DOCUMENT_TYPE_SCHEME))
         m_aMessageHandler.warn ("The PEPPOL document type ID '" +
-                                IdentifierHelper.getIdentifierURIEncoded (m_aPeppolDocumentTypeID) +
+                                m_aPeppolDocumentTypeID.getURIEncoded () +
                                 "' is using a non-standard scheme!");
 
     if (m_aPeppolProcessID == null)
@@ -837,7 +836,7 @@ public class AS2ClientBuilder
     else
       if (!m_aPeppolProcessID.hasScheme (PeppolIdentifierHelper.DEFAULT_PROCESS_SCHEME))
         m_aMessageHandler.warn ("The PEPPOL process ID '" +
-                                IdentifierHelper.getIdentifierURIEncoded (m_aPeppolProcessID) +
+                                m_aPeppolProcessID.getURIEncoded () +
                                 "' is using a non-standard scheme!");
 
     if (m_aValidationKey == null)

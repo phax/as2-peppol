@@ -41,7 +41,7 @@ import com.helger.peppol.sml.ESML;
 import com.helger.peppol.sml.ISMLInfo;
 import com.helger.peppol.smpclient.SMPClientConfiguration;
 import com.helger.peppol.smpclient.SMPClientReadOnly;
-import com.helger.peppol.url.BDXURLProvider;
+import com.helger.peppol.url.PeppolURLProvider;
 import com.helger.peppol.url.IPeppolURLProvider;
 import com.helger.peppol.validation.api.ValidationKey;
 import com.helger.peppol.validation.api.result.ValidationLayerResult;
@@ -66,7 +66,7 @@ public class MainAS2TestClient
   private static final String SENDER_KEY_ALIAS = SENDER_AS2_ID;
   /** The PEPPOL sender participant ID */
   private static final IParticipantIdentifier SENDER_PEPPOL_ID = PeppolParticipantIdentifier.createWithDefaultScheme ("9999:test-sender");
-  private static final IPeppolURLProvider URL_PROVIDER = new BDXURLProvider ();
+  private static final IPeppolURLProvider URL_PROVIDER = new PeppolURLProvider ();
 
   private static final Logger s_aLogger = LoggerFactory.getLogger (MainAS2TestClient.class);
 
