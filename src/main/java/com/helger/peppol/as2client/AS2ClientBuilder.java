@@ -596,7 +596,7 @@ public class AS2ClientBuilder
                 if (s_aLogger.isDebugEnabled ())
                   s_aLogger.debug ("No such SMP service registration", ex);
                 else
-                  s_aLogger.warn ("No such SMP service registration: " + ex.getMessage ());
+                  s_aLogger.error ("No such SMP service registration: " + ex.getMessage ());
                 // Fall through
               }
               catch (final SMPClientException ex)
@@ -604,7 +604,7 @@ public class AS2ClientBuilder
                 if (s_aLogger.isDebugEnabled ())
                   s_aLogger.debug ("Error querying the SMP", ex);
                 else
-                  s_aLogger.warn ("Error querying the SMP: " + ex.getMessage ());
+                  s_aLogger.error ("Error querying the SMP: " + ex.getMessage ());
                 // Fall through
               }
 
@@ -621,15 +621,15 @@ public class AS2ClientBuilder
               if (aEndpoint == null)
               {
                 // No such SMP entry
-                getMessageHandler ().warn ("Failed to perform SMP lookup for receiver '" +
-                                           m_aPeppolReceiverID.getURIEncoded () +
-                                           "' on document type '" +
-                                           m_aPeppolDocumentTypeID.getURIEncoded () +
-                                           "' and process ID '" +
-                                           m_aPeppolProcessID.getURIEncoded () +
-                                           "' using transport profile for AS2. " +
-                                           (aServiceMetadata != null ? "The service metadata was gathered successfully."
-                                                                     : "Failed to get the service metadata."));
+                getMessageHandler ().error ("Failed to perform SMP lookup for receiver '" +
+                                            m_aPeppolReceiverID.getURIEncoded () +
+                                            "' on document type '" +
+                                            m_aPeppolDocumentTypeID.getURIEncoded () +
+                                            "' and process ID '" +
+                                            m_aPeppolProcessID.getURIEncoded () +
+                                            "' using transport profile for AS2. " +
+                                            (aServiceMetadata != null ? "The service metadata was gathered successfully but no endpoint was found."
+                                                                      : "Failed to get the service metadata."));
               }
               else
               {

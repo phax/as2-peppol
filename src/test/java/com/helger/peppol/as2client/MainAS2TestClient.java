@@ -17,6 +17,7 @@
 package com.helger.peppol.as2client;
 
 import java.io.File;
+import java.net.URI;
 import java.security.Security;
 
 import org.apache.http.HttpHost;
@@ -29,6 +30,7 @@ import com.helger.as2lib.crypto.ECryptoAlgorithmSign;
 import com.helger.commons.debug.GlobalDebug;
 import com.helger.commons.io.resource.ClassPathResource;
 import com.helger.commons.io.resource.IReadableResource;
+import com.helger.commons.url.URLHelper;
 import com.helger.peppol.identifier.generic.doctype.IDocumentTypeIdentifier;
 import com.helger.peppol.identifier.generic.participant.IParticipantIdentifier;
 import com.helger.peppol.identifier.generic.process.IProcessIdentifier;
@@ -41,8 +43,8 @@ import com.helger.peppol.sml.ESML;
 import com.helger.peppol.sml.ISMLInfo;
 import com.helger.peppol.smpclient.SMPClientConfiguration;
 import com.helger.peppol.smpclient.SMPClientReadOnly;
-import com.helger.peppol.url.PeppolURLProvider;
 import com.helger.peppol.url.IPeppolURLProvider;
+import com.helger.peppol.url.PeppolURLProvider;
 import com.helger.peppol.validation.api.ValidationKey;
 import com.helger.peppol.validation.api.result.ValidationLayerResult;
 import com.helger.peppol.validation.engine.peppol.PeppolValidationKeys;
@@ -97,6 +99,7 @@ public class MainAS2TestClient
     String sReceiverAddress = null;
     ISMLInfo aSML = ESML.DIGIT_PRODUCTION;
     ValidationKey aValidationKey = PeppolValidationKeys.INVOICE_04_T10;
+    URI aSMPURI = null;
 
     HttpHost aProxy = null;
     final String sProxyHost = SMPClientConfiguration.getConfigFile ().getAsString ("http.proxyHost");
@@ -173,6 +176,16 @@ public class MainAS2TestClient
       sReceiverID = SENDER_AS2_ID;
       sReceiverKeyAlias = SENDER_KEY_ALIAS;
     }
+    if (true)
+    {
+      // localhost test redirect
+      aReceiver = PeppolParticipantIdentifier.createWithDefaultScheme ("9915:test");
+      sTestFilename = "xml/as2-test-at-gov.xml";
+      aSMPURI = URLHelper.getAsURI ("http://127.0.0.1:90");
+      aDocTypeID = PeppolDocumentTypeIdentifier.createWithDefaultScheme ("urn:oasis:names:specification:ubl:schema:xsd:CreditNote-2::CreditNote##urn:www.cenbii.eu:transaction:biitrns014:ver2.0:extended:urn:www.peppol.eu:bis:peppol5a:ver2.0:extended:urn:www.erechnung.gv.at:ver1.0::2.1");
+      aProcessID = PeppolProcessIdentifier.createWithDefaultScheme ("urn:www.cenbii.eu:profile:bii05:ver2.0");
+      aValidationKey = null;
+    }
     if (false)
     {
       // localhost test endpoint with 2 GB file
@@ -184,7 +197,7 @@ public class MainAS2TestClient
       sReceiverKeyAlias = SENDER_KEY_ALIAS;
       aValidationKey = null;
     }
-    if (true)
+    if (false)
     {
       // ESPAP test endpoint
       aReceiver = PeppolParticipantIdentifier.createWithDefaultScheme ("9946:espap");
@@ -196,7 +209,16 @@ public class MainAS2TestClient
     if (aTestResource == null)
       aTestResource = new ClassPathResource (sTestFilename);
 
-    final SMPClientReadOnly aSMPClient = new SMPClientReadOnly (URL_PROVIDER, aReceiver, aSML).setProxy (aProxy);
+    final SMPClientReadOnly aSMPClient = aSMPURI != null ? new SMPClientReadOnly (aSMPURI)
+                                                         : new SMPClientReadOnly (URL_PROVIDER, aReceiver, aSML);
+
+    // No proxy for local host
+    if (!aSMPClient.getSMPHostURI ().startsWith ("http://localhost") &&
+        !aSMPClient.getSMPHostURI ().startsWith ("http://127."))
+    {
+      aSMPClient.setProxy (aProxy);
+    }
+
     try
     {
       final AS2ClientResponse aResponse = new AS2ClientBuilder ().setSMPClient (aSMPClient)
