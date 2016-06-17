@@ -68,7 +68,7 @@ public class MainAS2TestClient
   private static final String SENDER_KEY_ALIAS = SENDER_AS2_ID;
   /** The PEPPOL sender participant ID */
   private static final IParticipantIdentifier SENDER_PEPPOL_ID = PeppolParticipantIdentifier.createWithDefaultScheme ("9999:test-sender");
-  private static final IPeppolURLProvider URL_PROVIDER = new PeppolURLProvider ();
+  private static final IPeppolURLProvider URL_PROVIDER = PeppolURLProvider.INSTANCE;
 
   private static final Logger s_aLogger = LoggerFactory.getLogger (MainAS2TestClient.class);
 
