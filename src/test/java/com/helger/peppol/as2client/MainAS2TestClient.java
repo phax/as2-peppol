@@ -54,7 +54,7 @@ import com.helger.peppol.validation.engine.peppol.PeppolValidationKeys;
  *
  * @author Philip Helger
  */
-public class MainAS2TestClient
+public final class MainAS2TestClient
 {
   /** The file path to the PKCS12 key store */
   private static final String PKCS12_CERTSTORE_PATH = "as2-client-data/client-certs.p12";
@@ -176,7 +176,7 @@ public class MainAS2TestClient
       sReceiverID = SENDER_AS2_ID;
       sReceiverKeyAlias = SENDER_KEY_ALIAS;
     }
-    if (true)
+    if (false)
     {
       // localhost test redirect
       aReceiver = PeppolParticipantIdentifier.createWithDefaultScheme ("9915:test");
@@ -186,7 +186,7 @@ public class MainAS2TestClient
       aProcessID = PeppolProcessIdentifier.createWithDefaultScheme ("urn:www.cenbii.eu:profile:bii05:ver2.0");
       aValidationKey = null;
     }
-    if (false)
+    if (true)
     {
       // localhost test endpoint with 2 GB file
       aReceiver = PeppolParticipantIdentifier.createWithDefaultScheme ("9915:test");
