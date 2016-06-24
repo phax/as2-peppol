@@ -17,8 +17,18 @@
 package com.helger.peppol.as2client;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.PipedInputStream;
+import java.io.PipedOutputStream;
+import java.net.InetSocketAddress;
+import java.net.Proxy;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -44,6 +54,7 @@ import com.helger.as2lib.disposition.DispositionOptions;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.OverrideOnDemand;
 import com.helger.commons.charset.CCharset;
+import com.helger.commons.concurrent.ManagedExecutorService;
 import com.helger.commons.email.EmailAddressHelper;
 import com.helger.commons.factory.FactoryNewInstance;
 import com.helger.commons.factory.IFactory;
@@ -51,8 +62,13 @@ import com.helger.commons.io.resource.FileSystemResource;
 import com.helger.commons.io.resource.IReadableResource;
 import com.helger.commons.io.resource.inmemory.ReadableResourceByteArray;
 import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
+import com.helger.commons.mime.CMimeType;
+import com.helger.commons.state.ESuccess;
 import com.helger.commons.string.StringHelper;
 import com.helger.commons.url.URLHelper;
+import com.helger.mail.cte.EContentTransferEncoding;
+import com.helger.mail.datahandler.DataSourceStreamingDataHandler;
+import com.helger.mail.datasource.InputStreamDataSource;
 import com.helger.peppol.identifier.generic.doctype.IDocumentTypeIdentifier;
 import com.helger.peppol.identifier.generic.participant.IParticipantIdentifier;
 import com.helger.peppol.identifier.generic.process.IProcessIdentifier;
@@ -915,6 +931,7 @@ public class AS2ClientBuilder
                                                m_aBusinessDocumentRes.getPath () +
                                                "' as XML");
         aBusinessDocumentXML = aXMLDocument.getDocumentElement ();
+        s_aLogger.info ("Successfully parsed the business document");
       }
       catch (final SAXException ex)
       {
@@ -935,53 +952,94 @@ public class AS2ClientBuilder
     if (m_aValidationKey != null)
       validateOutgoingBusinessDocument (aBusinessDocumentXML);
 
-    // 3. build SBD data
-    final PeppolSBDHDocument aDD = PeppolSBDHDocument.create (aBusinessDocumentXML);
-    aDD.setSenderWithDefaultScheme (m_aPeppolSenderID.getValue ());
-    aDD.setReceiver (m_aPeppolReceiverID.getScheme (), m_aPeppolReceiverID.getValue ());
-    aDD.setDocumentType (m_aPeppolDocumentTypeID.getScheme (), m_aPeppolDocumentTypeID.getValue ());
-    aDD.setProcess (m_aPeppolProcessID.getScheme (), m_aPeppolProcessID.getValue ());
+    // 3. build PEPPOL SBDH data
+    final PeppolSBDHDocument aSBDHDoc = PeppolSBDHDocument.create (aBusinessDocumentXML);
+    aSBDHDoc.setSenderWithDefaultScheme (m_aPeppolSenderID.getValue ());
+    aSBDHDoc.setReceiver (m_aPeppolReceiverID.getScheme (), m_aPeppolReceiverID.getValue ());
+    aSBDHDoc.setDocumentType (m_aPeppolDocumentTypeID.getScheme (), m_aPeppolDocumentTypeID.getValue ());
+    aSBDHDoc.setProcess (m_aPeppolProcessID.getScheme (), m_aPeppolProcessID.getValue ());
 
-    // 4. build SBD
-    final StandardBusinessDocument aSBD = new PeppolSBDHDocumentWriter ().createStandardBusinessDocument (aDD);
-    try (final NonBlockingByteArrayOutputStream aBAOS = new NonBlockingByteArrayOutputStream ())
+    // 4. set client properties
+    // Start building the AS2 client settings
+    final AS2ClientSettings aAS2ClientSettings = new AS2ClientSettings ();
+    // Key store
+    aAS2ClientSettings.setKeyStore (m_aKeyStoreFile, m_sKeyStorePassword);
+    aAS2ClientSettings.setSaveKeyStoreChangesToFile (m_bSaveKeyStoreChangesToFile);
+
+    // Fixed sender
+    aAS2ClientSettings.setSenderData (m_sSenderAS2ID, m_sSenderAS2Email, m_sSenderAS2KeyAlias);
+
+    // Dynamic receiver
+    aAS2ClientSettings.setReceiverData (m_sReceiverAS2ID, m_sReceiverAS2KeyAlias, m_sReceiverAS2Url);
+    aAS2ClientSettings.setReceiverCertificate (m_aReceiverCert);
+
+    // AS2 stuff - no need to change anything in this block
+    aAS2ClientSettings.setPartnershipName (aAS2ClientSettings.getSenderAS2ID () +
+                                           "-" +
+                                           aAS2ClientSettings.getReceiverAS2ID ());
+    aAS2ClientSettings.setMDNOptions (new DispositionOptions ().setMICAlg (m_eSigningAlgo)
+                                                               .setMICAlgImportance (DispositionOptions.IMPORTANCE_REQUIRED)
+                                                               .setProtocol (DispositionOptions.PROTOCOL_PKCS7_SIGNATURE)
+                                                               .setProtocolImportance (DispositionOptions.IMPORTANCE_REQUIRED));
+    aAS2ClientSettings.setEncryptAndSign (null, m_eSigningAlgo);
+    aAS2ClientSettings.setMessageIDFormat (m_sMessageIDFormat);
+
+    final AS2ClientRequest aRequest = new AS2ClientRequest (m_sAS2Subject);
+
+    // 4. build SBD from SBDH
+    if (true)
     {
-      if (new SBDMarshaller ().write (aSBD, new StreamResult (aBAOS)).isFailure ())
-        throw new AS2ClientBuilderException ("Failed to serialize SBD!");
+      // Version with huge memory consumption
+      final StandardBusinessDocument aSBD = new PeppolSBDHDocumentWriter ().createStandardBusinessDocument (aSBDHDoc);
 
-      // 5. send message
-      // Start building the AS2 client settings
-      final AS2ClientSettings aAS2ClientSettings = new AS2ClientSettings ();
-      // Key store
-      aAS2ClientSettings.setKeyStore (m_aKeyStoreFile, m_sKeyStorePassword);
-      aAS2ClientSettings.setSaveKeyStoreChangesToFile (m_bSaveKeyStoreChangesToFile);
+      try (final NonBlockingByteArrayOutputStream aBAOS = new NonBlockingByteArrayOutputStream ())
+      {
+        if (new SBDMarshaller ().write (aSBD, new StreamResult (aBAOS)).isFailure ())
+          throw new AS2ClientBuilderException ("Failed to serialize SBD!");
 
-      // Fixed sender
-      aAS2ClientSettings.setSenderData (m_sSenderAS2ID, m_sSenderAS2Email, m_sSenderAS2KeyAlias);
-
-      // Dynamic receiver
-      aAS2ClientSettings.setReceiverData (m_sReceiverAS2ID, m_sReceiverAS2KeyAlias, m_sReceiverAS2Url);
-      aAS2ClientSettings.setReceiverCertificate (m_aReceiverCert);
-
-      // AS2 stuff - no need to change anything in this block
-      aAS2ClientSettings.setPartnershipName (aAS2ClientSettings.getSenderAS2ID () +
-                                             "-" +
-                                             aAS2ClientSettings.getReceiverAS2ID ());
-      aAS2ClientSettings.setMDNOptions (new DispositionOptions ().setMICAlg (m_eSigningAlgo)
-                                                                 .setMICAlgImportance (DispositionOptions.IMPORTANCE_REQUIRED)
-                                                                 .setProtocol (DispositionOptions.PROTOCOL_PKCS7_SIGNATURE)
-                                                                 .setProtocolImportance (DispositionOptions.IMPORTANCE_REQUIRED));
-      aAS2ClientSettings.setEncryptAndSign (null, m_eSigningAlgo);
-      aAS2ClientSettings.setMessageIDFormat (m_sMessageIDFormat);
-
-      final AS2ClientRequest aRequest = new AS2ClientRequest (m_sAS2Subject);
-      // Using a String is better when having a
-      // com.sun.xml.ws.encoding.XmlDataContentHandler installed!
-      aRequest.setData (aBAOS.getAsString (CCharset.CHARSET_UTF_8_OBJ), CCharset.CHARSET_UTF_8_OBJ);
+        // Using a String is better when having a
+        // com.sun.xml.ws.encoding.XmlDataContentHandler installed!
+        aRequest.setData (aBAOS.getAsString (CCharset.CHARSET_UTF_8_OBJ), CCharset.CHARSET_UTF_8_OBJ);
+      }
 
       final AS2Client aAS2Client = m_aAS2ClientFactory.get ();
+      if (false)
+        aAS2Client.setHttpProxy (new Proxy (Proxy.Type.HTTP, new InetSocketAddress ("127.0.0.1", 8888)));
       final AS2ClientResponse aResponse = aAS2Client.sendSynchronous (aAS2ClientSettings, aRequest);
       return aResponse;
+    }
+    else
+    {
+      // Less memory consumption but allows only a single input stream
+      // acquisition which is a problem
+      try
+      {
+        final PipedOutputStream aPipedOS = new PipedOutputStream ();
+        final PipedInputStream aPipedIS = new PipedInputStream (aPipedOS);
+
+        final StandardBusinessDocument aSBD = new PeppolSBDHDocumentWriter ().createStandardBusinessDocument (aSBDHDoc);
+        final Callable <ESuccess> aMarshaller = () -> new SBDMarshaller ().write (aSBD, aPipedOS);
+
+        final ExecutorService aES = Executors.newSingleThreadExecutor ();
+        final Future <ESuccess> aFuture = aES.submit (aMarshaller);
+
+        final AS2Client aAS2Client = m_aAS2ClientFactory.get ();
+        aRequest.setData (new DataSourceStreamingDataHandler (new InputStreamDataSource (aPipedIS,
+                                                                                         "StandardBusinessDocument.xml",
+                                                                                         CMimeType.APPLICATION_XML).getEncodingAware (EContentTransferEncoding.AS2_DEFAULT)));
+        final AS2ClientResponse aResponse = aAS2Client.sendSynchronous (aAS2ClientSettings, aRequest);
+
+        s_aLogger.info ("Waiting for ExecutorService to shutdown");
+        ManagedExecutorService.shutdownAndWaitUntilAllTasksAreFinished (aES);
+        if (aFuture.get ().isFailure ())
+          throw new AS2ClientBuilderException ("Failed to serialize SBD!");
+
+        return aResponse;
+      }
+      catch (final IOException | InterruptedException | ExecutionException ex)
+      {
+        throw new AS2ClientBuilderException ("Failed to transmit AS2 document", ex);
+      }
     }
   }
 }

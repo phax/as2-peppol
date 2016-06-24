@@ -30,6 +30,7 @@ import com.helger.as2lib.crypto.ECryptoAlgorithmSign;
 import com.helger.commons.debug.GlobalDebug;
 import com.helger.commons.io.resource.ClassPathResource;
 import com.helger.commons.io.resource.IReadableResource;
+import com.helger.commons.io.resource.wrapped.GZIPReadableResource;
 import com.helger.commons.url.URLHelper;
 import com.helger.peppol.identifier.generic.doctype.IDocumentTypeIdentifier;
 import com.helger.peppol.identifier.generic.participant.IParticipantIdentifier;
@@ -166,7 +167,7 @@ public final class MainAS2TestClient
       aReceiver = PeppolParticipantIdentifier.createWithDefaultScheme ("9915:test");
       sTestFilename = "xml/as2-test-at-gov.xml";
     }
-    if (false)
+    if (true)
     {
       // localhost test endpoint
       aReceiver = PeppolParticipantIdentifier.createWithDefaultScheme ("9915:test");
@@ -175,6 +176,18 @@ public final class MainAS2TestClient
       sReceiverAddress = "http://localhost:8080/as2";
       sReceiverID = SENDER_AS2_ID;
       sReceiverKeyAlias = SENDER_KEY_ALIAS;
+      aValidationKey = null;
+    }
+    if (false)
+    {
+      // localhost test endpoint with 2 GB file
+      aReceiver = PeppolParticipantIdentifier.createWithDefaultScheme ("9915:test");
+      aTestResource = new GZIPReadableResource (new ClassPathResource ("xml/as2-test-at-gov-2gb.gz"));
+      // Avoid SMP lookup
+      sReceiverAddress = "http://localhost:8080/as2";
+      sReceiverID = SENDER_AS2_ID;
+      sReceiverKeyAlias = SENDER_KEY_ALIAS;
+      aValidationKey = null;
     }
     if (false)
     {
@@ -184,17 +197,6 @@ public final class MainAS2TestClient
       aSMPURI = URLHelper.getAsURI ("http://127.0.0.1:90");
       aDocTypeID = PeppolDocumentTypeIdentifier.createWithDefaultScheme ("urn:oasis:names:specification:ubl:schema:xsd:CreditNote-2::CreditNote##urn:www.cenbii.eu:transaction:biitrns014:ver2.0:extended:urn:www.peppol.eu:bis:peppol5a:ver2.0:extended:urn:www.erechnung.gv.at:ver1.0::2.1");
       aProcessID = PeppolProcessIdentifier.createWithDefaultScheme ("urn:www.cenbii.eu:profile:bii05:ver2.0");
-      aValidationKey = null;
-    }
-    if (true)
-    {
-      // localhost test endpoint with 2 GB file
-      aReceiver = PeppolParticipantIdentifier.createWithDefaultScheme ("9915:test");
-      aTestResource = new GZIPResource (new ClassPathResource ("xml/as2-test-at-gov-2gb.gz"));
-      // Avoid SMP lookup
-      sReceiverAddress = "http://localhost:8080/as2";
-      sReceiverID = SENDER_AS2_ID;
-      sReceiverKeyAlias = SENDER_KEY_ALIAS;
       aValidationKey = null;
     }
     if (false)

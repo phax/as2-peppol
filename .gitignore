@@ -13,4 +13,5 @@ hs_err_pid*
 *.hprof
 *.idom
 
-target/
+/target/
+/as2-sent-data/
