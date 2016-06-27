@@ -36,6 +36,7 @@ import com.helger.peppol.identifier.peppol.participant.PeppolParticipantIdentifi
 import com.helger.peppol.identifier.peppol.process.PeppolProcessIdentifier;
 import com.helger.peppol.smpclient.SMPClientConfiguration;
 import com.helger.peppol.smpclient.SMPClientReadOnly;
+import com.helger.peppol.utils.PeppolTechnicalSetup;
 import com.helger.peppol.validation.engine.peppol.PeppolValidationKeys;
 
 /**
@@ -67,7 +68,7 @@ public final class MainAS2TestClientGHX
   static
   {
     // Set Proxy Settings from property file.
-    SMPClientConfiguration.getConfigFile ().applyAllNetworkSystemProperties ();
+    PeppolTechnicalSetup.applyAllNetworkSystemProperties (SMPClientConfiguration.getConfigFile ());
 
     // Must be first!
     Security.addProvider (new BouncyCastleProvider ());
