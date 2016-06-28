@@ -1008,38 +1008,36 @@ public class AS2ClientBuilder
       final AS2ClientResponse aResponse = aAS2Client.sendSynchronous (aAS2ClientSettings, aRequest);
       return aResponse;
     }
-    else
+
+    // Less memory consumption but allows only a single input stream
+    // acquisition which is a problem
+    try
     {
-      // Less memory consumption but allows only a single input stream
-      // acquisition which is a problem
-      try
-      {
-        final PipedOutputStream aPipedOS = new PipedOutputStream ();
-        final PipedInputStream aPipedIS = new PipedInputStream (aPipedOS);
+      final PipedOutputStream aPipedOS = new PipedOutputStream ();
+      final PipedInputStream aPipedIS = new PipedInputStream (aPipedOS);
 
-        final StandardBusinessDocument aSBD = new PeppolSBDHDocumentWriter ().createStandardBusinessDocument (aSBDHDoc);
-        final Callable <ESuccess> aMarshaller = () -> new SBDMarshaller ().write (aSBD, aPipedOS);
+      final StandardBusinessDocument aSBD = new PeppolSBDHDocumentWriter ().createStandardBusinessDocument (aSBDHDoc);
+      final Callable <ESuccess> aMarshaller = () -> new SBDMarshaller ().write (aSBD, aPipedOS);
 
-        final ExecutorService aES = Executors.newSingleThreadExecutor ();
-        final Future <ESuccess> aFuture = aES.submit (aMarshaller);
+      final ExecutorService aES = Executors.newSingleThreadExecutor ();
+      final Future <ESuccess> aFuture = aES.submit (aMarshaller);
 
-        final AS2Client aAS2Client = m_aAS2ClientFactory.get ();
-        aRequest.setData (new DataSourceStreamingDataHandler (new InputStreamDataSource (aPipedIS,
-                                                                                         "StandardBusinessDocument.xml",
-                                                                                         CMimeType.APPLICATION_XML).getEncodingAware (EContentTransferEncoding.AS2_DEFAULT)));
-        final AS2ClientResponse aResponse = aAS2Client.sendSynchronous (aAS2ClientSettings, aRequest);
+      final AS2Client aAS2Client = m_aAS2ClientFactory.get ();
+      aRequest.setData (new DataSourceStreamingDataHandler (new InputStreamDataSource (aPipedIS,
+                                                                                       "StandardBusinessDocument.xml",
+                                                                                       CMimeType.APPLICATION_XML).getEncodingAware (EContentTransferEncoding.AS2_DEFAULT)));
+      final AS2ClientResponse aResponse = aAS2Client.sendSynchronous (aAS2ClientSettings, aRequest);
 
-        s_aLogger.info ("Waiting for ExecutorService to shutdown");
-        ManagedExecutorService.shutdownAndWaitUntilAllTasksAreFinished (aES);
-        if (aFuture.get ().isFailure ())
-          throw new AS2ClientBuilderException ("Failed to serialize SBD!");
+      s_aLogger.info ("Waiting for ExecutorService to shutdown");
+      ManagedExecutorService.shutdownAndWaitUntilAllTasksAreFinished (aES);
+      if (aFuture.get ().isFailure ())
+        throw new AS2ClientBuilderException ("Failed to serialize SBD!");
 
-        return aResponse;
-      }
-      catch (final IOException | InterruptedException | ExecutionException ex)
-      {
-        throw new AS2ClientBuilderException ("Failed to transmit AS2 document", ex);
-      }
+      return aResponse;
+    }
+    catch (final IOException | InterruptedException | ExecutionException ex)
+    {
+      throw new AS2ClientBuilderException ("Failed to transmit AS2 document", ex);
     }
   }
 }
