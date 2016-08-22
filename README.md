@@ -13,6 +13,11 @@ for a detailed description on how it works and how it fits in the overall PEPPOL
 
 This project is licensed under the Apache 2 License.
 
+#News
+
+  * v2.0.0 - 2016-08-22
+    * Updated to JDK 8
+
 #Configuration
 
 A keystore in the format PKCS12 must be available.
@@ -51,7 +56,7 @@ Add the following to your `pom.xml` to use this artifact:
 <dependency>
   <groupId>com.helger</groupId>
   <artifactId>as2-peppol-client</artifactId>
-  <version>1.0.4</version>
+  <version>2.0.0</version>
 </dependency>
 ```
 
