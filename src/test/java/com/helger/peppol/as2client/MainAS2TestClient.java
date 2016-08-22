@@ -161,13 +161,14 @@ public final class MainAS2TestClient
       aSML = ESML.DIGIT_TEST;
       sTestFilename = "xml/as2-order.xml";
     }
-    if (false)
+    if (true)
     {
       // BRZ test endpoint
       aReceiver = PeppolParticipantIdentifier.createWithDefaultScheme ("9915:test");
       sTestFilename = "xml/as2-test-at-gov.xml";
+      aValidationKey = null;
     }
-    if (true)
+    if (false)
     {
       // localhost test endpoint
       aReceiver = PeppolParticipantIdentifier.createWithDefaultScheme ("9915:test");
