@@ -161,7 +161,7 @@ public final class MainAS2TestClient
       aSML = ESML.DIGIT_TEST;
       sTestFilename = "xml/as2-order.xml";
     }
-    if (true)
+    if (false)
     {
       // BRZ test endpoint
       aReceiver = PeppolParticipantIdentifier.createWithDefaultScheme ("9915:test");
@@ -204,6 +204,14 @@ public final class MainAS2TestClient
     {
       // ESPAP test endpoint
       aReceiver = PeppolParticipantIdentifier.createWithDefaultScheme ("9946:espap");
+      sTestFilename = "xml/as2-test-at-gov.xml";
+      aSML = ESML.DIGIT_TEST;
+      aValidationKey = null;
+    }
+    if (true)
+    {
+      // ecosio test endpoint
+      aReceiver = PeppolParticipantIdentifier.createWithDefaultScheme ("0088:ecosio");
       sTestFilename = "xml/as2-test-at-gov.xml";
       aSML = ESML.DIGIT_TEST;
       aValidationKey = null;
