@@ -168,7 +168,7 @@ public final class MainAS2TestClient
       sTestFilename = "xml/as2-test-at-gov.xml";
       aValidationKey = null;
     }
-    if (false)
+    if (true)
     {
       // localhost test endpoint
       aReceiver = PeppolParticipantIdentifier.createWithDefaultScheme ("9915:test");
@@ -192,7 +192,7 @@ public final class MainAS2TestClient
     }
     if (false)
     {
-      // localhost test redirect
+      // localhost test redirect with test SMP on localhost:90
       aReceiver = PeppolParticipantIdentifier.createWithDefaultScheme ("9915:test");
       sTestFilename = "xml/as2-test-at-gov.xml";
       aSMPURI = URLHelper.getAsURI ("http://127.0.0.1:90");
@@ -208,7 +208,7 @@ public final class MainAS2TestClient
       aSML = ESML.DIGIT_TEST;
       aValidationKey = null;
     }
-    if (true)
+    if (false)
     {
       // ecosio test endpoint
       aReceiver = PeppolParticipantIdentifier.createWithDefaultScheme ("0088:ecosio");
@@ -217,7 +217,7 @@ public final class MainAS2TestClient
       aValidationKey = null;
     }
 
-    if (aTestResource == null)
+    if (aTestResource == null && sTestFilename != null)
       aTestResource = new ClassPathResource (sTestFilename);
 
     final SMPClientReadOnly aSMPClient = aSMPURI != null ? new SMPClientReadOnly (aSMPURI)
