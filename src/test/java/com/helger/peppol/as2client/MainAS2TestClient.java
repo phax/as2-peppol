@@ -99,7 +99,7 @@ public final class MainAS2TestClient
     String sReceiverKeyAlias = null;
     String sReceiverAddress = null;
     ISMLInfo aSML = ESML.DIGIT_PRODUCTION;
-    ValidationKey aValidationKey = PeppolValidationKeys.INVOICE_04_T10;
+    final ValidationKey aValidationKey = true ? null : PeppolValidationKeys.INVOICE_04_T10;
     URI aSMPURI = null;
 
     HttpHost aProxy = null;
@@ -161,14 +161,13 @@ public final class MainAS2TestClient
       aSML = ESML.DIGIT_TEST;
       sTestFilename = "xml/as2-order.xml";
     }
-    if (false)
+    if (true)
     {
       // BRZ test endpoint
       aReceiver = PeppolParticipantIdentifier.createWithDefaultScheme ("9915:test");
       sTestFilename = "xml/as2-test-at-gov.xml";
-      aValidationKey = null;
     }
-    if (true)
+    if (false)
     {
       // localhost test endpoint
       aReceiver = PeppolParticipantIdentifier.createWithDefaultScheme ("9915:test");
@@ -177,7 +176,6 @@ public final class MainAS2TestClient
       sReceiverAddress = "http://localhost:8080/as2";
       sReceiverID = SENDER_AS2_ID;
       sReceiverKeyAlias = SENDER_KEY_ALIAS;
-      aValidationKey = null;
     }
     if (false)
     {
@@ -188,7 +186,6 @@ public final class MainAS2TestClient
       sReceiverAddress = "http://localhost:8080/as2";
       sReceiverID = SENDER_AS2_ID;
       sReceiverKeyAlias = SENDER_KEY_ALIAS;
-      aValidationKey = null;
     }
     if (false)
     {
@@ -198,7 +195,6 @@ public final class MainAS2TestClient
       aSMPURI = URLHelper.getAsURI ("http://127.0.0.1:90");
       aDocTypeID = PeppolDocumentTypeIdentifier.createWithDefaultScheme ("urn:oasis:names:specification:ubl:schema:xsd:CreditNote-2::CreditNote##urn:www.cenbii.eu:transaction:biitrns014:ver2.0:extended:urn:www.peppol.eu:bis:peppol5a:ver2.0:extended:urn:www.erechnung.gv.at:ver1.0::2.1");
       aProcessID = PeppolProcessIdentifier.createWithDefaultScheme ("urn:www.cenbii.eu:profile:bii05:ver2.0");
-      aValidationKey = null;
     }
     if (false)
     {
@@ -206,7 +202,6 @@ public final class MainAS2TestClient
       aReceiver = PeppolParticipantIdentifier.createWithDefaultScheme ("9946:espap");
       sTestFilename = "xml/as2-test-at-gov.xml";
       aSML = ESML.DIGIT_TEST;
-      aValidationKey = null;
     }
     if (false)
     {
@@ -214,7 +209,6 @@ public final class MainAS2TestClient
       aReceiver = PeppolParticipantIdentifier.createWithDefaultScheme ("0088:ecosio");
       sTestFilename = "xml/as2-test-at-gov.xml";
       aSML = ESML.DIGIT_TEST;
-      aValidationKey = null;
     }
 
     if (aTestResource == null && sTestFilename != null)
