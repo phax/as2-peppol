@@ -161,6 +161,20 @@ public final class MainAS2TestClient
       aSML = ESML.DIGIT_TEST;
       sTestFilename = "xml/as2-order.xml";
     }
+    if (false)
+    {
+      // ESPAP test endpoint
+      aReceiver = PeppolParticipantIdentifier.createWithDefaultScheme ("9946:espap");
+      sTestFilename = "xml/as2-test-at-gov.xml";
+      aSML = ESML.DIGIT_TEST;
+    }
+    if (false)
+    {
+      // ecosio test endpoint
+      aReceiver = PeppolParticipantIdentifier.createWithDefaultScheme ("0088:ecosio");
+      sTestFilename = "xml/as2-test-at-gov.xml";
+      aSML = ESML.DIGIT_TEST;
+    }
     if (true)
     {
       // BRZ test endpoint
@@ -195,20 +209,6 @@ public final class MainAS2TestClient
       aSMPURI = URLHelper.getAsURI ("http://127.0.0.1:90");
       aDocTypeID = PeppolDocumentTypeIdentifier.createWithDefaultScheme ("urn:oasis:names:specification:ubl:schema:xsd:CreditNote-2::CreditNote##urn:www.cenbii.eu:transaction:biitrns014:ver2.0:extended:urn:www.peppol.eu:bis:peppol5a:ver2.0:extended:urn:www.erechnung.gv.at:ver1.0::2.1");
       aProcessID = PeppolProcessIdentifier.createWithDefaultScheme ("urn:www.cenbii.eu:profile:bii05:ver2.0");
-    }
-    if (false)
-    {
-      // ESPAP test endpoint
-      aReceiver = PeppolParticipantIdentifier.createWithDefaultScheme ("9946:espap");
-      sTestFilename = "xml/as2-test-at-gov.xml";
-      aSML = ESML.DIGIT_TEST;
-    }
-    if (false)
-    {
-      // ecosio test endpoint
-      aReceiver = PeppolParticipantIdentifier.createWithDefaultScheme ("0088:ecosio");
-      sTestFilename = "xml/as2-test-at-gov.xml";
-      aSML = ESML.DIGIT_TEST;
     }
 
     if (aTestResource == null && sTestFilename != null)
