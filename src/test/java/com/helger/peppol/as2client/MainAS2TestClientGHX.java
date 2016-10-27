@@ -28,12 +28,11 @@ import com.helger.as2lib.client.AS2ClientResponse;
 import com.helger.as2lib.crypto.ECryptoAlgorithmSign;
 import com.helger.commons.debug.GlobalDebug;
 import com.helger.commons.io.resource.ClassPathResource;
+import com.helger.peppol.identifier.factory.IIdentifierFactory;
+import com.helger.peppol.identifier.factory.PeppolIdentifierFactory;
 import com.helger.peppol.identifier.generic.doctype.IDocumentTypeIdentifier;
 import com.helger.peppol.identifier.generic.participant.IParticipantIdentifier;
 import com.helger.peppol.identifier.generic.process.IProcessIdentifier;
-import com.helger.peppol.identifier.peppol.doctype.PeppolDocumentTypeIdentifier;
-import com.helger.peppol.identifier.peppol.participant.PeppolParticipantIdentifier;
-import com.helger.peppol.identifier.peppol.process.PeppolProcessIdentifier;
 import com.helger.peppol.smpclient.SMPClientConfiguration;
 import com.helger.peppol.smpclient.SMPClientReadOnly;
 import com.helger.peppol.validation.engine.peppol.PeppolValidationKeys;
@@ -55,12 +54,13 @@ public final class MainAS2TestClientGHX
   private static final String SENDER_EMAIL = "peppol@example.org";
   /** Your AS2 key alias in the PKCS12 key store */
   private static final String SENDER_KEY_ALIAS = "APP_1000000004";
+  private static final IIdentifierFactory IF = PeppolIdentifierFactory.INSTANCE;
   /** The PEPPOL sender participant ID */
-  private static final IParticipantIdentifier SENDER_PEPPOL_ID = PeppolParticipantIdentifier.createWithDefaultScheme ("9999:test-sender");
+  private static final IParticipantIdentifier SENDER_PEPPOL_ID = IF.createParticipantIdentifierWithDefaultScheme ("9999:test-sender");
   /** The PEPPOL document type to use. */
-  private static final IDocumentTypeIdentifier DOCTYPE = PeppolDocumentTypeIdentifier.createWithDefaultScheme ("abc");
+  private static final IDocumentTypeIdentifier DOCTYPE = IF.createDocumentTypeIdentifierWithDefaultScheme ("abc");
   /** The PEPPOL process to use. */
-  private static final IProcessIdentifier PROCESS = PeppolProcessIdentifier.createWithDefaultScheme ("123");
+  private static final IProcessIdentifier PROCESS = IF.createProcessIdentifierWithDefaultScheme ("123");
 
   private static final Logger s_aLogger = LoggerFactory.getLogger (MainAS2TestClientGHX.class);
 
@@ -83,7 +83,7 @@ public final class MainAS2TestClientGHX
     String sReceiverAddress = null;
 
     // localhost test endpoint
-    final IParticipantIdentifier aReceiver = PeppolParticipantIdentifier.createWithDefaultScheme ("9915:test");
+    final IParticipantIdentifier aReceiver = IF.createParticipantIdentifierWithDefaultScheme ("9915:test");
     final String sTestFilename = "xml/as2-test-at-gov.xml";
 
     if (true)

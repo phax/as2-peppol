@@ -32,14 +32,13 @@ import com.helger.commons.io.resource.ClassPathResource;
 import com.helger.commons.io.resource.IReadableResource;
 import com.helger.commons.io.resource.wrapped.GZIPReadableResource;
 import com.helger.commons.url.URLHelper;
+import com.helger.peppol.identifier.factory.IIdentifierFactory;
+import com.helger.peppol.identifier.factory.PeppolIdentifierFactory;
 import com.helger.peppol.identifier.generic.doctype.IDocumentTypeIdentifier;
 import com.helger.peppol.identifier.generic.participant.IParticipantIdentifier;
 import com.helger.peppol.identifier.generic.process.IProcessIdentifier;
 import com.helger.peppol.identifier.peppol.doctype.EPredefinedDocumentTypeIdentifier;
-import com.helger.peppol.identifier.peppol.doctype.PeppolDocumentTypeIdentifier;
-import com.helger.peppol.identifier.peppol.participant.PeppolParticipantIdentifier;
 import com.helger.peppol.identifier.peppol.process.EPredefinedProcessIdentifier;
-import com.helger.peppol.identifier.peppol.process.PeppolProcessIdentifier;
 import com.helger.peppol.sml.ESML;
 import com.helger.peppol.sml.ISMLInfo;
 import com.helger.peppol.smpclient.SMPClientConfiguration;
@@ -67,9 +66,10 @@ public final class MainAS2TestClient
   private static final String SENDER_EMAIL = "peppol@example.org";
   /** Your AS2 key alias in the PKCS12 key store */
   private static final String SENDER_KEY_ALIAS = SENDER_AS2_ID;
-  /** The PEPPOL sender participant ID */
-  private static final IParticipantIdentifier SENDER_PEPPOL_ID = PeppolParticipantIdentifier.createWithDefaultScheme ("9999:test-sender");
+  private static final IIdentifierFactory IF = PeppolIdentifierFactory.INSTANCE;
   private static final IPeppolURLProvider URL_PROVIDER = PeppolURLProvider.INSTANCE;
+  /** The PEPPOL sender participant ID */
+  private static final IParticipantIdentifier SENDER_PEPPOL_ID = IF.createParticipantIdentifierWithDefaultScheme ("9999:test-sender");
 
   private static final Logger s_aLogger = LoggerFactory.getLogger (MainAS2TestClient.class);
 
@@ -111,31 +111,31 @@ public final class MainAS2TestClient
     if (false)
     {
       // mysupply test client
-      aReceiver = PeppolParticipantIdentifier.createWithDefaultScheme ("0088:5798009883995");
+      aReceiver = IF.createParticipantIdentifierWithDefaultScheme ("0088:5798009883995");
       sTestFilename = "xml/as2-mysupply_TEST_NO.xml";
     }
     if (false)
     {
       // DIFI test endpoint
-      aReceiver = PeppolParticipantIdentifier.createWithDefaultScheme ("9908:810418052");
+      aReceiver = IF.createParticipantIdentifierWithDefaultScheme ("9908:810418052");
       sTestFilename = "xml/as2-pagero.xml";
     }
     if (false)
     {
       // Pagero test participant 9908:222222222
-      aReceiver = PeppolParticipantIdentifier.createWithDefaultScheme ("9908:222222222");
+      aReceiver = IF.createParticipantIdentifierWithDefaultScheme ("9908:222222222");
       sTestFilename = "xml/as2-pagero.xml";
     }
     if (false)
     {
       // Unit4 test participant 9908:810017902
-      aReceiver = PeppolParticipantIdentifier.createWithDefaultScheme ("9908:810017902");
+      aReceiver = IF.createParticipantIdentifierWithDefaultScheme ("9908:810017902");
       sTestFilename = "xml/as2-pagero.xml";
     }
     if (false)
     {
       // Unit4 debug test endpoint
-      aReceiver = PeppolParticipantIdentifier.createWithDefaultScheme ("9908:810017902");
+      aReceiver = IF.createParticipantIdentifierWithDefaultScheme ("9908:810017902");
       sTestFilename = "xml/as2-pagero.xml";
       // Override since not in SMP
       sReceiverAddress = "https://ap-test.unit4.com/oxalis/as2";
@@ -143,48 +143,48 @@ public final class MainAS2TestClient
     if (false)
     {
       // DERWID test endpoint
-      aReceiver = PeppolParticipantIdentifier.createWithDefaultScheme ("9914:atu66313919");
+      aReceiver = IF.createParticipantIdentifierWithDefaultScheme ("9914:atu66313919");
       sTestFilename = "xml/as2-test-at-gov.xml";
     }
     if (false)
     {
       // TESISQUARE test endpoint
-      aReceiver = PeppolParticipantIdentifier.createWithDefaultScheme ("0088:0000000000003");
+      aReceiver = IF.createParticipantIdentifierWithDefaultScheme ("0088:0000000000003");
       sTestFilename = "xml/as2-tesisquare_test_file_noheader.xml";
     }
     if (false)
     {
       // CONSIP test endpoint
-      aReceiver = PeppolParticipantIdentifier.createWithDefaultScheme ("9907:consiptestap2");
-      aDocTypeID = PeppolDocumentTypeIdentifier.createWithDefaultScheme ("urn:oasis:names:specification:ubl:schema:xsd:Order-2::Order##urn:www.cenbii.eu:transaction:biitrns001:ver2.0:extended:urn:www.peppol.eu:bis:peppol3a:ver2.0::2.1");
-      aProcessID = PeppolProcessIdentifier.createWithDefaultScheme ("urn:www.cenbii.eu:profile:bii03:ver2.0");
+      aReceiver = IF.createParticipantIdentifierWithDefaultScheme ("9907:consiptestap2");
+      aDocTypeID = IF.createDocumentTypeIdentifierWithDefaultScheme ("urn:oasis:names:specification:ubl:schema:xsd:Order-2::Order##urn:www.cenbii.eu:transaction:biitrns001:ver2.0:extended:urn:www.peppol.eu:bis:peppol3a:ver2.0::2.1");
+      aProcessID = IF.createProcessIdentifierWithDefaultScheme ("urn:www.cenbii.eu:profile:bii03:ver2.0");
       aSML = ESML.DIGIT_TEST;
       sTestFilename = "xml/as2-order.xml";
     }
     if (false)
     {
       // ESPAP test endpoint
-      aReceiver = PeppolParticipantIdentifier.createWithDefaultScheme ("9946:espap");
+      aReceiver = IF.createParticipantIdentifierWithDefaultScheme ("9946:espap");
       sTestFilename = "xml/as2-test-at-gov.xml";
       aSML = ESML.DIGIT_TEST;
     }
     if (false)
     {
       // ecosio test endpoint
-      aReceiver = PeppolParticipantIdentifier.createWithDefaultScheme ("0088:ecosio");
+      aReceiver = IF.createParticipantIdentifierWithDefaultScheme ("0088:ecosio");
       sTestFilename = "xml/as2-test-at-gov.xml";
       aSML = ESML.DIGIT_TEST;
     }
     if (true)
     {
       // BRZ test endpoint
-      aReceiver = PeppolParticipantIdentifier.createWithDefaultScheme ("9915:test");
+      aReceiver = IF.createParticipantIdentifierWithDefaultScheme ("9915:test");
       sTestFilename = "xml/as2-test-at-gov.xml";
     }
     if (false)
     {
       // localhost test endpoint
-      aReceiver = PeppolParticipantIdentifier.createWithDefaultScheme ("9915:test");
+      aReceiver = IF.createParticipantIdentifierWithDefaultScheme ("9915:test");
       sTestFilename = "xml/as2-test-at-gov.xml";
       // Avoid SMP lookup
       sReceiverAddress = "http://localhost:8080/as2";
@@ -194,7 +194,7 @@ public final class MainAS2TestClient
     if (false)
     {
       // localhost test endpoint with 2 GB file
-      aReceiver = PeppolParticipantIdentifier.createWithDefaultScheme ("9915:test");
+      aReceiver = IF.createParticipantIdentifierWithDefaultScheme ("9915:test");
       aTestResource = new GZIPReadableResource (new ClassPathResource ("xml/as2-test-at-gov-2gb.gz"));
       // Avoid SMP lookup
       sReceiverAddress = "http://localhost:8080/as2";
@@ -204,11 +204,11 @@ public final class MainAS2TestClient
     if (false)
     {
       // localhost test redirect with test SMP on localhost:90
-      aReceiver = PeppolParticipantIdentifier.createWithDefaultScheme ("9915:test");
+      aReceiver = IF.createParticipantIdentifierWithDefaultScheme ("9915:test");
       sTestFilename = "xml/as2-test-at-gov.xml";
       aSMPURI = URLHelper.getAsURI ("http://127.0.0.1:90");
-      aDocTypeID = PeppolDocumentTypeIdentifier.createWithDefaultScheme ("urn:oasis:names:specification:ubl:schema:xsd:CreditNote-2::CreditNote##urn:www.cenbii.eu:transaction:biitrns014:ver2.0:extended:urn:www.peppol.eu:bis:peppol5a:ver2.0:extended:urn:www.erechnung.gv.at:ver1.0::2.1");
-      aProcessID = PeppolProcessIdentifier.createWithDefaultScheme ("urn:www.cenbii.eu:profile:bii05:ver2.0");
+      aDocTypeID = IF.createDocumentTypeIdentifierWithDefaultScheme ("urn:oasis:names:specification:ubl:schema:xsd:CreditNote-2::CreditNote##urn:www.cenbii.eu:transaction:biitrns014:ver2.0:extended:urn:www.peppol.eu:bis:peppol5a:ver2.0:extended:urn:www.erechnung.gv.at:ver1.0::2.1");
+      aProcessID = IF.createProcessIdentifierWithDefaultScheme ("urn:www.cenbii.eu:profile:bii05:ver2.0");
     }
 
     if (aTestResource == null && sTestFilename != null)
