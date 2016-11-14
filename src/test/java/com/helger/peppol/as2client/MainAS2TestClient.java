@@ -175,13 +175,14 @@ public final class MainAS2TestClient
       sTestFilename = "xml/as2-test-at-gov.xml";
       aSML = ESML.DIGIT_TEST;
     }
-    if (true)
+    if (false)
     {
       // BRZ test endpoint
       aReceiver = IF.createParticipantIdentifierWithDefaultScheme ("9915:test");
       sTestFilename = "xml/as2-test-at-gov.xml";
+      aSML = ESML.DIGIT_TEST;
     }
-    if (false)
+    if (true)
     {
       // localhost test endpoint
       aReceiver = IF.createParticipantIdentifierWithDefaultScheme ("9915:test");
@@ -190,6 +191,7 @@ public final class MainAS2TestClient
       sReceiverAddress = "http://localhost:8080/as2";
       sReceiverID = SENDER_AS2_ID;
       sReceiverKeyAlias = SENDER_KEY_ALIAS;
+      aSML = ESML.DIGIT_TEST;
     }
     if (false)
     {
@@ -200,6 +202,7 @@ public final class MainAS2TestClient
       sReceiverAddress = "http://localhost:8080/as2";
       sReceiverID = SENDER_AS2_ID;
       sReceiverKeyAlias = SENDER_KEY_ALIAS;
+      aSML = ESML.DIGIT_TEST;
     }
     if (false)
     {
