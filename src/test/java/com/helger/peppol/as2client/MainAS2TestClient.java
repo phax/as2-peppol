@@ -85,7 +85,7 @@ public final class MainAS2TestClient
     GlobalDebug.setDebugModeDirect (false);
   }
 
-  @SuppressWarnings ("null")
+  @SuppressWarnings ({ "null", "deprecation" })
   public static void main (final String [] args) throws Exception
   {
     /** The PEPPOL document type to use. */
@@ -101,6 +101,7 @@ public final class MainAS2TestClient
     ISMLInfo aSML = ESML.DIGIT_PRODUCTION;
     final ValidationKey aValidationKey = true ? null : PeppolValidationKeys.INVOICE_04_T10;
     URI aSMPURI = null;
+    ECryptoAlgorithmSign eMICAlg = ECryptoAlgorithmSign.DIGEST_SHA_1;
 
     HttpHost aProxy = null;
     final String sProxyHost = SMPClientConfiguration.getConfigFile ().getAsString ("http.proxyHost");
@@ -213,11 +214,17 @@ public final class MainAS2TestClient
       aDocTypeID = IF.createDocumentTypeIdentifierWithDefaultScheme ("urn:oasis:names:specification:ubl:schema:xsd:CreditNote-2::CreditNote##urn:www.cenbii.eu:transaction:biitrns014:ver2.0:extended:urn:www.peppol.eu:bis:peppol5a:ver2.0:extended:urn:www.erechnung.gv.at:ver1.0::2.1");
       aProcessID = IF.createProcessIdentifierWithDefaultScheme ("urn:www.cenbii.eu:profile:bii05:ver2.0");
     }
-    if (true)
+    if (false)
     {
       aReceiver = IF.createParticipantIdentifierWithDefaultScheme ("9925:0883663268");
       sTestFilename = "xml/as2-test-at-gov.xml";
       aSML = ESML.DIGIT_TEST;
+    }
+    if (true)
+    {
+      aReceiver = IF.createParticipantIdentifierWithDefaultScheme ("0007:5560760737");
+      sTestFilename = "xml/as2-test_logiq_stanley.xml";
+      eMICAlg = ECryptoAlgorithmSign.DIGEST_SHA1;
     }
 
     if (aTestResource == null && sTestFilename != null)
@@ -245,7 +252,7 @@ public final class MainAS2TestClient
                                                                  .setReceiverAS2ID (sReceiverID)
                                                                  .setReceiverAS2KeyAlias (sReceiverKeyAlias)
                                                                  .setReceiverAS2Url (sReceiverAddress)
-                                                                 .setAS2SigningAlgorithm (ECryptoAlgorithmSign.DIGEST_SHA_1)
+                                                                 .setAS2SigningAlgorithm (eMICAlg)
                                                                  .setBusinessDocument (aTestResource)
                                                                  .setPeppolSenderID (SENDER_PEPPOL_ID)
                                                                  .setPeppolReceiverID (aReceiver)
