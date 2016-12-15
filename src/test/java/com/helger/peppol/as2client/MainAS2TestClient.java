@@ -102,12 +102,7 @@ public final class MainAS2TestClient
     final ValidationKey aValidationKey = true ? null : PeppolValidationKeys.INVOICE_04_T10;
     URI aSMPURI = null;
     ECryptoAlgorithmSign eMICAlg = ECryptoAlgorithmSign.DIGEST_SHA_1;
-
-    HttpHost aProxy = null;
-    final String sProxyHost = SMPClientConfiguration.getConfigFile ().getAsString ("http.proxyHost");
-    final int nProxyPort = SMPClientConfiguration.getConfigFile ().getAsInt ("http.proxyPort", 0);
-    if (sProxyHost != null && nProxyPort > 0)
-      aProxy = new HttpHost (sProxyHost, nProxyPort);
+    final HttpHost aProxy = SMPClientConfiguration.getHttpProxy ();
 
     if (false)
     {
