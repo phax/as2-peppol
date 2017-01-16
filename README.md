@@ -15,6 +15,9 @@ This project is licensed under the Apache 2 License.
 
 #News
 
+  * v2.0.1 - 2017-01-16
+    * Just a new release with no new features
+    * Binds to ph-commons 8.6.x
   * v2.0.0 - 2016-08-22
     * Updated to JDK 8
 
