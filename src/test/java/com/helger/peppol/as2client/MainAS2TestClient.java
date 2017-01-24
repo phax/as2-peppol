@@ -85,7 +85,7 @@ public final class MainAS2TestClient
     GlobalDebug.setDebugModeDirect (false);
   }
 
-  @SuppressWarnings ({ "null", "deprecation" })
+  @SuppressWarnings ("null")
   public static void main (final String [] args) throws Exception
   {
     /** The PEPPOL document type to use. */

@@ -18,10 +18,10 @@
   <cbc:CustomizationID>urn:www.cenbii.eu:transaction:biicoretrdm010:ver1.0</cbc:CustomizationID>
   <cbc:ProfileID>urn:www.cenbii.eu:profile:bii04:ver1.0</cbc:ProfileID>
   <cbc:ID>as2-peppol-client-demo AT</cbc:ID>
-  <cbc:IssueDate>2016-01-15</cbc:IssueDate>
+  <cbc:IssueDate>2017-01-15</cbc:IssueDate>
   <cbc:InvoiceTypeCode listAgencyID="6" listID="UN/ECE 1001 Subset">380</cbc:InvoiceTypeCode>
   <cbc:Note languageID="en">Ordered in our booth at the convention.</cbc:Note>
-  <cbc:TaxPointDate>2016-11-30</cbc:TaxPointDate>
+  <cbc:TaxPointDate>2017-11-30</cbc:TaxPointDate>
   <cbc:DocumentCurrencyCode listAgencyID="6" listID="ISO 4217 Alpha">EUR</cbc:DocumentCurrencyCode>
   <cbc:AccountingCost>Project cost code 123</cbc:AccountingCost>
   <cac:InvoicePeriod>
@@ -156,7 +156,7 @@
     </cac:PartyLegalEntity>
   </cac:PayeeParty>
   <cac:Delivery>
-    <cbc:ActualDeliveryDate>2016-12-15</cbc:ActualDeliveryDate>
+    <cbc:ActualDeliveryDate>2017-12-15</cbc:ActualDeliveryDate>
     <cac:DeliveryLocation>
       <cbc:ID schemeAgencyID="9" schemeID="GLN">6291041500213</cbc:ID>
       <cac:Address>
@@ -179,7 +179,7 @@
   </cac:Delivery>
   <cac:PaymentMeans>
     <cbc:PaymentMeansCode listAgencyID="NES" listID="UN/ECE 4461 Subset">49</cbc:PaymentMeansCode>
-    <cbc:PaymentDueDate>2016-12-31</cbc:PaymentDueDate>
+    <cbc:PaymentDueDate>2017-12-31</cbc:PaymentDueDate>
     <cbc:PaymentChannelCode>SW</cbc:PaymentChannelCode>
     <cbc:PaymentID>Payref1</cbc:PaymentID>
     <cac:PayeeFinancialAccount>
