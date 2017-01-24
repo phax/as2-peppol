@@ -110,7 +110,7 @@
         <cbc:PostalZone>101</cbc:PostalZone>
         <cbc:CountrySubentity>RegionB</cbc:CountrySubentity>
         <cac:Country>
-          <cbc:IdentificationCode listAgencyID="6" listID="ISO3166-1">BE</cbc:IdentificationCode>
+          <cbc:IdentificationCode listAgencyID="6" listID="ISO3166-1">AT</cbc:IdentificationCode>
         </cac:Country>
       </cac:PostalAddress>
       <cac:PartyTaxScheme>
