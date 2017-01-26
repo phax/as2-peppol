@@ -27,6 +27,9 @@ import org.slf4j.LoggerFactory;
 
 import com.helger.as2lib.client.AS2ClientResponse;
 import com.helger.as2lib.crypto.ECryptoAlgorithmSign;
+import com.helger.bdve.executorset.VESID;
+import com.helger.bdve.peppol.PeppolValidation330;
+import com.helger.bdve.result.ValidationResult;
 import com.helger.commons.debug.GlobalDebug;
 import com.helger.commons.io.resource.ClassPathResource;
 import com.helger.commons.io.resource.IReadableResource;
@@ -44,9 +47,6 @@ import com.helger.peppol.smpclient.SMPClientConfiguration;
 import com.helger.peppol.smpclient.SMPClientReadOnly;
 import com.helger.peppol.url.IPeppolURLProvider;
 import com.helger.peppol.url.PeppolURLProvider;
-import com.helger.peppol.validation.api.ValidationKey;
-import com.helger.peppol.validation.api.result.ValidationLayerResult;
-import com.helger.peppol.validation.engine.peppol.PeppolValidationKeys;
 
 /**
  * Main class to send AS2 messages.
@@ -98,7 +98,7 @@ public final class MainAS2TestClientMultipleLocalHost
     String sReceiverKeyAlias = null;
     String sReceiverAddress = null;
     ISMLInfo aSML = ESML.DIGIT_PRODUCTION;
-    final ValidationKey aValidationKey = true ? null : PeppolValidationKeys.INVOICE_04_T10;
+    final VESID aValidationKey = true ? null : PeppolValidation330.VID_OPENPEPPOL_T10_V2;
     final URI aSMPURI = null;
     final ECryptoAlgorithmSign eMICAlg = ECryptoAlgorithmSign.DIGEST_SHA_1;
     final HttpHost aProxy = SMPClientConfiguration.getHttpProxy ();
@@ -158,11 +158,11 @@ public final class MainAS2TestClientMultipleLocalHost
       }
       catch (final AS2ClientBuilderValidationException ex)
       {
-        for (final ValidationLayerResult aVLR : ex.getValidationResult ())
-          if (aVLR.isFailure ())
-            s_aLogger.error (aVLR.toString ());
+        for (final ValidationResult aVR : ex.getValidationResult ())
+          if (aVR.isFailure ())
+            s_aLogger.error (aVR.toString ());
           else
-            s_aLogger.info (aVLR.toString ());
+            s_aLogger.info (aVR.toString ());
       }
       catch (final AS2ClientBuilderException ex)
       {

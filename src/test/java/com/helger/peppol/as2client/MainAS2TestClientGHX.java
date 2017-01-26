@@ -26,6 +26,7 @@ import org.slf4j.LoggerFactory;
 
 import com.helger.as2lib.client.AS2ClientResponse;
 import com.helger.as2lib.crypto.ECryptoAlgorithmSign;
+import com.helger.bdve.peppol.PeppolValidation330;
 import com.helger.commons.debug.GlobalDebug;
 import com.helger.commons.io.resource.ClassPathResource;
 import com.helger.peppol.identifier.factory.IIdentifierFactory;
@@ -35,7 +36,6 @@ import com.helger.peppol.identifier.generic.participant.IParticipantIdentifier;
 import com.helger.peppol.identifier.generic.process.IProcessIdentifier;
 import com.helger.peppol.smpclient.SMPClientConfiguration;
 import com.helger.peppol.smpclient.SMPClientReadOnly;
-import com.helger.peppol.validation.engine.peppol.PeppolValidationKeys;
 
 /**
  * Main class to send AS2 messages.
@@ -109,7 +109,7 @@ public final class MainAS2TestClientGHX
                                                                .setPeppolReceiverID (aReceiver)
                                                                .setPeppolDocumentTypeID (DOCTYPE)
                                                                .setPeppolProcessID (PROCESS)
-                                                               .setValidationKey (PeppolValidationKeys.INVOICE_04_T10)
+                                                               .setValidationKey (PeppolValidation330.VID_OPENPEPPOL_T10_V2)
                                                                .sendSynchronous ();
     if (aResponse.hasException ())
       s_aLogger.warn (aResponse.getAsString ());

@@ -34,7 +34,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.OverridingMethodsMustInvokeSuper;
 import javax.annotation.concurrent.NotThreadSafe;
-import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
 import org.slf4j.Logger;
@@ -51,6 +50,12 @@ import com.helger.as2lib.client.AS2ClientResponse;
 import com.helger.as2lib.client.AS2ClientSettings;
 import com.helger.as2lib.crypto.ECryptoAlgorithmSign;
 import com.helger.as2lib.disposition.DispositionOptions;
+import com.helger.bdve.executorset.IValidationExecutorSet;
+import com.helger.bdve.executorset.VESID;
+import com.helger.bdve.executorset.ValidationExecutorSetRegistry;
+import com.helger.bdve.peppol.PeppolValidation;
+import com.helger.bdve.result.ValidationResultList;
+import com.helger.bdve.source.ValidationSource;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.OverrideOnDemand;
 import com.helger.commons.charset.CCharset;
@@ -81,10 +86,6 @@ import com.helger.peppol.smp.SignedServiceMetadataType;
 import com.helger.peppol.smpclient.SMPClientReadOnly;
 import com.helger.peppol.smpclient.exception.SMPClientException;
 import com.helger.peppol.smpclient.exception.SMPClientNotFoundException;
-import com.helger.peppol.validation.api.ValidationKey;
-import com.helger.peppol.validation.api.result.ValidationLayerResultList;
-import com.helger.peppol.validation.engine.UBLDocumentValidator;
-import com.helger.peppol.validation.engine.peppol.PeppolValidationConfiguration;
 import com.helger.sbdh.SBDMarshaller;
 import com.helger.xml.serialize.read.DOMReader;
 
@@ -130,7 +131,7 @@ public class AS2ClientBuilder
   private IParticipantIdentifier m_aPeppolReceiverID;
   private IDocumentTypeIdentifier m_aPeppolDocumentTypeID;
   private IProcessIdentifier m_aPeppolProcessID;
-  private ValidationKey m_aValidationKey;
+  private VESID m_aVESID;
   private SMPClientReadOnly m_aSMPClient;
   private IFactory <AS2Client> m_aAS2ClientFactory = FactoryNewInstance.create (AS2Client.class, true);
 
@@ -438,7 +439,7 @@ public class AS2ClientBuilder
    * Set the PEPPOL sender ID. This is your PEPPOL participant ID.
    *
    * @param aPeppolSenderID
-   *        The sender PEPPOL participant ID. May not be <code>null</code>.
+   *        The sender PEPPOL participant ID. May be <code>null</code>.
    * @return this for chaining
    */
   @Nonnull
@@ -453,7 +454,7 @@ public class AS2ClientBuilder
    * recipient.
    *
    * @param aPeppolReceiverID
-   *        The receiver PEPPOL participant ID. May not be <code>null</code>.
+   *        The receiver PEPPOL participant ID. May be <code>null</code>.
    * @return this for chaining
    */
   @Nonnull
@@ -468,7 +469,7 @@ public class AS2ClientBuilder
    * document.
    *
    * @param aPeppolDocumentTypeID
-   *        The PEPPOL document type identifier. May not be <code>null</code>.
+   *        The PEPPOL document type identifier. May be <code>null</code>.
    * @return this for chaining
    */
   @Nonnull
@@ -482,7 +483,7 @@ public class AS2ClientBuilder
    * Set the PEPPOL process identifier for the exchanged business document.
    *
    * @param aPeppolProcessID
-   *        The PEPPOL process identifier. May not be <code>null</code>.
+   *        The PEPPOL process identifier. May be <code>null</code>.
    * @return this for chaining
    */
   @Nonnull
@@ -493,17 +494,17 @@ public class AS2ClientBuilder
   }
 
   /**
-   * Set the validation key to be used for validating the business document
-   * before sending.
+   * Set the validation executor set ID to be used for validating the business
+   * document before sending.
    *
-   * @param aValidationKey
-   *        The validation key to be used. May not be <code>null</code>.
+   * @param aVESID
+   *        The VESID to be used. May be <code>null</code>.
    * @return this for chaining
    */
   @Nonnull
-  public AS2ClientBuilder setValidationKey (@Nullable final ValidationKey aValidationKey)
+  public AS2ClientBuilder setValidationKey (@Nullable final VESID aVESID)
   {
-    m_aValidationKey = aValidationKey;
+    m_aVESID = aVESID;
     return this;
   }
 
@@ -855,8 +856,8 @@ public class AS2ClientBuilder
                                 m_aPeppolProcessID.getURIEncoded () +
                                 "' is using a non-standard scheme!");
 
-    if (m_aValidationKey == null)
-      m_aMessageHandler.warn ("The validation key determining the business document validation is missing. Therefore the outgoing business document is NOT validated!");
+    if (m_aVESID == null)
+      m_aMessageHandler.warn ("The validation executor set ID determining the business document validation is missing. Therefore the outgoing business document is NOT validated!");
 
     // Ensure that if a non-throwing message handler is installed, that the
     // sending is not performed!
@@ -872,15 +873,27 @@ public class AS2ClientBuilder
    *
    * @param aXML
    *        The DOM Element with the business document to be validated.
+   * @throws AS2ClientBuilderException
+   *         In case the validation executor set ID is unknown.
    * @throws AS2ClientBuilderValidationException
    *         In case validation failed.
    * @see #setValidationKey(ValidationKey)
    */
   @OverrideOnDemand
-  protected void validateOutgoingBusinessDocument (@Nonnull final Element aXML) throws AS2ClientBuilderValidationException
+  protected void validateOutgoingBusinessDocument (@Nonnull final Element aXML) throws AS2ClientBuilderException
   {
-    final UBLDocumentValidator aValidator = new UBLDocumentValidator (PeppolValidationConfiguration.createDefault (m_aValidationKey));
-    final ValidationLayerResultList aValidationResult = aValidator.applyCompleteValidation (new DOMSource (aXML));
+    final ValidationExecutorSetRegistry aVESRegistry = new ValidationExecutorSetRegistry ();
+    PeppolValidation.initStandard (aVESRegistry);
+    PeppolValidation.initThirdParty (aVESRegistry);
+
+    final IValidationExecutorSet aVES = aVESRegistry.getOfID (m_aVESID);
+    if (aVES == null)
+      throw new AS2ClientBuilderException ("The validation executor set ID " +
+                                           m_aVESID.getAsSingleID () +
+                                           " is unknown!");
+
+    final ValidationResultList aValidationResult = aVES.getExecutorManager ()
+                                                       .executeValidation (ValidationSource.create (null, aXML));
     if (aValidationResult.containsAtLeastOneError ())
       throw new AS2ClientBuilderValidationException (aValidationResult);
   }
@@ -949,7 +962,7 @@ public class AS2ClientBuilder
       throw new AS2ClientBuilderException ("No XML business content present!");
 
     // 2. validate the business document
-    if (m_aValidationKey != null)
+    if (m_aVESID != null)
       validateOutgoingBusinessDocument (aBusinessDocumentXML);
 
     // 3. build PEPPOL SBDH data
