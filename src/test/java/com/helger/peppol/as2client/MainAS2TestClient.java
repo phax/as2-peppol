@@ -171,14 +171,14 @@ public final class MainAS2TestClient
       sTestFilename = "xml/as2-test-at-gov.xml";
       aSML = ESML.DIGIT_TEST;
     }
-    if (false)
+    if (true)
     {
       // BRZ test endpoint
       aReceiver = IF.createParticipantIdentifierWithDefaultScheme ("9915:test");
       sTestFilename = "xml/as2-test-at-gov.xml";
       aSML = ESML.DIGIT_TEST;
     }
-    if (true)
+    if (false)
     {
       // localhost test endpoint
       aReceiver = IF.createParticipantIdentifierWithDefaultScheme ("9915:test");
