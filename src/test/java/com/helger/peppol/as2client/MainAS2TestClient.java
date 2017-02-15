@@ -18,6 +18,7 @@ package com.helger.peppol.as2client;
 
 import java.io.File;
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.security.Security;
 
 import org.apache.http.HttpHost;
@@ -26,14 +27,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.helger.as2lib.client.AS2ClientResponse;
+import com.helger.as2lib.client.AS2ClientSettings;
 import com.helger.as2lib.crypto.ECryptoAlgorithmSign;
+import com.helger.as2lib.util.http.HTTPHelper;
 import com.helger.bdve.executorset.VESID;
 import com.helger.bdve.peppol.PeppolValidation330;
 import com.helger.bdve.result.ValidationResult;
+import com.helger.commons.CGlobal;
 import com.helger.commons.debug.GlobalDebug;
 import com.helger.commons.io.resource.ClassPathResource;
 import com.helger.commons.io.resource.IReadableResource;
 import com.helger.commons.io.resource.wrapped.GZIPReadableResource;
+import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
 import com.helger.commons.url.URLHelper;
 import com.helger.peppol.identifier.factory.IIdentifierFactory;
 import com.helger.peppol.identifier.factory.PeppolIdentifierFactory;
@@ -103,6 +108,8 @@ public final class MainAS2TestClient
     URI aSMPURI = null;
     ECryptoAlgorithmSign eMICAlg = ECryptoAlgorithmSign.DIGEST_SHA_1;
     final HttpHost aProxy = SMPClientConfiguration.getHttpProxy ();
+    final int nConnectTimeoutMS = AS2ClientSettings.DEFAULT_CONNECT_TIMEOUT_MS;
+    int nReadTimeoutMS = AS2ClientSettings.DEFAULT_READ_TIMEOUT_MS;
 
     if (false)
     {
@@ -171,7 +178,7 @@ public final class MainAS2TestClient
       sTestFilename = "xml/as2-test-at-gov.xml";
       aSML = ESML.DIGIT_TEST;
     }
-    if (true)
+    if (false)
     {
       // BRZ test endpoint
       aReceiver = IF.createParticipantIdentifierWithDefaultScheme ("9915:test");
@@ -221,6 +228,28 @@ public final class MainAS2TestClient
       sTestFilename = "xml/as2-test_logiq_stanley.xml";
       eMICAlg = ECryptoAlgorithmSign.DIGEST_SHA1;
     }
+    if (true)
+    {
+      // Doclogistics test participant 9948:rs062525164
+      aReceiver = IF.createParticipantIdentifierWithDefaultScheme ("9948:rs062525164");
+      sTestFilename = "xml/as2-pagero.xml";
+      aSML = ESML.DIGIT_TEST;
+
+      // For debugging
+      nReadTimeoutMS = 500 * (int) CGlobal.MILLISECONDS_PER_SECOND;
+    }
+
+    NonBlockingByteArrayOutputStream aDebugOS = null;
+    if (false)
+    {
+      aDebugOS = new NonBlockingByteArrayOutputStream ();
+      HTTPHelper.setHTTPOutgoingDumper (aMsg -> aDebugOS);
+    }
+    if (false)
+      HTTPHelper.setHTTPIncomingDumper ( (aHeaderLines, aPayload, aMsg) -> {
+        s_aLogger.info ("Received Headers: " + aHeaderLines);
+        s_aLogger.info ("Received  Payload: " + new String (aPayload, StandardCharsets.UTF_8));
+      });
 
     if (aTestResource == null && sTestFilename != null)
       aTestResource = new ClassPathResource (sTestFilename);
@@ -248,6 +277,8 @@ public final class MainAS2TestClient
                                                                  .setReceiverAS2KeyAlias (sReceiverKeyAlias)
                                                                  .setReceiverAS2Url (sReceiverAddress)
                                                                  .setAS2SigningAlgorithm (eMICAlg)
+                                                                 .setConnectTimeoutMS (nConnectTimeoutMS)
+                                                                 .setReadTimeoutMS (nReadTimeoutMS)
                                                                  .setBusinessDocument (aTestResource)
                                                                  .setPeppolSenderID (SENDER_PEPPOL_ID)
                                                                  .setPeppolReceiverID (aReceiver)
@@ -257,6 +288,9 @@ public final class MainAS2TestClient
                                                                  .sendSynchronous ();
       if (aResponse.hasException ())
         s_aLogger.warn (aResponse.getAsString ());
+
+      if (aDebugOS != null)
+        s_aLogger.info ("Outgoing request:\n" + aDebugOS.getAsString (StandardCharsets.UTF_8));
 
       s_aLogger.info ("Done");
     }
