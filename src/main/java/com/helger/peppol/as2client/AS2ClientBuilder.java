@@ -125,6 +125,9 @@ public class AS2ClientBuilder
   private X509Certificate m_aReceiverCert;
   private ECryptoAlgorithmSign m_eSigningAlgo = DEFAULT_SIGNING_ALGORITHM;
   private String m_sMessageIDFormat = DEFAULT_AS2_MESSAGE_ID_FORMAT;
+  private int m_nConnectTimeoutMS = AS2ClientSettings.DEFAULT_CONNECT_TIMEOUT_MS;
+  private int m_nReadTimeoutMS = AS2ClientSettings.DEFAULT_READ_TIMEOUT_MS;
+
   private IReadableResource m_aBusinessDocumentRes;
   private Element m_aBusinessDocumentElement;
   private IParticipantIdentifier m_aPeppolSenderID;
@@ -369,6 +372,58 @@ public class AS2ClientBuilder
   {
     m_sMessageIDFormat = sMessageIDFormat;
     return this;
+  }
+
+  /**
+   * Set the connection timeout in milliseconds.
+   *
+   * @param nConnectTimeoutMS
+   *        Connect timeout milliseconds.
+   * @return this for chaining
+   * @see #getConnectTimeoutMS()
+   * @since 2.0.2
+   */
+  @Nonnull
+  public AS2ClientBuilder setConnectTimeoutMS (final int nConnectTimeoutMS)
+  {
+    m_nConnectTimeoutMS = nConnectTimeoutMS;
+    return this;
+  }
+
+  /**
+   * @return The connection timeout in milliseconds. The default value is
+   *         {@link AS2ClientSettings#DEFAULT_CONNECT_TIMEOUT_MS}.
+   * @since 2.0.2
+   */
+  public int getConnectTimeoutMS ()
+  {
+    return m_nConnectTimeoutMS;
+  }
+
+  /**
+   * Set the read timeout in milliseconds.
+   *
+   * @param nReadTimeoutMS
+   *        Read timeout milliseconds.
+   * @return this for chaining
+   * @see #getReadTimeoutMS()
+   * @since 2.0.2
+   */
+  @Nonnull
+  public AS2ClientBuilder setReadTimeoutMS (final int nReadTimeoutMS)
+  {
+    m_nReadTimeoutMS = nReadTimeoutMS;
+    return this;
+  }
+
+  /**
+   * @return The read timeout in milliseconds. The default value is
+   *         {@link AS2ClientSettings#DEFAULT_READ_TIMEOUT_MS}.
+   * @since 2.0.2
+   */
+  public int getReadTimeoutMS ()
+  {
+    return m_nReadTimeoutMS;
   }
 
   /**
@@ -996,6 +1051,9 @@ public class AS2ClientBuilder
                                                                .setProtocolImportance (DispositionOptions.IMPORTANCE_REQUIRED));
     aAS2ClientSettings.setEncryptAndSign (null, m_eSigningAlgo);
     aAS2ClientSettings.setMessageIDFormat (m_sMessageIDFormat);
+
+    aAS2ClientSettings.setConnectTimeoutMS (m_nConnectTimeoutMS);
+    aAS2ClientSettings.setReadTimeoutMS (m_nReadTimeoutMS);
 
     final AS2ClientRequest aRequest = new AS2ClientRequest (m_sAS2Subject);
 
