@@ -39,6 +39,7 @@ import com.helger.commons.io.resource.ClassPathResource;
 import com.helger.commons.io.resource.IReadableResource;
 import com.helger.commons.io.resource.wrapped.GZIPReadableResource;
 import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
+import com.helger.commons.string.StringHelper;
 import com.helger.commons.url.URLHelper;
 import com.helger.peppol.identifier.factory.IIdentifierFactory;
 import com.helger.peppol.identifier.factory.PeppolIdentifierFactory;
@@ -90,7 +91,7 @@ public final class MainAS2TestClient
     GlobalDebug.setDebugModeDirect (false);
   }
 
-  @SuppressWarnings ("null")
+  @SuppressWarnings ({ "null", "resource" })
   public static void main (final String [] args) throws Exception
   {
     /** The PEPPOL document type to use. */
@@ -235,24 +236,32 @@ public final class MainAS2TestClient
       aReceiver = IF.createParticipantIdentifierWithDefaultScheme ("9948:rs062525164");
       sTestFilename = "xml/as2-pagero.xml";
       aSML = ESML.DIGIT_TEST;
-      sReceiverAddress = "https://connect.docslogistics.net/AccessPoint/Home/Receive";
+      if (false)
+        sReceiverAddress = "https://connect.docslogistics.net/AccessPoint/Home/Receive";
 
       // For debugging
       nReadTimeoutMS = 500 * (int) CGlobal.MILLISECONDS_PER_SECOND;
     }
 
-    NonBlockingByteArrayOutputStream aDebugOS = null;
+    // Debug outgoing (AS2 message)?
+    NonBlockingByteArrayOutputStream aDebugOS;
     if (false)
     {
       aDebugOS = new NonBlockingByteArrayOutputStream ();
       HTTPHelper.setHTTPOutgoingDumper (aMsg -> aDebugOS);
     }
-    if (true)
+    else
+      aDebugOS = null;
+
+    // Debug incoming (AS2 MDN)?
+    if (false)
       HTTPHelper.setHTTPIncomingDumper ( (aHeaderLines, aPayload, aMsg) -> {
-        s_aLogger.info ("Received Headers: " + aHeaderLines);
-        s_aLogger.info ("Received  Payload: " + new String (aPayload, StandardCharsets.UTF_8));
+        s_aLogger.info ("Received Headers: " + StringHelper.getImploded ("\n  ", aHeaderLines));
+        s_aLogger.info ("Received Payload: " + new String (aPayload, StandardCharsets.UTF_8));
+        s_aLogger.info ("Received Message: " + aMsg);
       });
 
+    // Read resource by filename
     if (aTestResource == null && sTestFilename != null)
       aTestResource = new ClassPathResource (sTestFilename);
 
