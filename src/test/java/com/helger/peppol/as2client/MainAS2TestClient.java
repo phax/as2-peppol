@@ -231,9 +231,11 @@ public final class MainAS2TestClient
     if (true)
     {
       // Doclogistics test participant 9948:rs062525164
+      // or 9944:nl807881958b01
       aReceiver = IF.createParticipantIdentifierWithDefaultScheme ("9948:rs062525164");
       sTestFilename = "xml/as2-pagero.xml";
       aSML = ESML.DIGIT_TEST;
+      sReceiverAddress = "https://connect.docslogistics.net/AccessPoint/Home/Receive";
 
       // For debugging
       nReadTimeoutMS = 500 * (int) CGlobal.MILLISECONDS_PER_SECOND;
@@ -245,7 +247,7 @@ public final class MainAS2TestClient
       aDebugOS = new NonBlockingByteArrayOutputStream ();
       HTTPHelper.setHTTPOutgoingDumper (aMsg -> aDebugOS);
     }
-    if (false)
+    if (true)
       HTTPHelper.setHTTPIncomingDumper ( (aHeaderLines, aPayload, aMsg) -> {
         s_aLogger.info ("Received Headers: " + aHeaderLines);
         s_aLogger.info ("Received  Payload: " + new String (aPayload, StandardCharsets.UTF_8));
