@@ -1075,7 +1075,10 @@ public class AS2ClientBuilder
 
       final AS2Client aAS2Client = m_aAS2ClientFactory.get ();
       if (false)
+      {
+        // Local Fiddler proxy
         aAS2Client.setHttpProxy (new Proxy (Proxy.Type.HTTP, new InetSocketAddress ("127.0.0.1", 8888)));
+      }
       final AS2ClientResponse aResponse = aAS2Client.sendSynchronous (aAS2ClientSettings, aRequest);
       return aResponse;
     }

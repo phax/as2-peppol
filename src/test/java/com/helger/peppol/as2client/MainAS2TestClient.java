@@ -234,7 +234,10 @@ public final class MainAS2TestClient
       // Doclogistics test participant 9948:rs062525164
       // or 9944:nl807881958b01
       aReceiver = IF.createParticipantIdentifierWithDefaultScheme ("9948:rs062525164");
-      sTestFilename = "xml/as2-pagero.xml";
+      if (false)
+        sTestFilename = "xml/as2-pagero.xml";
+      else
+        aTestResource = new GZIPReadableResource (new ClassPathResource ("xml/as2-test-at-gov-2gb.gz"));
       aSML = ESML.DIGIT_TEST;
       if (false)
         sReceiverAddress = "https://connect.docslogistics.net/AccessPoint/Home/Receive";
