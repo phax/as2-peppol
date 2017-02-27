@@ -22,6 +22,7 @@ import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
+import java.nio.charset.StandardCharsets;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.concurrent.Callable;
@@ -58,7 +59,6 @@ import com.helger.bdve.result.ValidationResultList;
 import com.helger.bdve.source.ValidationSource;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.OverrideOnDemand;
-import com.helger.commons.charset.CCharset;
 import com.helger.commons.concurrent.ManagedExecutorService;
 import com.helger.commons.email.EmailAddressHelper;
 import com.helger.commons.factory.FactoryNewInstance;
@@ -1070,7 +1070,7 @@ public class AS2ClientBuilder
 
         // Using a String is better when having a
         // com.sun.xml.ws.encoding.XmlDataContentHandler installed!
-        aRequest.setData (aBAOS.getAsString (CCharset.CHARSET_UTF_8_OBJ), CCharset.CHARSET_UTF_8_OBJ);
+        aRequest.setData (aBAOS.getAsString (StandardCharsets.UTF_8), StandardCharsets.UTF_8);
       }
 
       final AS2Client aAS2Client = m_aAS2ClientFactory.get ();
