@@ -932,7 +932,7 @@ public class AS2ClientBuilder
    *         In case the validation executor set ID is unknown.
    * @throws AS2ClientBuilderValidationException
    *         In case validation failed.
-   * @see #setValidationKey(ValidationKey)
+   * @see #setValidationKey(VESID)
    */
   @OverrideOnDemand
   protected void validateOutgoingBusinessDocument (@Nonnull final Element aXML) throws AS2ClientBuilderException
