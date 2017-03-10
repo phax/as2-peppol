@@ -137,6 +137,7 @@ public class AS2ClientBuilder
   private VESID m_aVESID;
   private SMPClientReadOnly m_aSMPClient;
   private IFactory <AS2Client> m_aAS2ClientFactory = FactoryNewInstance.create (AS2Client.class, true);
+  private ValidationExecutorSetRegistry m_aVESRegistry;
 
   /**
    * Default constructor.
@@ -921,6 +922,27 @@ public class AS2ClientBuilder
   }
 
   /**
+   * Create a new {@link ValidationExecutorSetRegistry} to be used with this
+   * client builder. By default the {@link PeppolValidation} artefacts are
+   * contained. If additional artefacts like SimplerInvoicing or EN16931 is to
+   * be used, this method must be overwritten! This method is only called once
+   * per client to lazily initialize the respective member variable.
+   *
+   * @return The created {@link ValidationExecutorSetRegistry} and never
+   *         <code>null</code>.
+   * @since 2.0.3
+   */
+  @OverrideOnDemand
+  @Nonnull
+  protected ValidationExecutorSetRegistry createValidationRegistry ()
+  {
+    final ValidationExecutorSetRegistry aVESRegistry = new ValidationExecutorSetRegistry ();
+    PeppolValidation.initStandard (aVESRegistry);
+    PeppolValidation.initThirdParty (aVESRegistry);
+    return aVESRegistry;
+  }
+
+  /**
    * Perform the standard PEPPOL validation of the outgoing business document
    * before sending takes place. In case validation fails, an exception is
    * thrown. The validation is configured using the validation key. This method
@@ -937,11 +959,12 @@ public class AS2ClientBuilder
   @OverrideOnDemand
   protected void validateOutgoingBusinessDocument (@Nonnull final Element aXML) throws AS2ClientBuilderException
   {
-    final ValidationExecutorSetRegistry aVESRegistry = new ValidationExecutorSetRegistry ();
-    PeppolValidation.initStandard (aVESRegistry);
-    PeppolValidation.initThirdParty (aVESRegistry);
-
-    final IValidationExecutorSet aVES = aVESRegistry.getOfID (m_aVESID);
+    if (m_aVESRegistry == null)
+    {
+      // Create lazily
+      m_aVESRegistry = createValidationRegistry ();
+    }
+    final IValidationExecutorSet aVES = m_aVESRegistry.getOfID (m_aVESID);
     if (aVES == null)
       throw new AS2ClientBuilderException ("The validation executor set ID " +
                                            m_aVESID.getAsSingleID () +
