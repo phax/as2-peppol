@@ -15,8 +15,10 @@ This project is licensed under the Apache 2 License.
 
 #News
 
+  * v2.0.3 - work in progress
+    * Improved customizability of `AS2ClientBuilder`
   * v2.0.2 - 2017-03-01
-    * USing ph-bdve 3 for validation
+    * Using ph-bdve 3 for validation
   * v2.0.1 - 2017-01-16
     * Just a new release with no new features
     * Binds to ph-commons 8.6.x
