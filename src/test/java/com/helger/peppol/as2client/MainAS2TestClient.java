@@ -62,20 +62,12 @@ import com.helger.peppol.url.PeppolURLProvider;
  */
 public final class MainAS2TestClient
 {
-  /** The file path to the PKCS12 key store */
-  private static final String PKCS12_CERTSTORE_PATH = "as2-client-data/client-certs.p12";
-  /** The password to open the PKCS12 key store */
-  private static final String PKCS12_CERTSTORE_PASSWORD = "peppol";
-  /** Your AS2 sender ID */
-  private static final String SENDER_AS2_ID = "APP_1000000101";
-  /** Your AS2 sender email address */
-  private static final String SENDER_EMAIL = "peppol@example.org";
-  /** Your AS2 key alias in the PKCS12 key store */
-  private static final String SENDER_KEY_ALIAS = SENDER_AS2_ID;
   private static final IIdentifierFactory IF = PeppolIdentifierFactory.INSTANCE;
   private static final IPeppolURLProvider URL_PROVIDER = PeppolURLProvider.INSTANCE;
   /** The PEPPOL sender participant ID */
   private static final IParticipantIdentifier SENDER_PEPPOL_ID = IF.createParticipantIdentifierWithDefaultScheme ("9999:test-sender");
+  /** Your AS2 sender email address */
+  private static final String SENDER_EMAIL = "peppol@example.org";
 
   private static final Logger s_aLogger = LoggerFactory.getLogger (MainAS2TestClient.class);
 
@@ -89,6 +81,31 @@ public final class MainAS2TestClient
 
     // Enable or disable debug mode
     GlobalDebug.setDebugModeDirect (false);
+  }
+
+  /** The file path to the PKCS12 key store */
+  private static String _getKeyStorePath ()
+  {
+    return "as2-client-data/client-certs.p12";
+  }
+
+  /** The password to open the PKCS12 key store */
+  private static String _getKeyStorePassword ()
+  {
+    return "peppol";
+  }
+
+  /** Your AS2 sender ID */
+  private static final String _getSenderAS2ID ()
+  {
+    // Pro: 306 Test: 309
+    return "APP_1000000306";
+  }
+
+  /** Your AS2 key alias in the PKCS12 key store */
+  private static final String _getSenderKeyAlias ()
+  {
+    return _getSenderAS2ID ();
   }
 
   @SuppressWarnings ({ "null", "resource" })
@@ -193,8 +210,8 @@ public final class MainAS2TestClient
       sTestFilename = "xml/as2-test-at-gov.xml";
       // Avoid SMP lookup
       sReceiverAddress = "http://localhost:8080/as2";
-      sReceiverID = SENDER_AS2_ID;
-      sReceiverKeyAlias = SENDER_KEY_ALIAS;
+      sReceiverID = _getSenderAS2ID ();
+      sReceiverKeyAlias = _getSenderKeyAlias ();
       aSML = ESML.DIGIT_TEST;
     }
     if (false)
@@ -204,8 +221,8 @@ public final class MainAS2TestClient
       aTestResource = new GZIPReadableResource (new ClassPathResource ("xml/as2-test-at-gov-2gb.gz"));
       // Avoid SMP lookup
       sReceiverAddress = "http://localhost:8080/as2";
-      sReceiverID = SENDER_AS2_ID;
-      sReceiverKeyAlias = SENDER_KEY_ALIAS;
+      sReceiverID = _getSenderAS2ID ();
+      sReceiverKeyAlias = _getSenderKeyAlias ();
       aSML = ESML.DIGIT_TEST;
     }
     if (false)
@@ -229,7 +246,7 @@ public final class MainAS2TestClient
       sTestFilename = "xml/as2-test_logiq_stanley.xml";
       eMICAlg = ECryptoAlgorithmSign.DIGEST_SHA1;
     }
-    if (true)
+    if (false)
     {
       // Doclogistics test participant 9948:rs062525164
       // or 9944:nl807881958b01
@@ -244,6 +261,13 @@ public final class MainAS2TestClient
 
       // For debugging
       nReadTimeoutMS = 500 * (int) CGlobal.MILLISECONDS_PER_SECOND;
+    }
+    if (true)
+    {
+      aReceiver = IF.createParticipantIdentifierWithDefaultScheme ("9932:856922195");
+      aDocTypeID = IF.createDocumentTypeIdentifierWithDefaultScheme ("urn:oasis:names:specification:ubl:schema:xsd:Order-2::Order##urn:www.cenbii.eu:transaction:biitrns001:ver2.0:extended:urn:www.peppol.eu:bis:peppol3a:ver2.0::2.1");
+      aProcessID = IF.createProcessIdentifierWithDefaultScheme ("urn:www.cenbii.eu:profile:bii03:ver2.0");
+      sTestFilename = "xml/as2-order.xml";
     }
 
     // Debug outgoing (AS2 message)?
@@ -281,12 +305,12 @@ public final class MainAS2TestClient
     try
     {
       final AS2ClientResponse aResponse = new AS2ClientBuilder ().setSMPClient (aSMPClient)
-                                                                 .setPKCS12KeyStore (new File (PKCS12_CERTSTORE_PATH),
-                                                                                     PKCS12_CERTSTORE_PASSWORD)
+                                                                 .setPKCS12KeyStore (new File (_getKeyStorePath ()),
+                                                                                     _getKeyStorePassword ())
                                                                  .setSaveKeyStoreChangesToFile (false)
-                                                                 .setSenderAS2ID (SENDER_AS2_ID)
+                                                                 .setSenderAS2ID (_getSenderAS2ID ())
                                                                  .setSenderAS2Email (SENDER_EMAIL)
-                                                                 .setSenderAS2KeyAlias (SENDER_KEY_ALIAS)
+                                                                 .setSenderAS2KeyAlias (_getSenderKeyAlias ())
                                                                  .setReceiverAS2ID (sReceiverID)
                                                                  .setReceiverAS2KeyAlias (sReceiverKeyAlias)
                                                                  .setReceiverAS2Url (sReceiverAddress)
