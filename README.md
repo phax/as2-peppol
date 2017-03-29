@@ -1,4 +1,4 @@
-#as2-peppol-client
+# as2-peppol-client
 
 [![Build Status](https://travis-ci.org/phax/as2-peppol-client.svg?branch=master)](https://travis-ci.org/phax/as2-peppol-client)
 ﻿
@@ -13,7 +13,7 @@ for a detailed description on how it works and how it fits in the overall PEPPOL
 
 This project is licensed under the Apache 2 License.
 
-#News
+# News
 
   * v2.0.3 - 2017-03-20
     * Improved customizability of `AS2ClientBuilder`
@@ -25,7 +25,7 @@ This project is licensed under the Apache 2 License.
   * v2.0.0 - 2016-08-22
     * Updated to JDK 8
 
-#Configuration
+# Configuration
 
 A keystore in the format PKCS12 must be available.
 By default it is expected to be called `client-certs.p12` residing in the `as2-client-data` folder. It must contain one certificate, namely your PEPPOL AP certificate.
@@ -39,7 +39,7 @@ A test class is `MainAS2TestClient` and you need to adopt the constants on top t
   * **SENDER_EMAIL** your email address for out of band resolutions.
   * **SENDER_KEY_ALIAS** the alias name of your PEPPOL-AP-certificate within the PKCS12 keystore. This should be the same value as **SENDER_AS2_ID** 
 
-#Sending a document
+# Sending a document
 
 Before being ready to send a document, the recipient participant identifier as well as the test document must be selected. This happens currently directly in the `main` method and you have to choose the recipient you want.
 
@@ -57,9 +57,9 @@ https.proxyPort=8080
 
 If you need a username and password for your proxy see [here](http://rolandtapken.de/blog/2012-04/java-process-httpproxyuser-and-httpproxypassword) for a guideline.
 
-#Maven usage
+# Maven usage
 Add the following to your `pom.xml` to use this artifact:
-```
+```xml
 <dependency>
   <groupId>com.helger</groupId>
   <artifactId>as2-peppol-client</artifactId>
