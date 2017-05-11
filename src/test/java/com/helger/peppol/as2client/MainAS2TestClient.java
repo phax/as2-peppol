@@ -262,14 +262,27 @@ public final class MainAS2TestClient
       // For debugging
       nReadTimeoutMS = 500 * (int) CGlobal.MILLISECONDS_PER_SECOND;
     }
-    if (true)
+    if (false)
     {
       aReceiver = IF.createParticipantIdentifierWithDefaultScheme ("9932:856922195");
-      aDocTypeID = IF.createDocumentTypeIdentifierWithDefaultScheme ("urn:oasis:names:specification:ubl:schema:xsd:Order-2::Order##urn:www.cenbii.eu:transaction:biitrns001:ver2.0:extended:urn:www.peppol.eu:bis:peppol3a:ver2.0::2.1");
-      aProcessID = IF.createProcessIdentifierWithDefaultScheme ("urn:www.cenbii.eu:profile:bii03:ver2.0");
+      aDocTypeID = EPredefinedDocumentTypeIdentifier.ORDER_T001_BIS03A_V20.getAsDocumentTypeIdentifier ();
+      aProcessID = EPredefinedProcessIdentifier.BIS03A_V20.getAsProcessIdentifier ();
       sTestFilename = "xml/as2-order.xml";
     }
+    if (true)
+    {
+      aReceiver = IF.createParticipantIdentifierWithDefaultScheme ("9921:ITUFX1HE");
+      if (false)
+        sReceiverAddress = "https://test-notier.regione.emilia-romagna.it/notier/rest/v1.0/documenti/invio";
 
+      // Next two settings, to specify I'm seding an order, NOT an invoice
+      aDocTypeID = EPredefinedDocumentTypeIdentifier.ORDER_T001_BIS03A_V20.getAsDocumentTypeIdentifier ();
+      aDocTypeID = IF.createDocumentTypeIdentifierWithDefaultScheme ("urn:oasis:names:specification:ubl:schema:xsd:Order-2::Order#urn:www.cenbii.eu:transaction:biitrns001:ver2.0:extended:urn:www.peppol.eu:bis:peppol3a:ver2.0::2.1");
+      aProcessID = EPredefinedProcessIdentifier.BIS03A_V20.getAsProcessIdentifier ();
+
+      sTestFilename = "xml/ordine-FA-2017-896-RIETI.xml";
+      aSML = ESML.DIGIT_TEST;
+    }
     // Debug outgoing (AS2 message)?
     NonBlockingByteArrayOutputStream aDebugOS;
     if (false)
