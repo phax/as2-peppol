@@ -18,6 +18,7 @@ package com.helger.peppol.as2client;
 
 import java.io.File;
 import java.net.URI;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.security.Security;
 
@@ -37,10 +38,12 @@ import com.helger.commons.CGlobal;
 import com.helger.commons.debug.GlobalDebug;
 import com.helger.commons.io.resource.ClassPathResource;
 import com.helger.commons.io.resource.IReadableResource;
+import com.helger.commons.io.resource.URLResource;
 import com.helger.commons.io.resource.wrapped.GZIPReadableResource;
 import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
 import com.helger.commons.string.StringHelper;
 import com.helger.commons.url.URLHelper;
+import com.helger.network.proxy.autoconf.ProxyAutoConfigHelper;
 import com.helger.peppol.identifier.factory.IIdentifierFactory;
 import com.helger.peppol.identifier.factory.PeppolIdentifierFactory;
 import com.helger.peppol.identifier.generic.doctype.IDocumentTypeIdentifier;
@@ -125,9 +128,10 @@ public final class MainAS2TestClient
     final VESID aValidationKey = true ? null : PeppolValidation330.VID_OPENPEPPOL_T10_V2;
     URI aSMPURI = null;
     ECryptoAlgorithmSign eMICAlg = ECryptoAlgorithmSign.DIGEST_SHA_1;
-    final HttpHost aProxy = SMPClientConfiguration.getHttpProxy ();
+    HttpHost aProxy = SMPClientConfiguration.getHttpProxy ();
     final int nConnectTimeoutMS = AS2ClientSettings.DEFAULT_CONNECT_TIMEOUT_MS;
     int nReadTimeoutMS = AS2ClientSettings.DEFAULT_READ_TIMEOUT_MS;
+    String sWPAD = null;
 
     if (false)
     {
@@ -282,6 +286,8 @@ public final class MainAS2TestClient
 
       sTestFilename = "xml/ordine-FA-2017-896-RIETI.xml";
       aSML = ESML.DIGIT_TEST;
+
+      sWPAD = "http://wpad.ente.regione.emr.it/wpad.dat";
     }
     // Debug outgoing (AS2 message)?
     NonBlockingByteArrayOutputStream aDebugOS;
@@ -305,8 +311,26 @@ public final class MainAS2TestClient
     if (aTestResource == null && sTestFilename != null)
       aTestResource = new ClassPathResource (sTestFilename);
 
-    final SMPClientReadOnly aSMPClient = aSMPURI != null ? new SMPClientReadOnly (aSMPURI)
-                                                         : new SMPClientReadOnly (URL_PROVIDER, aReceiver, aSML);
+    if (aSMPURI == null)
+      aSMPURI = URL_PROVIDER.getSMPURIOfParticipant (aReceiver, aSML);
+
+    if (sWPAD != null)
+    {
+      final ProxyAutoConfigHelper aPACHelper = new ProxyAutoConfigHelper (new URLResource (sWPAD));
+      final String sProxyHost = aPACHelper.findProxyForURL (aSMPURI.toURL ().toExternalForm (), aSMPURI.getHost ());
+      if (sProxyHost != null)
+      {
+        s_aLogger.info ("Using proxy '" + sProxyHost + "'");
+        final URL aURL = URLHelper.getAsURL (sProxyHost);
+        if (aURL != null)
+        {
+          aProxy = new HttpHost (aURL.getHost (), aURL.getPort ());
+          s_aLogger.info ("  Resolved proxy to '" + aProxy + "'");
+        }
+      }
+    }
+
+    final SMPClientReadOnly aSMPClient = new SMPClientReadOnly (aSMPURI);
 
     // No proxy for local host
     if (!aSMPClient.getSMPHostURI ().startsWith ("http://localhost") &&
