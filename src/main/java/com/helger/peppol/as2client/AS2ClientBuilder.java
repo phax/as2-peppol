@@ -970,7 +970,7 @@ public class AS2ClientBuilder
                                            m_aVESID.getAsSingleID () +
                                            " is unknown!");
 
-    final ValidationResultList aValidationResult = aVES.getExecutorManager ()
+    final ValidationResultList aValidationResult = aVES.createExecutionManager ()
                                                        .executeValidation (ValidationSource.create (null, aXML));
     if (aValidationResult.containsAtLeastOneError ())
       throw new AS2ClientBuilderValidationException (aValidationResult);
