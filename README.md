@@ -15,6 +15,8 @@ This project is licensed under the Apache 2 License.
 
 # News
 
+  * v2.0.4 - 2017-05-18
+    * Updated to ph-bdve 3.1.0 (PEPPOL validation 3.4.0)
   * v2.0.3 - 2017-03-20
     * Improved customizability of `AS2ClientBuilder`
   * v2.0.2 - 2017-03-01
@@ -63,7 +65,7 @@ Add the following to your `pom.xml` to use this artifact:
 <dependency>
   <groupId>com.helger</groupId>
   <artifactId>as2-peppol-client</artifactId>
-  <version>2.0.2</version>
+  <version>2.0.4</version>
 </dependency>
 ```
 
