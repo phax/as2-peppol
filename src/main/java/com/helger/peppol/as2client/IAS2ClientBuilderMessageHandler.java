@@ -49,7 +49,10 @@ public interface IAS2ClientBuilderMessageHandler
    * @throws AS2ClientBuilderException
    *         In case the implementation wants to throw an exception
    */
-  void error (@Nonnull String sMessage) throws AS2ClientBuilderException;
+  default void error (@Nonnull final String sMessage) throws AS2ClientBuilderException
+  {
+    error (sMessage, null);
+  }
 
   /**
    * Emit an error

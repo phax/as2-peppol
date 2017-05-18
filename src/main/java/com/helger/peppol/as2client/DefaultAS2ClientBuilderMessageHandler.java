@@ -51,11 +51,6 @@ public class DefaultAS2ClientBuilderMessageHandler implements IAS2ClientBuilderM
     return m_nWarn;
   }
 
-  public void error (@Nonnull final String sMessage) throws AS2ClientBuilderException
-  {
-    error (sMessage, null);
-  }
-
   public void error (@Nonnull final String sMessage, @Nullable final Throwable aCause) throws AS2ClientBuilderException
   {
     m_nError++;
