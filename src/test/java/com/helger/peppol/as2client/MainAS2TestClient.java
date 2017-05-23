@@ -200,7 +200,7 @@ public final class MainAS2TestClient
       sTestFilename = "xml/as2-test-at-gov.xml";
       aSML = ESML.DIGIT_TEST;
     }
-    if (false)
+    if (true)
     {
       // BRZ test endpoint
       aReceiver = IF.createParticipantIdentifierWithDefaultScheme ("9915:test");
@@ -273,7 +273,7 @@ public final class MainAS2TestClient
       aProcessID = EPredefinedProcessIdentifier.BIS03A_V20.getAsProcessIdentifier ();
       sTestFilename = "xml/as2-order.xml";
     }
-    if (true)
+    if (false)
     {
       aReceiver = IF.createParticipantIdentifierWithDefaultScheme ("9921:ITUFX1HE");
       if (false)
