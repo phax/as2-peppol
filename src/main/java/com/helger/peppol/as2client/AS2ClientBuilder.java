@@ -17,19 +17,11 @@
 package com.helger.peppol.as2client;
 
 import java.io.File;
-import java.io.IOException;
-import java.io.PipedInputStream;
-import java.io.PipedOutputStream;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.nio.charset.StandardCharsets;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -59,7 +51,6 @@ import com.helger.bdve.result.ValidationResultList;
 import com.helger.bdve.source.ValidationSource;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.OverrideOnDemand;
-import com.helger.commons.concurrent.ManagedExecutorService;
 import com.helger.commons.email.EmailAddressHelper;
 import com.helger.commons.factory.FactoryNewInstance;
 import com.helger.commons.factory.IFactory;
@@ -67,13 +58,8 @@ import com.helger.commons.io.resource.FileSystemResource;
 import com.helger.commons.io.resource.IReadableResource;
 import com.helger.commons.io.resource.inmemory.ReadableResourceByteArray;
 import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
-import com.helger.commons.mime.CMimeType;
-import com.helger.commons.state.ESuccess;
 import com.helger.commons.string.StringHelper;
 import com.helger.commons.url.URLHelper;
-import com.helger.mail.cte.EContentTransferEncoding;
-import com.helger.mail.datahandler.DataSourceStreamingDataHandler;
-import com.helger.mail.datasource.InputStreamDataSource;
 import com.helger.peppol.identifier.generic.doctype.IDocumentTypeIdentifier;
 import com.helger.peppol.identifier.generic.participant.IParticipantIdentifier;
 import com.helger.peppol.identifier.generic.process.IProcessIdentifier;
@@ -86,7 +72,9 @@ import com.helger.peppol.smp.SignedServiceMetadataType;
 import com.helger.peppol.smpclient.SMPClientReadOnly;
 import com.helger.peppol.smpclient.exception.SMPClientException;
 import com.helger.peppol.smpclient.exception.SMPClientNotFoundException;
+import com.helger.sbdh.CSBDH;
 import com.helger.sbdh.SBDMarshaller;
+import com.helger.xml.namespace.INamespaceContext;
 import com.helger.xml.serialize.read.DOMReader;
 
 /**
@@ -138,6 +126,7 @@ public class AS2ClientBuilder
   private SMPClientReadOnly m_aSMPClient;
   private IFactory <AS2Client> m_aAS2ClientFactory = FactoryNewInstance.create (AS2Client.class, true);
   private ValidationExecutorSetRegistry m_aVESRegistry;
+  private INamespaceContext m_aNamespaceContext;
 
   /**
    * Default constructor.
@@ -617,6 +606,24 @@ public class AS2ClientBuilder
   }
 
   /**
+   * Set the custom namespace context to be used for marshalling the SBDH
+   * document. By default the SBDH namespace URI {@link CSBDH#SBDH_NS} is mapped
+   * to the "sh" prefix.
+   *
+   * @param aNamespaceContext
+   *        The new namespace context to be used. May be <code>null</code> to
+   *        indicate the usage of the default namespace context.
+   * @return this for chaining
+   * @since 2.0.5
+   */
+  @Nonnull
+  public AS2ClientBuilder setNamespaceContext (@Nullable final INamespaceContext aNamespaceContext)
+  {
+    m_aNamespaceContext = aNamespaceContext;
+    return this;
+  }
+
+  /**
    * This method is responsible for performing the SMP client lookup if an SMP
    * client was specified via {@link #setSMPClient(SMPClientReadOnly)}. If any
    * of the prerequisites mentioned there is not fulfilled a warning is emitted
@@ -1081,60 +1088,30 @@ public class AS2ClientBuilder
     final AS2ClientRequest aRequest = new AS2ClientRequest (m_sAS2Subject);
 
     // 4. build SBD from SBDH
-    if (true)
+
+    // Version with huge memory consumption
+    final StandardBusinessDocument aSBD = new PeppolSBDHDocumentWriter ().createStandardBusinessDocument (aSBDHDoc);
+
+    try (final NonBlockingByteArrayOutputStream aBAOS = new NonBlockingByteArrayOutputStream ())
     {
-      // Version with huge memory consumption
-      final StandardBusinessDocument aSBD = new PeppolSBDHDocumentWriter ().createStandardBusinessDocument (aSBDHDoc);
-
-      try (final NonBlockingByteArrayOutputStream aBAOS = new NonBlockingByteArrayOutputStream ())
-      {
-        if (new SBDMarshaller ().write (aSBD, new StreamResult (aBAOS)).isFailure ())
-          throw new AS2ClientBuilderException ("Failed to serialize SBD!");
-
-        // Using a String is better when having a
-        // com.sun.xml.ws.encoding.XmlDataContentHandler installed!
-        aRequest.setData (aBAOS.getAsString (StandardCharsets.UTF_8), StandardCharsets.UTF_8);
-      }
-
-      final AS2Client aAS2Client = m_aAS2ClientFactory.get ();
-      if (false)
-      {
-        // Local Fiddler proxy
-        aAS2Client.setHttpProxy (new Proxy (Proxy.Type.HTTP, new InetSocketAddress ("127.0.0.1", 8888)));
-      }
-      final AS2ClientResponse aResponse = aAS2Client.sendSynchronous (aAS2ClientSettings, aRequest);
-      return aResponse;
-    }
-
-    // Less memory consumption but allows only a single input stream
-    // acquisition which is a problem
-    try
-    {
-      final PipedOutputStream aPipedOS = new PipedOutputStream ();
-      final PipedInputStream aPipedIS = new PipedInputStream (aPipedOS);
-
-      final StandardBusinessDocument aSBD = new PeppolSBDHDocumentWriter ().createStandardBusinessDocument (aSBDHDoc);
-      final Callable <ESuccess> aMarshaller = () -> new SBDMarshaller ().write (aSBD, aPipedOS);
-
-      final ExecutorService aES = Executors.newSingleThreadExecutor ();
-      final Future <ESuccess> aFuture = aES.submit (aMarshaller);
-
-      final AS2Client aAS2Client = m_aAS2ClientFactory.get ();
-      aRequest.setData (new DataSourceStreamingDataHandler (new InputStreamDataSource (aPipedIS,
-                                                                                       "StandardBusinessDocument.xml",
-                                                                                       CMimeType.APPLICATION_XML).getEncodingAware (EContentTransferEncoding.AS2_DEFAULT)));
-      final AS2ClientResponse aResponse = aAS2Client.sendSynchronous (aAS2ClientSettings, aRequest);
-
-      s_aLogger.info ("Waiting for ExecutorService to shutdown");
-      ManagedExecutorService.shutdownAndWaitUntilAllTasksAreFinished (aES);
-      if (aFuture.get ().isFailure ())
+      final SBDMarshaller aMarshaller = new SBDMarshaller ();
+      if (m_aNamespaceContext != null)
+        aMarshaller.setNamespaceContext (m_aNamespaceContext);
+      if (aMarshaller.write (aSBD, new StreamResult (aBAOS)).isFailure ())
         throw new AS2ClientBuilderException ("Failed to serialize SBD!");
 
-      return aResponse;
+      // Using a String is better when having a
+      // com.sun.xml.ws.encoding.XmlDataContentHandler installed!
+      aRequest.setData (aBAOS.getAsString (StandardCharsets.UTF_8), StandardCharsets.UTF_8);
     }
-    catch (final IOException | InterruptedException | ExecutionException ex)
+
+    final AS2Client aAS2Client = m_aAS2ClientFactory.get ();
+    if (false)
     {
-      throw new AS2ClientBuilderException ("Failed to transmit AS2 document", ex);
+      // Local Fiddler proxy
+      aAS2Client.setHttpProxy (new Proxy (Proxy.Type.HTTP, new InetSocketAddress ("127.0.0.1", 8888)));
     }
+    final AS2ClientResponse aResponse = aAS2Client.sendSynchronous (aAS2ClientSettings, aRequest);
+    return aResponse;
   }
 }
