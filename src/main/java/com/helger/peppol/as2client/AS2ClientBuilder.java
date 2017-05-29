@@ -759,7 +759,9 @@ public class AS2ClientBuilder
       // may be null)
       m_sReceiverAS2KeyAlias = m_sReceiverAS2ID;
       if (s_aLogger.isDebugEnabled ())
-        s_aLogger.debug ("The receiver AS2 key alias was defaulted to the AS2 receiver ID");
+        s_aLogger.debug ("The receiver AS2 key alias was defaulted to the AS2 receiver ID ('" +
+                         m_sReceiverAS2ID +
+                         "')");
     }
   }
 
@@ -1087,17 +1089,20 @@ public class AS2ClientBuilder
 
     final AS2ClientRequest aRequest = new AS2ClientRequest (m_sAS2Subject);
 
-    // 4. build SBD from SBDH
-
+    // 5. assemble and send
     // Version with huge memory consumption
     final StandardBusinessDocument aSBD = new PeppolSBDHDocumentWriter ().createStandardBusinessDocument (aSBDHDoc);
 
     try (final NonBlockingByteArrayOutputStream aBAOS = new NonBlockingByteArrayOutputStream ())
     {
-      final SBDMarshaller aMarshaller = new SBDMarshaller ();
+      final SBDMarshaller aSBDMarshaller = new SBDMarshaller ();
+
+      // Set custom namespace context (work around an OpusCapita problem)
       if (m_aNamespaceContext != null)
-        aMarshaller.setNamespaceContext (m_aNamespaceContext);
-      if (aMarshaller.write (aSBD, new StreamResult (aBAOS)).isFailure ())
+        aSBDMarshaller.setNamespaceContext (m_aNamespaceContext);
+
+      // Write to BAOS
+      if (aSBDMarshaller.write (aSBD, new StreamResult (aBAOS)).isFailure ())
         throw new AS2ClientBuilderException ("Failed to serialize SBD!");
 
       // Using a String is better when having a
