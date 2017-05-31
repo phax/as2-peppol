@@ -60,6 +60,7 @@ import com.helger.commons.io.resource.inmemory.ReadableResourceByteArray;
 import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
 import com.helger.commons.string.StringHelper;
 import com.helger.commons.url.URLHelper;
+import com.helger.peppol.identifier.factory.PeppolIdentifierFactory;
 import com.helger.peppol.identifier.generic.doctype.IDocumentTypeIdentifier;
 import com.helger.peppol.identifier.generic.participant.IParticipantIdentifier;
 import com.helger.peppol.identifier.generic.process.IProcessIdentifier;
@@ -1053,7 +1054,8 @@ public class AS2ClientBuilder
       validateOutgoingBusinessDocument (aBusinessDocumentXML);
 
     // 3. build PEPPOL SBDH data
-    final PeppolSBDHDocument aSBDHDoc = PeppolSBDHDocument.create (aBusinessDocumentXML);
+    final PeppolSBDHDocument aSBDHDoc = PeppolSBDHDocument.create (aBusinessDocumentXML,
+                                                                   PeppolIdentifierFactory.INSTANCE);
     aSBDHDoc.setSenderWithDefaultScheme (m_aPeppolSenderID.getValue ());
     aSBDHDoc.setReceiver (m_aPeppolReceiverID.getScheme (), m_aPeppolReceiverID.getValue ());
     aSBDHDoc.setDocumentType (m_aPeppolDocumentTypeID.getScheme (), m_aPeppolDocumentTypeID.getValue ());
