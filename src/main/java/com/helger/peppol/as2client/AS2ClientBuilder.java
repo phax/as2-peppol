@@ -43,6 +43,7 @@ import com.helger.as2lib.client.AS2ClientResponse;
 import com.helger.as2lib.client.AS2ClientSettings;
 import com.helger.as2lib.crypto.ECryptoAlgorithmSign;
 import com.helger.as2lib.disposition.DispositionOptions;
+import com.helger.bdve.execute.ValidationExecutionManager;
 import com.helger.bdve.executorset.IValidationExecutorSet;
 import com.helger.bdve.executorset.VESID;
 import com.helger.bdve.executorset.ValidationExecutorSetRegistry;
@@ -980,8 +981,8 @@ public class AS2ClientBuilder
                                            m_aVESID.getAsSingleID () +
                                            " is unknown!");
 
-    final ValidationResultList aValidationResult = aVES.createExecutionManager ()
-                                                       .executeValidation (ValidationSource.create (null, aXML));
+    final ValidationExecutionManager aVEM = aVES.createExecutionManager ();
+    final ValidationResultList aValidationResult = aVEM.executeValidation (ValidationSource.create (null, aXML));
     if (aValidationResult.containsAtLeastOneError ())
       throw new AS2ClientBuilderValidationException (aValidationResult);
   }
