@@ -43,6 +43,7 @@ import com.helger.commons.error.IError;
 import com.helger.commons.io.resource.ClassPathResource;
 import com.helger.commons.io.resource.IReadableResource;
 import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
+import com.helger.commons.io.stream.StreamHelper;
 import com.helger.commons.string.StringHelper;
 import com.helger.peppol.identifier.factory.IIdentifierFactory;
 import com.helger.peppol.identifier.factory.PeppolIdentifierFactory;
@@ -111,6 +112,7 @@ public final class MainAS2TestClientUpNxt
     return _getSenderAS2ID ();
   }
 
+  @SuppressWarnings ("null")
   public static void main (final String [] args) throws Exception
   {
     /** The PEPPOL document type to use. */
@@ -132,7 +134,7 @@ public final class MainAS2TestClientUpNxt
 
     // Debug outgoing (AS2 message)?
     NonBlockingByteArrayOutputStream aDebugOS;
-    if (false)
+    if (true)
     {
       aDebugOS = new NonBlockingByteArrayOutputStream ();
       HTTPHelper.setHTTPOutgoingDumper (aMsg -> aDebugOS);
@@ -208,6 +210,10 @@ public final class MainAS2TestClientUpNxt
     catch (final AS2ClientBuilderException ex)
     {
       ex.printStackTrace ();
+    }
+    finally
+    {
+      StreamHelper.close (aDebugOS);
     }
   }
 }
