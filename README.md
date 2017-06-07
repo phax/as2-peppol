@@ -15,6 +15,8 @@ This project is licensed under the Apache 2 License.
 
 # News
 
+  * v2.0.6 - work in progress
+    * Updated to ph-bdve 3.1.3 for XSLT validation fix
   * v2.0.5 - 2017-05-23
     * Added possibility to provide a custom namespace context
   * v2.0.4 - 2017-05-18
