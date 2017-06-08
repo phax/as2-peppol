@@ -289,6 +289,14 @@ public final class MainAS2TestClient
 
       sWPAD = "http://wpad.ente.regione.emr.it/wpad.dat";
     }
+    if (true)
+    {
+      aReceiver = IF.createParticipantIdentifierWithDefaultScheme ("0088:5050689000018");
+      sTestFilename = "xml/as2-test-at-gov.xml";
+      aSML = ESML.DIGIT_TEST;
+      aDocTypeID = IF.createDocumentTypeIdentifierWithDefaultScheme ("urn:oasis:names:specification:ubl:schema:xsd:Invoice-2::Invoice##urn:www.cenbii.eu:transaction:biitrns010:ver2.0:extended:urn:www.peppol.eu:bis:peppol4a:ver2.0::2.1");
+    }
+
     // Debug outgoing (AS2 message)?
     NonBlockingByteArrayOutputStream aDebugOS;
     if (false)
