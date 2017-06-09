@@ -200,44 +200,6 @@ public final class MainAS2TestClient
       sTestFilename = "xml/as2-test-at-gov.xml";
       aSML = ESML.DIGIT_TEST;
     }
-    if (true)
-    {
-      // BRZ test endpoint
-      aReceiver = IF.createParticipantIdentifierWithDefaultScheme ("9915:test");
-      sTestFilename = "xml/as2-test-at-gov.xml";
-      aSML = ESML.DIGIT_TEST;
-    }
-    if (false)
-    {
-      // localhost test endpoint
-      aReceiver = IF.createParticipantIdentifierWithDefaultScheme ("9915:test");
-      sTestFilename = "xml/as2-test-at-gov.xml";
-      // Avoid SMP lookup
-      sReceiverAddress = "http://localhost:8080/as2";
-      sReceiverID = _getSenderAS2ID ();
-      sReceiverKeyAlias = _getSenderKeyAlias ();
-      aSML = ESML.DIGIT_TEST;
-    }
-    if (false)
-    {
-      // localhost test endpoint with 2 GB file
-      aReceiver = IF.createParticipantIdentifierWithDefaultScheme ("9915:test");
-      aTestResource = new GZIPReadableResource (new ClassPathResource ("xml/as2-test-at-gov-2gb.gz"));
-      // Avoid SMP lookup
-      sReceiverAddress = "http://localhost:8080/as2";
-      sReceiverID = _getSenderAS2ID ();
-      sReceiverKeyAlias = _getSenderKeyAlias ();
-      aSML = ESML.DIGIT_TEST;
-    }
-    if (false)
-    {
-      // localhost test redirect with test SMP on localhost:90
-      aReceiver = IF.createParticipantIdentifierWithDefaultScheme ("9915:test");
-      sTestFilename = "xml/as2-test-at-gov.xml";
-      aSMPURI = URLHelper.getAsURI ("http://127.0.0.1:90");
-      aDocTypeID = IF.createDocumentTypeIdentifierWithDefaultScheme ("urn:oasis:names:specification:ubl:schema:xsd:CreditNote-2::CreditNote##urn:www.cenbii.eu:transaction:biitrns014:ver2.0:extended:urn:www.peppol.eu:bis:peppol5a:ver2.0:extended:urn:www.erechnung.gv.at:ver1.0::2.1");
-      aProcessID = IF.createProcessIdentifierWithDefaultScheme ("urn:www.cenbii.eu:profile:bii05:ver2.0");
-    }
     if (false)
     {
       aReceiver = IF.createParticipantIdentifierWithDefaultScheme ("9925:0883663268");
@@ -289,11 +251,50 @@ public final class MainAS2TestClient
 
       sWPAD = "http://wpad.ente.regione.emr.it/wpad.dat";
     }
-    if (true)
+    if (false)
     {
+      // IBM test
       aReceiver = IF.createParticipantIdentifierWithDefaultScheme ("0088:5050689000018");
       sTestFilename = "xml/Use Case 1.a_ExampleFile_PEPPOL BIS.xml";
       aSML = ESML.DIGIT_TEST;
+    }
+    if (false)
+    {
+      // BRZ test endpoint
+      aReceiver = IF.createParticipantIdentifierWithDefaultScheme ("9915:test");
+      sTestFilename = "xml/as2-test-at-gov.xml";
+      aSML = ESML.DIGIT_TEST;
+    }
+    if (true)
+    {
+      // localhost test endpoint
+      aReceiver = IF.createParticipantIdentifierWithDefaultScheme ("9915:test");
+      sTestFilename = "xml/as2-test-at-gov.xml";
+      // Avoid SMP lookup
+      sReceiverAddress = "http://localhost:8080/as2";
+      sReceiverID = _getSenderAS2ID ();
+      sReceiverKeyAlias = _getSenderKeyAlias ();
+      aSML = ESML.DIGIT_TEST;
+    }
+    if (false)
+    {
+      // localhost test endpoint with 2 GB file
+      aReceiver = IF.createParticipantIdentifierWithDefaultScheme ("9915:test");
+      aTestResource = new GZIPReadableResource (new ClassPathResource ("xml/as2-test-at-gov-2gb.gz"));
+      // Avoid SMP lookup
+      sReceiverAddress = "http://localhost:8080/as2";
+      sReceiverID = _getSenderAS2ID ();
+      sReceiverKeyAlias = _getSenderKeyAlias ();
+      aSML = ESML.DIGIT_TEST;
+    }
+    if (false)
+    {
+      // localhost test redirect with test SMP on localhost:90
+      aReceiver = IF.createParticipantIdentifierWithDefaultScheme ("9915:test");
+      sTestFilename = "xml/as2-test-at-gov.xml";
+      aSMPURI = URLHelper.getAsURI ("http://127.0.0.1:90");
+      aDocTypeID = IF.createDocumentTypeIdentifierWithDefaultScheme ("urn:oasis:names:specification:ubl:schema:xsd:CreditNote-2::CreditNote##urn:www.cenbii.eu:transaction:biitrns014:ver2.0:extended:urn:www.peppol.eu:bis:peppol5a:ver2.0:extended:urn:www.erechnung.gv.at:ver1.0::2.1");
+      aProcessID = IF.createProcessIdentifierWithDefaultScheme ("urn:www.cenbii.eu:profile:bii05:ver2.0");
     }
 
     // Debug outgoing (AS2 message)?
