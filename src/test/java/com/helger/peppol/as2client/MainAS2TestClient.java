@@ -21,6 +21,7 @@ import java.net.URI;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.security.Security;
+import java.util.Map;
 
 import org.apache.http.HttpHost;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
@@ -42,6 +43,7 @@ import com.helger.commons.io.resource.URLResource;
 import com.helger.commons.io.resource.wrapped.GZIPReadableResource;
 import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
 import com.helger.commons.string.StringHelper;
+import com.helger.commons.system.SystemHelper;
 import com.helger.commons.url.URLHelper;
 import com.helger.network.proxy.autoconf.ProxyAutoConfigHelper;
 import com.helger.peppol.identifier.factory.IIdentifierFactory;
@@ -87,9 +89,9 @@ public final class MainAS2TestClient
   }
 
   /** The file path to the PKCS12 key store */
-  private static String _getKeyStorePath ()
+  private static String _getKeyStorePath (final boolean bProd)
   {
-    return "as2-client-data/client-certs.p12";
+    return bProd ? "as2-client-data/client-certs.p12" : "as2-client-data/test-client-certs.p12";
   }
 
   /** The password to open the PKCS12 key store */
@@ -99,16 +101,16 @@ public final class MainAS2TestClient
   }
 
   /** Your AS2 sender ID */
-  private static final String _getSenderAS2ID ()
+  private static final String _getSenderAS2ID (final boolean bProd)
   {
     // Pro: 306 Test: 309
-    return "APP_1000000306";
+    return bProd ? "APP_1000000306" : "APP_1000000309";
   }
 
   /** Your AS2 key alias in the PKCS12 key store */
-  private static final String _getSenderKeyAlias ()
+  private static final String _getSenderKeyAlias (final boolean bProd)
   {
-    return _getSenderAS2ID ();
+    return _getSenderAS2ID (bProd);
   }
 
   @SuppressWarnings ({ "null", "resource" })
@@ -132,6 +134,8 @@ public final class MainAS2TestClient
     final int nConnectTimeoutMS = AS2ClientSettings.DEFAULT_CONNECT_TIMEOUT_MS;
     int nReadTimeoutMS = AS2ClientSettings.DEFAULT_READ_TIMEOUT_MS;
     String sWPAD = null;
+    boolean bDebugOutgoing = false;
+    boolean bDebugIncoming = false;
 
     if (false)
     {
@@ -251,12 +255,22 @@ public final class MainAS2TestClient
 
       sWPAD = "http://wpad.ente.regione.emr.it/wpad.dat";
     }
-    if (true)
+    if (false)
     {
       // IBM test
       aReceiver = IF.createParticipantIdentifierWithDefaultScheme ("0088:5050689000018");
       sTestFilename = "xml/Use Case 1.a_ExampleFile_PEPPOL BIS.xml";
       aSML = ESML.DIGIT_TEST;
+    }
+    if (true)
+    {
+      // IBM test 2
+      aReceiver = IF.createParticipantIdentifierWithDefaultScheme ("0088:1234567890111");
+      if (false)
+        sReceiverAddress = "http://na1t40.as2.b2b.ibmcloud.com/as2";
+      sTestFilename = "xml/Use Case 1.a_ExampleFile_PEPPOL BIS.xml";
+      aSML = ESML.DIGIT_TEST;
+      bDebugOutgoing = true;
     }
     if (false)
     {
@@ -272,8 +286,8 @@ public final class MainAS2TestClient
       sTestFilename = "xml/as2-test-at-gov.xml";
       // Avoid SMP lookup
       sReceiverAddress = "http://localhost:8080/as2";
-      sReceiverID = _getSenderAS2ID ();
-      sReceiverKeyAlias = _getSenderKeyAlias ();
+      sReceiverID = _getSenderAS2ID (false);
+      sReceiverKeyAlias = _getSenderKeyAlias (false);
       aSML = ESML.DIGIT_TEST;
     }
     if (false)
@@ -283,8 +297,8 @@ public final class MainAS2TestClient
       aTestResource = new GZIPReadableResource (new ClassPathResource ("xml/as2-test-at-gov-2gb.gz"));
       // Avoid SMP lookup
       sReceiverAddress = "http://localhost:8080/as2";
-      sReceiverID = _getSenderAS2ID ();
-      sReceiverKeyAlias = _getSenderKeyAlias ();
+      sReceiverID = _getSenderAS2ID (false);
+      sReceiverKeyAlias = _getSenderKeyAlias (false);
       aSML = ESML.DIGIT_TEST;
     }
     if (false)
@@ -295,20 +309,35 @@ public final class MainAS2TestClient
       aSMPURI = URLHelper.getAsURI ("http://127.0.0.1:90");
       aDocTypeID = IF.createDocumentTypeIdentifierWithDefaultScheme ("urn:oasis:names:specification:ubl:schema:xsd:CreditNote-2::CreditNote##urn:www.cenbii.eu:transaction:biitrns014:ver2.0:extended:urn:www.peppol.eu:bis:peppol5a:ver2.0:extended:urn:www.erechnung.gv.at:ver1.0::2.1");
       aProcessID = IF.createProcessIdentifierWithDefaultScheme ("urn:www.cenbii.eu:profile:bii05:ver2.0");
+      bDebugIncoming = true;
     }
 
     // Debug outgoing (AS2 message)?
     NonBlockingByteArrayOutputStream aDebugOS;
-    if (true)
+    if (bDebugOutgoing)
     {
       aDebugOS = new NonBlockingByteArrayOutputStream ();
-      HTTPHelper.setHTTPOutgoingDumper (aMsg -> aDebugOS);
+      HTTPHelper.setHTTPOutgoingDumper (aMsg -> {
+        final StringBuilder aSB = new StringBuilder ();
+        // Write all attributes first
+        aSB.append ("Attributes:\n");
+        for (final Map.Entry <String, String> aEntry : aMsg.getAllAttributes ())
+        {
+          aSB.append ("  ").append (aEntry.getKey ()).append ('=').append (aEntry.getValue ()).append ('\n');
+        }
+        // Than all headers
+        aSB.append ("Headers:\n");
+        aMsg.forEachHeader ( (k, v) -> aSB.append ("  ").append (k).append ('=').append (v).append ('\n'));
+
+        aDebugOS.write (aSB.toString ().getBytes (SystemHelper.getSystemCharset ()));
+        return aDebugOS;
+      });
     }
     else
       aDebugOS = null;
 
     // Debug incoming (AS2 MDN)?
-    if (false)
+    if (bDebugIncoming)
       HTTPHelper.setHTTPIncomingDumper ( (aHeaderLines, aPayload, aMsg) -> {
         s_aLogger.info ("Received Headers: " + StringHelper.getImploded ("\n  ", aHeaderLines));
         s_aLogger.info ("Received Payload: " + new String (aPayload, StandardCharsets.UTF_8));
@@ -349,13 +378,14 @@ public final class MainAS2TestClient
 
     try
     {
+      final boolean bProd = aSML == ESML.DIGIT_PRODUCTION;
       final AS2ClientResponse aResponse = new AS2ClientBuilder ().setSMPClient (aSMPClient)
-                                                                 .setPKCS12KeyStore (new File (_getKeyStorePath ()),
+                                                                 .setPKCS12KeyStore (new File (_getKeyStorePath (bProd)),
                                                                                      _getKeyStorePassword ())
                                                                  .setSaveKeyStoreChangesToFile (false)
-                                                                 .setSenderAS2ID (_getSenderAS2ID ())
+                                                                 .setSenderAS2ID (_getSenderAS2ID (bProd))
                                                                  .setSenderAS2Email (SENDER_EMAIL)
-                                                                 .setSenderAS2KeyAlias (_getSenderKeyAlias ())
+                                                                 .setSenderAS2KeyAlias (_getSenderKeyAlias (bProd))
                                                                  .setReceiverAS2ID (sReceiverID)
                                                                  .setReceiverAS2KeyAlias (sReceiverKeyAlias)
                                                                  .setReceiverAS2Url (sReceiverAddress)
