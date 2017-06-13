@@ -266,11 +266,11 @@ public final class MainAS2TestClient
     {
       // IBM test 2
       aReceiver = IF.createParticipantIdentifierWithDefaultScheme ("0088:1234567890111");
-      if (false)
+      if (true)
         sReceiverAddress = "http://na1t40.as2.b2b.ibmcloud.com/as2";
       sTestFilename = "xml/Use Case 1.a_ExampleFile_PEPPOL BIS.xml";
       aSML = ESML.DIGIT_TEST;
-      bDebugOutgoing = true;
+      bDebugOutgoing = false;
     }
     if (false)
     {
