@@ -251,7 +251,7 @@ public final class MainAS2TestClient
 
       sWPAD = "http://wpad.ente.regione.emr.it/wpad.dat";
     }
-    if (false)
+    if (true)
     {
       // IBM test
       aReceiver = IF.createParticipantIdentifierWithDefaultScheme ("0088:5050689000018");
@@ -265,7 +265,7 @@ public final class MainAS2TestClient
       sTestFilename = "xml/as2-test-at-gov.xml";
       aSML = ESML.DIGIT_TEST;
     }
-    if (true)
+    if (false)
     {
       // localhost test endpoint
       aReceiver = IF.createParticipantIdentifierWithDefaultScheme ("9915:test");
@@ -299,7 +299,7 @@ public final class MainAS2TestClient
 
     // Debug outgoing (AS2 message)?
     NonBlockingByteArrayOutputStream aDebugOS;
-    if (false)
+    if (true)
     {
       aDebugOS = new NonBlockingByteArrayOutputStream ();
       HTTPHelper.setHTTPOutgoingDumper (aMsg -> aDebugOS);

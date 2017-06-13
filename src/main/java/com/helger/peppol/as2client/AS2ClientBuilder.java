@@ -59,8 +59,10 @@ import com.helger.commons.io.resource.FileSystemResource;
 import com.helger.commons.io.resource.IReadableResource;
 import com.helger.commons.io.resource.inmemory.ReadableResourceByteArray;
 import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
+import com.helger.commons.mime.CMimeType;
 import com.helger.commons.string.StringHelper;
 import com.helger.commons.url.URLHelper;
+import com.helger.mail.cte.EContentTransferEncoding;
 import com.helger.peppol.identifier.factory.PeppolIdentifierFactory;
 import com.helger.peppol.identifier.generic.doctype.IDocumentTypeIdentifier;
 import com.helger.peppol.identifier.generic.participant.IParticipantIdentifier;
@@ -1108,9 +1110,20 @@ public class AS2ClientBuilder
       if (aSBDMarshaller.write (aSBD, new StreamResult (aBAOS)).isFailure ())
         throw new AS2ClientBuilderException ("Failed to serialize SBD!");
 
-      // Using a String is better when having a
-      // com.sun.xml.ws.encoding.XmlDataContentHandler installed!
-      aRequest.setData (aBAOS.getAsString (StandardCharsets.UTF_8), StandardCharsets.UTF_8);
+      if (false)
+      {
+        // Use data to force
+        aRequest.setData (aBAOS.toByteArray ());
+      }
+      else
+      {
+        // Using a String is better when having a
+        // com.sun.xml.ws.encoding.XmlDataContentHandler installed!
+        aRequest.setData (aBAOS.getAsString (StandardCharsets.UTF_8), StandardCharsets.UTF_8);
+      }
+      // Explicitly add application/xml
+      aRequest.setContentType (CMimeType.APPLICATION_XML.getAsString ());
+      aRequest.setContentTransferEncoding (EContentTransferEncoding.QUOTED_PRINTABLE);
     }
 
     final AS2Client aAS2Client = m_aAS2ClientFactory.get ();
