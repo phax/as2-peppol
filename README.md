@@ -15,7 +15,7 @@ This project is licensed under the Apache 2 License.
 
 # News
 
-  * v2.0.6 - work in progress
+  * v2.0.6 - 2017-06-19
     * Updated to ph-bdve 3.1.3 for XSLT validation fix
   * v2.0.5 - 2017-05-23
     * Added possibility to provide a custom namespace context
@@ -69,7 +69,7 @@ Add the following to your `pom.xml` to use this artifact:
 <dependency>
   <groupId>com.helger</groupId>
   <artifactId>as2-peppol-client</artifactId>
-  <version>2.0.5</version>
+  <version>2.0.6</version>
 </dependency>
 ```
 
