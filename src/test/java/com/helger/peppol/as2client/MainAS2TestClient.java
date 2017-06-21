@@ -45,6 +45,7 @@ import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
 import com.helger.commons.string.StringHelper;
 import com.helger.commons.system.SystemHelper;
 import com.helger.commons.url.URLHelper;
+import com.helger.mail.cte.EContentTransferEncoding;
 import com.helger.network.proxy.autoconf.ProxyAutoConfigHelper;
 import com.helger.peppol.identifier.factory.IIdentifierFactory;
 import com.helger.peppol.identifier.factory.PeppolIdentifierFactory;
@@ -136,6 +137,7 @@ public final class MainAS2TestClient
     String sWPAD = null;
     boolean bDebugOutgoing = false;
     boolean bDebugIncoming = false;
+    EContentTransferEncoding eCTE = EContentTransferEncoding.AS2_DEFAULT;
 
     if (false)
     {
@@ -261,6 +263,7 @@ public final class MainAS2TestClient
       aReceiver = IF.createParticipantIdentifierWithDefaultScheme ("0088:5050689000018");
       sTestFilename = "xml/Use Case 1.a_ExampleFile_PEPPOL BIS.xml";
       aSML = ESML.DIGIT_TEST;
+      eCTE = EContentTransferEncoding.BINARY;
     }
     if (true)
     {
@@ -271,6 +274,7 @@ public final class MainAS2TestClient
       sTestFilename = "xml/Use Case 1.a_ExampleFile_PEPPOL BIS.xml";
       aSML = ESML.DIGIT_TEST;
       bDebugOutgoing = false;
+      eCTE = EContentTransferEncoding.BINARY;
     }
     if (false)
     {
@@ -398,6 +402,7 @@ public final class MainAS2TestClient
                                                                  .setPeppolDocumentTypeID (aDocTypeID)
                                                                  .setPeppolProcessID (aProcessID)
                                                                  .setValidationKey (aValidationKey)
+                                                                 .setContentTransferEncoding (eCTE)
                                                                  .sendSynchronous ();
       if (aResponse.hasException ())
         s_aLogger.warn (aResponse.getAsString ());

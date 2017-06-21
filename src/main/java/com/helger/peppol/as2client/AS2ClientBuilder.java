@@ -131,6 +131,7 @@ public class AS2ClientBuilder
   private IFactory <AS2Client> m_aAS2ClientFactory = FactoryNewInstance.create (AS2Client.class, true);
   private ValidationExecutorSetRegistry m_aVESRegistry;
   private INamespaceContext m_aNamespaceContext;
+  private EContentTransferEncoding m_eCTE = EContentTransferEncoding.AS2_DEFAULT;
 
   /**
    * Default constructor.
@@ -628,6 +629,25 @@ public class AS2ClientBuilder
   }
 
   /**
+   * Set a custom <code>Content-Transfer-Encoding</code> type. By default the
+   * AS2-default 'binary' is used. This setting alters the way how the payload
+   * is encoded inside the transmitted AS2 message and must usually not be set!
+   *
+   * @param eCTE
+   *        The new content transfer encoding to be used. May not be
+   *        <code>null</code>.
+   * @return this for chaining
+   * @since 2.0.7
+   */
+  @Nonnull
+  public AS2ClientBuilder setContentTransferEncoding (@Nonnull final EContentTransferEncoding eCTE)
+  {
+    ValueEnforcer.notNull (eCTE, "ContentTransferEncoding");
+    m_eCTE = eCTE;
+    return this;
+  }
+
+  /**
    * This method is responsible for performing the SMP client lookup if an SMP
    * client was specified via {@link #setSMPClient(SMPClientReadOnly)}. If any
    * of the prerequisites mentioned there is not fulfilled a warning is emitted
@@ -1121,9 +1141,12 @@ public class AS2ClientBuilder
         // com.sun.xml.ws.encoding.XmlDataContentHandler installed!
         aRequest.setData (aBAOS.getAsString (StandardCharsets.UTF_8), StandardCharsets.UTF_8);
       }
-      // Explicitly add application/xml
+      // Explicitly add application/xml even though the "setData" may have
+      // suggested something else (like text/plain)
       aRequest.setContentType (CMimeType.APPLICATION_XML.getAsString ());
-      aRequest.setContentTransferEncoding (EContentTransferEncoding.QUOTED_PRINTABLE);
+
+      // Set the custom content transfer encoding
+      aRequest.setContentTransferEncoding (m_eCTE);
     }
 
     final AS2Client aAS2Client = m_aAS2ClientFactory.get ();

@@ -15,6 +15,8 @@ This project is licensed under the Apache 2 License.
 
 # News
 
+  * v2.0.7 - work in progress
+    * Added possibility to customize `Content-Transfer-Encoding` used
   * v2.0.6 - 2017-06-19
     * Updated to ph-bdve 3.1.3 for XSLT validation fix
   * v2.0.5 - 2017-05-23
