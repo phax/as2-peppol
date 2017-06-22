@@ -32,6 +32,7 @@ import org.slf4j.LoggerFactory;
 import com.helger.as2lib.client.AS2ClientResponse;
 import com.helger.as2lib.client.AS2ClientSettings;
 import com.helger.as2lib.crypto.ECryptoAlgorithmSign;
+import com.helger.as2lib.util.dump.HTTPOutgoingDumperStreamBased;
 import com.helger.as2lib.util.http.HTTPHelper;
 import com.helger.bdve.executorset.VESID;
 import com.helger.bdve.executorset.ValidationExecutorSetRegistry;
@@ -137,14 +138,14 @@ public final class MainAS2TestClientUpNxt
     if (true)
     {
       aDebugOS = new NonBlockingByteArrayOutputStream ();
-      HTTPHelper.setHTTPOutgoingDumper (aMsg -> aDebugOS);
+      HTTPHelper.setHTTPOutgoingDumperFactory (aMsg -> new HTTPOutgoingDumperStreamBased (aDebugOS));
     }
     else
       aDebugOS = null;
 
     // Debug incoming (AS2 MDN)?
     if (false)
-      HTTPHelper.setHTTPIncomingDumper ( (aHeaderLines, aPayload, aMsg) -> {
+      HTTPHelper.setHTTPIncomingDumperFactory ( () -> (aHeaderLines, aPayload, aMsg) -> {
         s_aLogger.info ("Received Headers: " + StringHelper.getImploded ("\n  ", aHeaderLines));
         s_aLogger.info ("Received Payload: " + new String (aPayload, StandardCharsets.UTF_8));
         s_aLogger.info ("Received Message: " + aMsg);

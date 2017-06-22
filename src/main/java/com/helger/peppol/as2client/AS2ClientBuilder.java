@@ -43,6 +43,7 @@ import com.helger.as2lib.client.AS2ClientResponse;
 import com.helger.as2lib.client.AS2ClientSettings;
 import com.helger.as2lib.crypto.ECryptoAlgorithmSign;
 import com.helger.as2lib.disposition.DispositionOptions;
+import com.helger.as2lib.util.CAS2Header;
 import com.helger.bdve.execute.ValidationExecutionManager;
 import com.helger.bdve.executorset.IValidationExecutorSet;
 import com.helger.bdve.executorset.VESID;
@@ -1111,6 +1112,9 @@ public class AS2ClientBuilder
 
     aAS2ClientSettings.setConnectTimeoutMS (m_nConnectTimeoutMS);
     aAS2ClientSettings.setReadTimeoutMS (m_nReadTimeoutMS);
+
+    // Add a custom header to request an MDN for IBM implementation
+    aAS2ClientSettings.customHeaders ().addHeader (CAS2Header.HEADER_DISPOSITION_NOTIFICATION_TO, "dummy");
 
     final AS2ClientRequest aRequest = new AS2ClientRequest (m_sAS2Subject);
 

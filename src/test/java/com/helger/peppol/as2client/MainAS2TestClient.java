@@ -21,7 +21,6 @@ import java.net.URI;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.security.Security;
-import java.util.Map;
 
 import org.apache.http.HttpHost;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
@@ -31,6 +30,7 @@ import org.slf4j.LoggerFactory;
 import com.helger.as2lib.client.AS2ClientResponse;
 import com.helger.as2lib.client.AS2ClientSettings;
 import com.helger.as2lib.crypto.ECryptoAlgorithmSign;
+import com.helger.as2lib.util.dump.HTTPOutgoingDumperStreamBased;
 import com.helger.as2lib.util.http.HTTPHelper;
 import com.helger.bdve.executorset.VESID;
 import com.helger.bdve.peppol.PeppolValidation330;
@@ -43,7 +43,6 @@ import com.helger.commons.io.resource.URLResource;
 import com.helger.commons.io.resource.wrapped.GZIPReadableResource;
 import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
 import com.helger.commons.string.StringHelper;
-import com.helger.commons.system.SystemHelper;
 import com.helger.commons.url.URLHelper;
 import com.helger.mail.cte.EContentTransferEncoding;
 import com.helger.network.proxy.autoconf.ProxyAutoConfigHelper;
@@ -263,6 +262,7 @@ public final class MainAS2TestClient
       aReceiver = IF.createParticipantIdentifierWithDefaultScheme ("0088:5050689000018");
       sTestFilename = "xml/Use Case 1.a_ExampleFile_PEPPOL BIS.xml";
       aSML = ESML.DIGIT_TEST;
+      bDebugOutgoing = true;
       eCTE = EContentTransferEncoding.BINARY;
     }
     if (true)
@@ -273,7 +273,7 @@ public final class MainAS2TestClient
         sReceiverAddress = "http://na1t40.as2.b2b.ibmcloud.com/as2";
       sTestFilename = "xml/Use Case 1.a_ExampleFile_PEPPOL BIS.xml";
       aSML = ESML.DIGIT_TEST;
-      bDebugOutgoing = false;
+      bDebugOutgoing = true;
       eCTE = EContentTransferEncoding.BINARY;
     }
     if (false)
@@ -321,28 +321,14 @@ public final class MainAS2TestClient
     if (bDebugOutgoing)
     {
       aDebugOS = new NonBlockingByteArrayOutputStream ();
-      HTTPHelper.setHTTPOutgoingDumper (aMsg -> {
-        final StringBuilder aSB = new StringBuilder ();
-        // Write all attributes first
-        aSB.append ("Attributes:\n");
-        for (final Map.Entry <String, String> aEntry : aMsg.getAllAttributes ())
-        {
-          aSB.append ("  ").append (aEntry.getKey ()).append ('=').append (aEntry.getValue ()).append ('\n');
-        }
-        // Than all headers
-        aSB.append ("Headers:\n");
-        aMsg.forEachHeader ( (k, v) -> aSB.append ("  ").append (k).append ('=').append (v).append ('\n'));
-
-        aDebugOS.write (aSB.toString ().getBytes (SystemHelper.getSystemCharset ()));
-        return aDebugOS;
-      });
+      HTTPHelper.setHTTPOutgoingDumperFactory (aMsg -> new HTTPOutgoingDumperStreamBased (aDebugOS));
     }
     else
       aDebugOS = null;
 
     // Debug incoming (AS2 MDN)?
     if (bDebugIncoming)
-      HTTPHelper.setHTTPIncomingDumper ( (aHeaderLines, aPayload, aMsg) -> {
+      HTTPHelper.setHTTPIncomingDumperFactory ( () -> (aHeaderLines, aPayload, aMsg) -> {
         s_aLogger.info ("Received Headers: " + StringHelper.getImploded ("\n  ", aHeaderLines));
         s_aLogger.info ("Received Payload: " + new String (aPayload, StandardCharsets.UTF_8));
         s_aLogger.info ("Received Message: " + aMsg);
