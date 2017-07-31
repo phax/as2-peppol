@@ -55,7 +55,7 @@ import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.OverrideOnDemand;
 import com.helger.commons.email.EmailAddressHelper;
 import com.helger.commons.factory.FactoryNewInstance;
-import com.helger.commons.factory.IFactory;
+import com.helger.commons.functional.ISupplier;
 import com.helger.commons.io.resource.FileSystemResource;
 import com.helger.commons.io.resource.IReadableResource;
 import com.helger.commons.io.resource.inmemory.ReadableResourceByteArray;
@@ -129,7 +129,7 @@ public class AS2ClientBuilder
   private IProcessIdentifier m_aPeppolProcessID;
   private VESID m_aVESID;
   private SMPClientReadOnly m_aSMPClient;
-  private IFactory <AS2Client> m_aAS2ClientFactory = FactoryNewInstance.create (AS2Client.class, true);
+  private ISupplier <AS2Client> m_aAS2ClientFactory = FactoryNewInstance.create (AS2Client.class, true);
   private ValidationExecutorSetRegistry m_aVESRegistry;
   private INamespaceContext m_aNamespaceContext;
   private EContentTransferEncoding m_eCTE = EContentTransferEncoding.AS2_DEFAULT;
@@ -605,7 +605,7 @@ public class AS2ClientBuilder
    * @return this for chaining
    */
   @Nonnull
-  public AS2ClientBuilder setAS2ClientFactory (@Nonnull final IFactory <AS2Client> aAS2ClientFactory)
+  public AS2ClientBuilder setAS2ClientFactory (@Nonnull final ISupplier <AS2Client> aAS2ClientFactory)
   {
     m_aAS2ClientFactory = ValueEnforcer.notNull (aAS2ClientFactory, "AS2ClientFactory");
     return this;
