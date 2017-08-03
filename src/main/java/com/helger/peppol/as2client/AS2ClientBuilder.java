@@ -43,7 +43,6 @@ import com.helger.as2lib.client.AS2ClientResponse;
 import com.helger.as2lib.client.AS2ClientSettings;
 import com.helger.as2lib.crypto.ECryptoAlgorithmSign;
 import com.helger.as2lib.disposition.DispositionOptions;
-import com.helger.as2lib.util.CAS2Header;
 import com.helger.bdve.execute.ValidationExecutionManager;
 import com.helger.bdve.executorset.IValidationExecutorSet;
 import com.helger.bdve.executorset.VESID;
@@ -56,6 +55,7 @@ import com.helger.commons.annotation.OverrideOnDemand;
 import com.helger.commons.email.EmailAddressHelper;
 import com.helger.commons.factory.FactoryNewInstance;
 import com.helger.commons.functional.ISupplier;
+import com.helger.commons.http.CHttpHeader;
 import com.helger.commons.io.resource.FileSystemResource;
 import com.helger.commons.io.resource.IReadableResource;
 import com.helger.commons.io.resource.inmemory.ReadableResourceByteArray;
@@ -1114,7 +1114,7 @@ public class AS2ClientBuilder
     aAS2ClientSettings.setReadTimeoutMS (m_nReadTimeoutMS);
 
     // Add a custom header to request an MDN for IBM implementation
-    aAS2ClientSettings.customHeaders ().addHeader (CAS2Header.HEADER_DISPOSITION_NOTIFICATION_TO, "dummy");
+    aAS2ClientSettings.customHeaders ().addHeader (CHttpHeader.DISPOSITION_NOTIFICATION_TO, "dummy");
 
     final AS2ClientRequest aRequest = new AS2ClientRequest (m_sAS2Subject);
 
