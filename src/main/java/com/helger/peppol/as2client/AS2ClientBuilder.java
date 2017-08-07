@@ -27,7 +27,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.OverridingMethodsMustInvokeSuper;
 import javax.annotation.concurrent.NotThreadSafe;
-import javax.xml.transform.stream.StreamResult;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -1131,7 +1130,7 @@ public class AS2ClientBuilder
         aSBDMarshaller.setNamespaceContext (m_aNamespaceContext);
 
       // Write to BAOS
-      if (aSBDMarshaller.write (aSBD, new StreamResult (aBAOS)).isFailure ())
+      if (aSBDMarshaller.write (aSBD, aBAOS).isFailure ())
         throw new AS2ClientBuilderException ("Failed to serialize SBD!");
 
       if (false)
