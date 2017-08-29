@@ -79,6 +79,7 @@ import com.helger.peppol.smpclient.exception.SMPClientNotFoundException;
 import com.helger.sbdh.CSBDH;
 import com.helger.sbdh.SBDMarshaller;
 import com.helger.xml.namespace.INamespaceContext;
+import com.helger.xml.namespace.MapBasedNamespaceContext;
 import com.helger.xml.serialize.read.DOMReader;
 
 /**
@@ -613,7 +614,10 @@ public class AS2ClientBuilder
   /**
    * Set the custom namespace context to be used for marshalling the SBDH
    * document. By default the SBDH namespace URI {@link CSBDH#SBDH_NS} is mapped
-   * to the "sh" prefix.
+   * to the default prefix (""). Prior to v3 it was mapped to the "sh" prefix
+   * but that caused problems with certain Oxalis versions that scan for
+   * <code>&lt;StandardBusinessDocument</code> in the incoming byte sequence
+   * (which is a classical beginners error).
    *
    * @param aNamespaceContext
    *        The new namespace context to be used. May be <code>null</code> to
@@ -1128,6 +1132,11 @@ public class AS2ClientBuilder
       // Set custom namespace context (work around an OpusCapita problem)
       if (m_aNamespaceContext != null)
         aSBDMarshaller.setNamespaceContext (m_aNamespaceContext);
+      else
+      {
+        // Ensure default marshaller without a prefix is used!
+        aSBDMarshaller.setNamespaceContext (new MapBasedNamespaceContext ().setDefaultNamespaceURI (CSBDH.SBDH_NS));
+      }
 
       // Write to BAOS
       if (aSBDMarshaller.write (aSBD, aBAOS).isFailure ())
