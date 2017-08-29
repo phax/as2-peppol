@@ -14,7 +14,9 @@ for a detailed description on how it works and how it fits in the overall PEPPOL
 This project is licensed under the Apache 2 License.
 
 # News
-
+  * v3.0.0 - work in progress
+    * Updated to ph-commons 9.0.0
+    * The `StandardBusinessDocument` send out, uses the default XML namespace prefix ("") instead of "sh"
   * v2.0.7 - 2017-07-27
     * Added possibility to customize `Content-Transfer-Encoding` used
     * Using ph-bdve 3.2.0 which improves validation artefact ClassLoader handling
