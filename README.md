@@ -17,6 +17,7 @@ This project is licensed under the Apache 2 License.
   * v3.0.0 - work in progress
     * Updated to ph-commons 9.0.0
     * The `StandardBusinessDocument` send out, uses the default XML namespace prefix ("") instead of "sh"
+    * Updated to BouncyCastle 1.58
   * v2.0.7 - 2017-07-27
     * Added possibility to customize `Content-Transfer-Encoding` used
     * Using ph-bdve 3.2.0 which improves validation artefact ClassLoader handling
