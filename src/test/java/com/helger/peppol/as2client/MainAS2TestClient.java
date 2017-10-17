@@ -276,7 +276,7 @@ public final class MainAS2TestClient
       bDebugOutgoing = true;
       eCTE = EContentTransferEncoding.BINARY;
     }
-    if (true)
+    if (false)
     {
       // BRZ test endpoint
       aReceiver = IF.createParticipantIdentifierWithDefaultScheme ("9915:test");
@@ -313,6 +313,16 @@ public final class MainAS2TestClient
       aSMPURI = URLHelper.getAsURI ("http://127.0.0.1:90");
       aDocTypeID = IF.createDocumentTypeIdentifierWithDefaultScheme ("urn:oasis:names:specification:ubl:schema:xsd:CreditNote-2::CreditNote##urn:www.cenbii.eu:transaction:biitrns014:ver2.0:extended:urn:www.peppol.eu:bis:peppol5a:ver2.0:extended:urn:www.erechnung.gv.at:ver1.0::2.1");
       aProcessID = IF.createProcessIdentifierWithDefaultScheme ("urn:www.cenbii.eu:profile:bii05:ver2.0");
+      bDebugIncoming = true;
+    }
+    if (true)
+    {
+      // Elcom Test Invoice (on SML)
+      aReceiver = IF.createParticipantIdentifierWithDefaultScheme ("0088:5060412690004");
+      aDocTypeID = EPredefinedDocumentTypeIdentifier.INVOICE_T010_BIS5A_V20.getAsDocumentTypeIdentifier ();
+      aProcessID = EPredefinedProcessIdentifier.BIS5A_V20.getAsProcessIdentifier ();
+      sTestFilename = "xml/as2-test-at-gov.xml";
+      bDebugOutgoing = true;
       bDebugIncoming = true;
     }
 
