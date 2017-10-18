@@ -322,8 +322,9 @@ public final class MainAS2TestClient
       aDocTypeID = EPredefinedDocumentTypeIdentifier.INVOICE_T010_BIS5A_V20.getAsDocumentTypeIdentifier ();
       aProcessID = EPredefinedProcessIdentifier.BIS5A_V20.getAsProcessIdentifier ();
       sTestFilename = "xml/as2-test-at-gov.xml";
-      bDebugOutgoing = true;
-      bDebugIncoming = true;
+      bDebugOutgoing = false;
+      bDebugIncoming = false;
+      eMICAlg = ECryptoAlgorithmSign.DIGEST_SHA1;
     }
 
     // Debug outgoing (AS2 message)?
