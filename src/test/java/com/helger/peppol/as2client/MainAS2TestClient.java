@@ -315,7 +315,7 @@ public final class MainAS2TestClient
       aProcessID = IF.createProcessIdentifierWithDefaultScheme ("urn:www.cenbii.eu:profile:bii05:ver2.0");
       bDebugIncoming = true;
     }
-    if (false)
+    if (true)
     {
       // Elcom Test Invoice (on SML)
       aReceiver = IF.createParticipantIdentifierWithDefaultScheme ("0088:5060412690004");
@@ -326,7 +326,7 @@ public final class MainAS2TestClient
       bDebugIncoming = false;
       eMICAlg = ECryptoAlgorithmSign.DIGEST_SHA1;
     }
-    if (true)
+    if (false)
     {
       // Mini file
       aReceiver = IF.createParticipantIdentifierWithDefaultScheme ("9915:test");
