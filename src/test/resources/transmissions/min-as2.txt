@@ -1,0 +1,64 @@
+content-type=multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;    boundary="----=_Part_1_2133876532.1508507209855"
+subject=OpenPEPPOL AS2 message
+message-id=<OpenPEPPOL-20102017154649+0200-9154@APP_1000000309_APP_1000000309>
+disposition-notification-to=dummy
+Connection=close, TE
+User-Agent=ph-OpenAS2/AS2Sender
+Date=Fr, 20 Okt 2017 15:46:49 +0200
+Message-ID=<OpenPEPPOL-20102017154649+0200-9154@APP_1000000309_APP_1000000309>
+Mime-Version=1.0
+Content-Type=multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;    boundary="----=_Part_1_2133876532.1508507209855"
+AS2-Version=1.1
+Recipient-Address=https://test.erechnung.gv.at/as2
+AS2-From=APP_1000000309
+AS2-To=APP_1000000309
+Subject=OpenPEPPOL AS2 message
+From=peppol@example.org
+Content-Transfer-Encoding=
+Disposition-Notification-Options=signed-receipt-protocol=required, pkcs7-signature; signed-receipt-micalg=required, sha-256
+
+------=_Part_1_2133876532.1508507209855
+Content-Type: application/xml
+Content-Transfer-Encoding: binary
+
+<?xml version="1.0" encoding="UTF-8"?><StandardBusinessDocument xmlns="http://www.unece.org/cefact/namespaces/StandardBusinessDocumentHeader"><StandardBusinessDocumentHeader><HeaderVersion>1.0</HeaderVersion><Sender><Identifier Authority="iso6523-actorid-upis">9999:test-sender</Identifier></Sender><Receiver><Identifier Authority="iso6523-actorid-upis">9915:test</Identifier></Receiver><DocumentIdentification><Standard>urn:as2-as4-benchmark</Standard><TypeVersion>2.1</TypeVersion><InstanceIdentifier>d82e088c-926b-4f5d-bdee-af0131fbd184</InstanceIdentifier><Type>mini</Type><CreationDateAndTime>2017-10-20T15:46:48.328</CreationDateAndTime></DocumentIdentification><BusinessScope><Scope><Type>DOCUMENTID</Type><InstanceIdentifier>urn:oasis:names:specification:ubl:schema:xsd:Invoice-2::Invoice##urn:www.cenbii.eu:transaction:biitrns010:ver2.0:extended:urn:www.peppol.eu:bis:peppol4a:ver2.0::2.1</InstanceIdentifier></Scope><Scope><Type>PROCESSID</Type><InstanceIdentifier>urn:www.cenbii.eu:profile:bii04:ver2.0</InstanceIdentifier></Scope></BusinessScope></StandardBusinessDocumentHeader><mini xmlns="urn:as2-as4-benchmark"></mini></StandardBusinessDocument>
+------=_Part_1_2133876532.1508507209855
+Content-Type: application/pkcs7-signature; name=smime.p7s; smime-type=signed-data
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="smime.p7s"
+Content-Description: S/MIME Cryptographic Signature
+
+MIAGCSqGSIb3DQEHAqCAMIACAQExDzANBglghkgBZQMEAgEFADCABgkqhkiG9w0BBwEAAKCAMIIE
+dzCCA1+gAwIBAgIQV9I9fBtklKClHXaghN4VuzANBgkqhkiG9w0BAQsFADB9MQswCQYDVQQGEwJE
+SzEnMCUGA1UEChMeTkFUSU9OQUwgSVQgQU5EIFRFTEVDT00gQUdFTkNZMR8wHQYDVQQLExZGT1Ig
+VEVTVCBQVVJQT1NFUyBPTkxZMSQwIgYDVQQDExtQRVBQT0wgQUNDRVNTIFBPSU5UIFRFU1QgQ0Ew
+HhcNMTcwMzAzMDAwMDAwWhcNMTkwMzAzMjM1OTU5WjBJMQswCQYDVQQGEwJBVDEhMB8GA1UECgwY
+QnVuZGVzcmVjaGVuemVudHJ1bSBHbWJIMRcwFQYDVQQDDA5BUFBfMTAwMDAwMDMwOTCCASIwDQYJ
+KoZIhvcNAQEBBQADggEPADCCAQoCggEBALmdky6NkLpC8/DMxZffIUNZhTKg/ZdmwZOTFe41mTif
+G4zoMTvlj6UChuRV65ZdKkdmazOAR5jbjyhqDBH53SC2iTsPMeUnnhAyUF2FASt30a1Hvjxccgl2
+JqfHjwx1re8vaoWK4+hMGYS+Ynk6D7jlhk7+PFCX9lz+IDY94jV7YZxXpcarZdYdrOJ7Q6M3eiZZ
+PIcYpmlffQ7n5MuSju5bH0/H9aVt7EOI4u/n4CsF/M+euG/eXN5Ll/g+vtWvU7k2EbzWAaRZOihK
+LxXP55r0GdfBo+MwfmGXjcRnBM1y/wXYMKP6vOP2wnpck7Fza/wPuITDRxxZOaXKmQyU89sCAwEA
+AaOCASUwggEhMAkGA1UdEwQCMAAwCwYDVR0PBAQDAgO4MHYGA1UdHwRvMG0wa6BpoGeGZWh0dHA6
+Ly9waWxvdG9uc2l0ZWNybC52ZXJpc2lnbi5jb20vRGlnaXRhbGlzZXJpbmdzc3R5cmVsc2VuUGls
+b3RPcGVuUEVQUE9MQUNDRVNTUE9JTlRDQS9MYXRlc3RDUkwuY3JsMB8GA1UdIwQYMBaAFPeWixlM
+ruJWIQC+hv16R6ydygV1MB0GA1UdDgQWBBQbHk7j8xsJXV4O7e8ZdUDkxB+YtzA6BggrBgEFBQcB
+AQQuMCwwKgYIKwYBBQUHMAGGHmh0dHA6Ly9waWxvdC1vY3NwLnZlcmlzaWduLmNvbTATBgNVHSUE
+DDAKBggrBgEFBQcDAjANBgkqhkiG9w0BAQsFAAOCAQEAiFcJVpX8akMuF2UEZjHolErmhXnG7AS9
+WCq5P63LTep8dvnI8xWf7mC38vVbE2iob3ohki3RFTqYw7UMHpZXXL4+jnZhbKE6kQzuH10YWY6j
+YvZRv23e19DBAW7u0LZp2xKxLAyGh8u/73GCefVnt5+Z1wAcodB1Ehz4I345L71iL4HnjEpDQcfu
+gS1725LJPocz/yVGqJnLbYmkoSdDE4Ol5qQl/qQzW/rGDOVH68cSW5iDJPQOY00ZRuilnaMePqmc
+zfAfdyFp7rPlU+UKUNyRwpMjKQC3swPut+tzCOGS/5Y6jSfk44ZCPXMBdLx4WLANXZW3F9UDAjo/
+M+UvNwAAMYICdjCCAnICAQEwgZEwfTELMAkGA1UEBhMCREsxJzAlBgNVBAoTHk5BVElPTkFMIElU
+IEFORCBURUxFQ09NIEFHRU5DWTEfMB0GA1UECxMWRk9SIFRFU1QgUFVSUE9TRVMgT05MWTEkMCIG
+A1UEAxMbUEVQUE9MIEFDQ0VTUyBQT0lOVCBURVNUIENBAhBX0j18G2SUoKUddqCE3hW7MA0GCWCG
+SAFlAwQCAQUAoIG2MBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTE3
+MTAyMDEzNDY0OVowHAYJKoZIhvcNAQkPMQ8wDTALBglghkgBZQMEAgEwLQYJKoZIhvcNAQk0MSAw
+HjANBglghkgBZQMEAgEFAKENBgkqhkiG9w0BAQsFADAvBgkqhkiG9w0BCQQxIgQgeIKPz2fy2SjV
+epMZdOAcBGOfI39Ja6Bk/cHoNg1l2QYwDQYJKoZIhvcNAQELBQAEggEALBeS6TKEIZJ4zoWb3+t/
+ze7d1wLM4SB4zMmAh6OYyANwWuFA7TKe6FXG2qU1S1W4tGRiHKKjaZa39+lUzdVwKe337CP8CMLs
+TjOhxwxXP+B5bCov29otVnZ49ldp4CtSjvHVdZ2/k/+Ppt+xJ/GfqitlbP4DzC2pbYfcMn2IB8Qi
++3ajZsFYIQ44O2bYOHb2+yJPx8lrVHHlAllpqJ0HHRKur8w/6SPL1wPQQLJH1Xd0buSdQza7aDyg
+5sDFIFby2aFrQ6gNbHBebPbCbgnyVJRXxqOk56wNtxKrlWMNJli7gH6091vYZal2OZoqXad60oOO
+dpHNu5L+2BLXK2A+uAAAAAAAAA==
+------=_Part_1_2133876532.1508507209855--
