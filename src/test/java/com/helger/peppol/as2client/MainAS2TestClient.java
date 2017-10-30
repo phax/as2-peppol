@@ -246,7 +246,7 @@ public final class MainAS2TestClient
       if (false)
         sReceiverAddress = "https://test-notier.regione.emilia-romagna.it/notier/rest/v1.0/documenti/invio";
 
-      // Next two settings, to specify I'm seding an order, NOT an invoice
+      // Next two settings, to specify I'm sending an order, NOT an invoice
       aDocTypeID = EPredefinedDocumentTypeIdentifier.ORDER_T001_BIS03A_V20.getAsDocumentTypeIdentifier ();
       aDocTypeID = IF.createDocumentTypeIdentifierWithDefaultScheme ("urn:oasis:names:specification:ubl:schema:xsd:Order-2::Order#urn:www.cenbii.eu:transaction:biitrns001:ver2.0:extended:urn:www.peppol.eu:bis:peppol3a:ver2.0::2.1");
       aProcessID = EPredefinedProcessIdentifier.BIS03A_V20.getAsProcessIdentifier ();
@@ -283,7 +283,7 @@ public final class MainAS2TestClient
       sTestFilename = "xml/as2-test-at-gov.xml";
       aSML = ESML.DIGIT_TEST;
     }
-    if (false)
+    if (true)
     {
       // localhost test endpoint
       aReceiver = IF.createParticipantIdentifierWithDefaultScheme ("9915:test");
@@ -315,7 +315,7 @@ public final class MainAS2TestClient
       aProcessID = IF.createProcessIdentifierWithDefaultScheme ("urn:www.cenbii.eu:profile:bii05:ver2.0");
       bDebugIncoming = true;
     }
-    if (true)
+    if (false)
     {
       // Elcom Test Invoice (on SML)
       aReceiver = IF.createParticipantIdentifierWithDefaultScheme ("0088:5060412690004");
