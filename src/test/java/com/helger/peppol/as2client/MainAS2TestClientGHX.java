@@ -36,6 +36,7 @@ import com.helger.peppol.identifier.generic.participant.IParticipantIdentifier;
 import com.helger.peppol.identifier.generic.process.IProcessIdentifier;
 import com.helger.peppol.smpclient.SMPClientConfiguration;
 import com.helger.peppol.smpclient.SMPClientReadOnly;
+import com.helger.security.keystore.EKeyStoreType;
 
 /**
  * Main class to send AS2 messages.
@@ -96,8 +97,9 @@ public final class MainAS2TestClientGHX
     }
 
     final AS2ClientResponse aResponse = new AS2ClientBuilder ().setSMPClient (new SMPClientReadOnly (URI.create ("http://127.0.0.1")))
-                                                               .setPKCS12KeyStore (new File (PKCS12_CERTSTORE_PATH),
-                                                                                   PKCS12_CERTSTORE_PASSWORD)
+                                                               .setKeyStore (EKeyStoreType.PKCS12,
+                                                                             new File (PKCS12_CERTSTORE_PATH),
+                                                                             PKCS12_CERTSTORE_PASSWORD)
                                                                .setSenderAS2ID (SENDER_AS2_ID)
                                                                .setSenderAS2Email (SENDER_EMAIL)
                                                                .setSenderAS2KeyAlias (SENDER_KEY_ALIAS)

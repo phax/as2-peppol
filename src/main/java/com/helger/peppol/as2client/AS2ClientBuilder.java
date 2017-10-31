@@ -78,6 +78,8 @@ import com.helger.peppol.smpclient.exception.SMPClientException;
 import com.helger.peppol.smpclient.exception.SMPClientNotFoundException;
 import com.helger.sbdh.CSBDH;
 import com.helger.sbdh.SBDMarshaller;
+import com.helger.security.keystore.EKeyStoreType;
+import com.helger.security.keystore.IKeyStoreType;
 import com.helger.xml.namespace.INamespaceContext;
 import com.helger.xml.namespace.MapBasedNamespaceContext;
 import com.helger.xml.serialize.read.DOMReader;
@@ -105,6 +107,7 @@ public class AS2ClientBuilder
   private static final Logger s_aLogger = LoggerFactory.getLogger (AS2ClientBuilder.class);
 
   private IAS2ClientBuilderMessageHandler m_aMessageHandler = new DefaultAS2ClientBuilderMessageHandler ();
+  private IKeyStoreType m_aKeyStoreType;
   private File m_aKeyStoreFile;
   private String m_sKeyStorePassword;
   private boolean m_bSaveKeyStoreChangesToFile = IStorableCertificateFactory.DEFAULT_SAVE_CHANGES_TO_FILE;
@@ -182,9 +185,35 @@ public class AS2ClientBuilder
    * @return this for chaining
    */
   @Nonnull
+  @Deprecated
   public AS2ClientBuilder setPKCS12KeyStore (@Nullable final File aKeyStoreFile,
                                              @Nullable final String sKeyStorePassword)
   {
+    return setKeyStore (EKeyStoreType.PKCS12, aKeyStoreFile, sKeyStorePassword);
+  }
+
+  /**
+   * Set the key store type, file and password for the AS2 client. The key store
+   * must be an existing containing at least the key alias of the sender (see
+   * {@link #setSenderAS2ID(String)}). The key store file must be writable as
+   * dynamically certificates of partners are added.
+   *
+   * @param aKeyStoreType
+   *        The key store type. May not be <code>null</code>.
+   * @param aKeyStoreFile
+   *        The existing key store file. Must exist and may not be
+   *        <code>null</code>.
+   * @param sKeyStorePassword
+   *        The password to the key store. May not be <code>null</code> but
+   *        empty.
+   * @return this for chaining
+   */
+  @Nonnull
+  public AS2ClientBuilder setKeyStore (@Nullable final IKeyStoreType aKeyStoreType,
+                                       @Nullable final File aKeyStoreFile,
+                                       @Nullable final String sKeyStorePassword)
+  {
+    m_aKeyStoreType = aKeyStoreType;
     m_aKeyStoreFile = aKeyStoreFile;
     m_sKeyStorePassword = sKeyStorePassword;
     return this;
@@ -806,28 +835,31 @@ public class AS2ClientBuilder
    */
   public void verifyContent () throws AS2ClientBuilderException
   {
+    if (m_aKeyStoreType == null)
+      m_aMessageHandler.error ("No AS2 key store type is defined");
+
     if (m_aKeyStoreFile == null)
-      m_aMessageHandler.error ("No AS2 key store is defined");
+      m_aMessageHandler.error ("No AS2 key store file is defined");
     else
     {
       if (!m_aKeyStoreFile.exists ())
-        m_aMessageHandler.error ("The provided AS2 key store '" +
+        m_aMessageHandler.error ("The provided AS2 key store file '" +
                                  m_aKeyStoreFile.getAbsolutePath () +
                                  "' does not exist.");
       else
         if (!m_aKeyStoreFile.isFile ())
-          m_aMessageHandler.error ("The provided AS2 key store '" +
+          m_aMessageHandler.error ("The provided AS2 key store file '" +
                                    m_aKeyStoreFile.getAbsolutePath () +
                                    "' is not a file but potentially a directory.");
         else
           if (!m_aKeyStoreFile.canWrite ())
-            m_aMessageHandler.error ("The provided AS2 key store '" +
+            m_aMessageHandler.error ("The provided AS2 key store file '" +
                                      m_aKeyStoreFile.getAbsolutePath () +
                                      "' is not writable. As it is dynamically modified, it must be writable.");
 
     }
     if (m_sKeyStorePassword == null)
-      m_aMessageHandler.error ("No key store password provided. If you need an empty password, please provide an empty String!");
+      m_aMessageHandler.error ("No AS2 key store password provided. If you need an empty password, please provide an empty String!");
 
     if (StringHelper.hasNoText (m_sAS2Subject))
       m_aMessageHandler.error ("The AS2 message subject is missing");
@@ -1092,7 +1124,7 @@ public class AS2ClientBuilder
     // Start building the AS2 client settings
     final AS2ClientSettings aAS2ClientSettings = new AS2ClientSettings ();
     // Key store
-    aAS2ClientSettings.setKeyStore (m_aKeyStoreFile, m_sKeyStorePassword);
+    aAS2ClientSettings.setKeyStore (m_aKeyStoreType, m_aKeyStoreFile, m_sKeyStorePassword);
     aAS2ClientSettings.setSaveKeyStoreChangesToFile (m_bSaveKeyStoreChangesToFile);
 
     // Fixed sender

@@ -22,6 +22,8 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.security.Security;
 
+import javax.annotation.Nonnull;
+
 import org.apache.http.HttpHost;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.slf4j.Logger;
@@ -59,6 +61,8 @@ import com.helger.peppol.smpclient.SMPClientConfiguration;
 import com.helger.peppol.smpclient.SMPClientReadOnly;
 import com.helger.peppol.url.IPeppolURLProvider;
 import com.helger.peppol.url.PeppolURLProvider;
+import com.helger.security.keystore.EKeyStoreType;
+import com.helger.security.keystore.IKeyStoreType;
 
 /**
  * Main class to send AS2 messages.
@@ -89,6 +93,12 @@ public final class MainAS2TestClient
     GlobalDebug.setDebugModeDirect (false);
   }
 
+  @Nonnull
+  private static IKeyStoreType _getKeyStoreType (final boolean bProd)
+  {
+    return bProd ? EKeyStoreType.PKCS12 : EKeyStoreType.PKCS12;
+  }
+
   /** The file path to the PKCS12 key store */
   private static String _getKeyStorePath (final boolean bProd)
   {
@@ -96,9 +106,9 @@ public final class MainAS2TestClient
   }
 
   /** The password to open the PKCS12 key store */
-  private static String _getKeyStorePassword ()
+  private static String _getKeyStorePassword (final boolean bProd)
   {
-    return "peppol";
+    return bProd ? "peppol" : "peppol";
   }
 
   /** Your AS2 sender ID */
@@ -392,8 +402,9 @@ public final class MainAS2TestClient
     {
       final boolean bProd = aSML == ESML.DIGIT_PRODUCTION;
       final AS2ClientResponse aResponse = new AS2ClientBuilder ().setSMPClient (aSMPClient)
-                                                                 .setPKCS12KeyStore (new File (_getKeyStorePath (bProd)),
-                                                                                     _getKeyStorePassword ())
+                                                                 .setKeyStore (_getKeyStoreType (bProd),
+                                                                               new File (_getKeyStorePath (bProd)),
+                                                                               _getKeyStorePassword (bProd))
                                                                  .setSaveKeyStoreChangesToFile (false)
                                                                  .setSenderAS2ID (_getSenderAS2ID (bProd))
                                                                  .setSenderAS2Email (SENDER_EMAIL)

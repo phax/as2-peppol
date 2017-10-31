@@ -59,6 +59,8 @@ import com.helger.peppol.smpclient.SMPClientConfiguration;
 import com.helger.peppol.smpclient.SMPClientReadOnly;
 import com.helger.peppol.url.IPeppolURLProvider;
 import com.helger.peppol.url.PeppolURLProvider;
+import com.helger.security.keystore.EKeyStoreType;
+import com.helger.security.keystore.IKeyStoreType;
 
 /**
  * Main class to send AS2 messages.
@@ -87,6 +89,12 @@ public final class MainAS2TestClientUpNxt
 
     // Enable or disable debug mode
     GlobalDebug.setDebugModeDirect (false);
+  }
+
+  @Nonnull
+  private static IKeyStoreType _getKeyStoreType ()
+  {
+    return EKeyStoreType.PKCS12;
   }
 
   /** The file path to the PKCS12 key store */
@@ -176,7 +184,7 @@ public final class MainAS2TestClientUpNxt
           return aVESRegistry;
         }
       }.setSMPClient (aSMPClient)
-       .setPKCS12KeyStore (new File (_getKeyStorePath ()), _getKeyStorePassword ())
+       .setKeyStore (_getKeyStoreType (), new File (_getKeyStorePath ()), _getKeyStorePassword ())
        .setSaveKeyStoreChangesToFile (false)
        .setSenderAS2ID (_getSenderAS2ID ())
        .setSenderAS2Email (SENDER_EMAIL)

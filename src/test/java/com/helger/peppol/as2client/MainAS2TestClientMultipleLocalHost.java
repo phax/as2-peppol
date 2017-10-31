@@ -47,6 +47,7 @@ import com.helger.peppol.smpclient.SMPClientConfiguration;
 import com.helger.peppol.smpclient.SMPClientReadOnly;
 import com.helger.peppol.url.IPeppolURLProvider;
 import com.helger.peppol.url.PeppolURLProvider;
+import com.helger.security.keystore.EKeyStoreType;
 
 /**
  * Main class to send AS2 messages.
@@ -135,8 +136,9 @@ public final class MainAS2TestClientMultipleLocalHost
       try
       {
         final AS2ClientResponse aResponse = new AS2ClientBuilder ().setSMPClient (aSMPClient)
-                                                                   .setPKCS12KeyStore (new File (PKCS12_CERTSTORE_PATH),
-                                                                                       PKCS12_CERTSTORE_PASSWORD)
+                                                                   .setKeyStore (EKeyStoreType.PKCS12,
+                                                                                 new File (PKCS12_CERTSTORE_PATH),
+                                                                                 PKCS12_CERTSTORE_PASSWORD)
                                                                    .setSaveKeyStoreChangesToFile (false)
                                                                    .setSenderAS2ID (SENDER_AS2_ID)
                                                                    .setSenderAS2Email (SENDER_EMAIL)
