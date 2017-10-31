@@ -70,7 +70,8 @@ public final class MainAS2TestClientGHX
     SMPClientConfiguration.getConfigFile ().applyAllNetworkSystemProperties ();
 
     // Must be first!
-    Security.addProvider (new BouncyCastleProvider ());
+    if (Security.getProvider (BouncyCastleProvider.PROVIDER_NAME) == null)
+      Security.addProvider (new BouncyCastleProvider ());
 
     // Enable or disable debug mode
     GlobalDebug.setDebugModeDirect (false);
