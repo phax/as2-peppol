@@ -18,6 +18,7 @@ This project is licensed under the Apache 2 License.
     * Updated to ph-commons 9.0.0
     * The `StandardBusinessDocument` send out, uses the default XML namespace prefix ("") instead of "sh"
     * Updated to BouncyCastle 1.58
+    * Arbitrary key store types can now be used for sending (no more limitation to PKCS12)
   * v2.0.7 - 2017-07-27
     * Added possibility to customize `Content-Transfer-Encoding` used
     * Using ph-bdve 3.2.0 which improves validation artefact ClassLoader handling
