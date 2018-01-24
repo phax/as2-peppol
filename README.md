@@ -14,29 +14,30 @@ for a detailed description on how it works and how it fits in the overall PEPPOL
 This project is licensed under the Apache 2 License.
 
 # News
-  * v3.0.0 - work in progress
-    * Updated to ph-commons 9.0.0
-    * The `StandardBusinessDocument` send out, uses the default XML namespace prefix ("") instead of "sh"
-    * Updated to BouncyCastle 1.58
-    * Arbitrary key store types can now be used for sending (no more limitation to PKCS12)
-  * v2.0.7 - 2017-07-27
-    * Added possibility to customize `Content-Transfer-Encoding` used
-    * Using ph-bdve 3.2.0 which improves validation artefact ClassLoader handling
-  * v2.0.6 - 2017-06-19
-    * Updated to ph-bdve 3.1.3 for XSLT validation fix
-  * v2.0.5 - 2017-05-23
-    * Added possibility to provide a custom namespace context
-  * v2.0.4 - 2017-05-18
-    * Updated to ph-bdve 3.1.0 (PEPPOL validation 3.4.0)
-  * v2.0.3 - 2017-03-20
-    * Improved customizability of `AS2ClientBuilder`
-  * v2.0.2 - 2017-03-01
-    * Using ph-bdve 3 for validation
-  * v2.0.1 - 2017-01-16
-    * Just a new release with no new features
-    * Binds to ph-commons 8.6.x
-  * v2.0.0 - 2016-08-22
-    * Updated to JDK 8
+
+* v3.0.0 - work in progress
+  * Updated to ph-commons 9.0.0
+  * The `StandardBusinessDocument` send out, uses the default XML namespace prefix ("") instead of "sh"
+  * Updated to BouncyCastle 1.59
+  * Arbitrary key store types can now be used for sending (no more limitation to PKCS12)
+* v2.0.7 - 2017-07-27
+  * Added possibility to customize `Content-Transfer-Encoding` used
+  * Using ph-bdve 3.2.0 which improves validation artefact ClassLoader handling
+* v2.0.6 - 2017-06-19
+  * Updated to ph-bdve 3.1.3 for XSLT validation fix
+* v2.0.5 - 2017-05-23
+  * Added possibility to provide a custom namespace context
+* v2.0.4 - 2017-05-18
+  * Updated to ph-bdve 3.1.0 (PEPPOL validation 3.4.0)
+* v2.0.3 - 2017-03-20
+  * Improved customizability of `AS2ClientBuilder`
+* v2.0.2 - 2017-03-01
+  * Using ph-bdve 3 for validation
+* v2.0.1 - 2017-01-16
+  * Just a new release with no new features
+  * Binds to ph-commons 8.6.x
+* v2.0.0 - 2016-08-22
+  * Updated to JDK 8
 
 # Configuration
 
