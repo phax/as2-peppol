@@ -22,6 +22,7 @@ import java.net.Proxy;
 import java.nio.charset.StandardCharsets;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.util.Locale;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -1040,7 +1041,8 @@ public class AS2ClientBuilder
                                            " is unknown!");
 
     final ValidationExecutionManager aVEM = aVES.createExecutionManager ();
-    final ValidationResultList aValidationResult = aVEM.executeValidation (ValidationSource.create (null, aXML));
+    final ValidationResultList aValidationResult = aVEM.executeValidation (ValidationSource.create (null, aXML),
+                                                                           (Locale) null);
     if (aValidationResult.containsAtLeastOneError ())
       throw new AS2ClientBuilderValidationException (aValidationResult);
   }
