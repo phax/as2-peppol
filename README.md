@@ -13,10 +13,10 @@ for a detailed description on how it works and how it fits in the overall PEPPOL
 
 This project is licensed under the Apache 2 License.
 
-# News
+# News and Noteworthy
 
-* v3.0.0 - work in progress
-  * Updated to ph-commons 9.0.0
+* v3.0.0 - 2018-02-12
+  * Updated to ph-commons 9.0.1
   * The `StandardBusinessDocument` send out, uses the default XML namespace prefix ("") instead of "sh"
   * Updated to BouncyCastle 1.59
   * Arbitrary key store types can now be used for sending (no more limitation to PKCS12)
@@ -77,7 +77,7 @@ Add the following to your `pom.xml` to use this artifact:
 <dependency>
   <groupId>com.helger</groupId>
   <artifactId>as2-peppol-client</artifactId>
-  <version>2.0.7</version>
+  <version>3.0.0</version>
 </dependency>
 ```
 
