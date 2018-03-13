@@ -22,7 +22,7 @@
   <parent>
     <groupId>com.helger</groupId>
     <artifactId>parent-pom</artifactId>
-    <version>1.10.0</version>
+    <version>1.10.2</version>
   </parent>
   <artifactId>as2-peppol-client</artifactId>
   <version>3.0.1-SNAPSHOT</version>
@@ -92,14 +92,14 @@
       <dependency>
         <groupId>com.helger</groupId>
         <artifactId>peppol-commons-parent-pom</artifactId>
-        <version>6.0.1</version>
+        <version>6.0.2</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
       <dependency>
         <groupId>com.helger</groupId>
         <artifactId>ph-bdve-parent-pom</artifactId>
-        <version>4.0.3</version>
+        <version>4.0.4</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
