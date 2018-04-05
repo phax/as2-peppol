@@ -15,6 +15,9 @@ This project is licensed under the Apache 2 License.
 
 # News and Noteworthy
 
+* v3.0.1 - 2018-04-05
+  * Updated to as2-lib 4.0.2 fixing usage of BC PKCS 12 keystore instead of JDK PKCS 12 keystore
+  * Exceptions in MDN processing are now propagated to the outside world
 * v3.0.0 - 2018-02-12
   * Updated to ph-commons 9.0.1
   * The `StandardBusinessDocument` send out, uses the default XML namespace prefix ("") instead of "sh"
@@ -77,7 +80,7 @@ Add the following to your `pom.xml` to use this artifact:
 <dependency>
   <groupId>com.helger</groupId>
   <artifactId>as2-peppol-client</artifactId>
-  <version>3.0.0</version>
+  <version>3.0.1</version>
 </dependency>
 ```
 
