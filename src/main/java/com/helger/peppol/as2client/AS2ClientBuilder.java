@@ -53,7 +53,6 @@ import com.helger.bdve.source.ValidationSource;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.OverrideOnDemand;
 import com.helger.commons.email.EmailAddressHelper;
-import com.helger.commons.factory.FactoryNewInstance;
 import com.helger.commons.functional.ISupplier;
 import com.helger.commons.http.CHttpHeader;
 import com.helger.commons.io.resource.FileSystemResource;
@@ -133,7 +132,11 @@ public class AS2ClientBuilder
   private IProcessIdentifier m_aPeppolProcessID;
   private VESID m_aVESID;
   private SMPClientReadOnly m_aSMPClient;
-  private ISupplier <AS2Client> m_aAS2ClientFactory = FactoryNewInstance.create (AS2Client.class, true);
+  private ISupplier <AS2Client> m_aAS2ClientFactory = () -> {
+    final AS2Client ret = new AS2Client ();
+    // Use this special sender module factory
+    return ret.setAS2SenderModuleFactory (PeppolAS2SenderModule::new);
+  };
   private ValidationExecutorSetRegistry m_aVESRegistry;
   private INamespaceContext m_aNamespaceContext;
   private EContentTransferEncoding m_eCTE = EContentTransferEncoding.AS2_DEFAULT;
