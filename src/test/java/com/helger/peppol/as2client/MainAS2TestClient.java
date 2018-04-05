@@ -294,7 +294,7 @@ public final class MainAS2TestClient
       sTestFilename = "xml/as2-test-at-gov.xml";
       aSML = ESML.DIGIT_TEST;
     }
-    if (true)
+    if (false)
     {
       // localhost test endpoint
       aReceiver = IF.createParticipantIdentifierWithDefaultScheme ("9915:test");
@@ -346,6 +346,14 @@ public final class MainAS2TestClient
       bDebugIncoming = false;
       eMICAlg = ECryptoAlgorithmSign.DIGEST_SHA_256;
       aSML = ESML.DIGIT_TEST;
+    }
+    if (true)
+    {
+      // Jonas test 1
+      aReceiver = IF.createParticipantIdentifierWithDefaultScheme ("9937:lt343639811");
+      sTestFilename = "xml/Use Case 1.a_ExampleFile_PEPPOL BIS.xml";
+      // aSML = ESML.DIGIT_TEST;
+      // bDebugOutgoing = true;
     }
 
     // Debug outgoing (AS2 message)?
