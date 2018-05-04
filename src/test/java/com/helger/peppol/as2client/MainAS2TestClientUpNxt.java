@@ -128,7 +128,7 @@ public final class MainAS2TestClientUpNxt
     /** The PEPPOL document type to use. */
     final IDocumentTypeIdentifier aDocTypeID = EPredefinedDocumentTypeIdentifier.INVOICE_T010_BIS4A_V20.getAsDocumentTypeIdentifier ();
     /** The PEPPOL process to use. */
-    final IProcessIdentifier aProcessID = EPredefinedProcessIdentifier.BIS4A_V20.getAsProcessIdentifier ();
+    final IProcessIdentifier aProcessID = EPredefinedProcessIdentifier.BIS4A_V2.getAsProcessIdentifier ();
     final IParticipantIdentifier aReceiver = IF.createParticipantIdentifierWithDefaultScheme ("9915:test");
     final IReadableResource aTestResource = new ClassPathResource ("xml/si/a1_extended.xml");
     final String sReceiverID = _getSenderAS2ID ();

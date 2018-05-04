@@ -130,7 +130,7 @@ public final class MainAS2TestClient
     /** The PEPPOL document type to use. */
     IDocumentTypeIdentifier aDocTypeID = EPredefinedDocumentTypeIdentifier.INVOICE_T010_BIS4A_V20.getAsDocumentTypeIdentifier ();
     /** The PEPPOL process to use. */
-    IProcessIdentifier aProcessID = EPredefinedProcessIdentifier.BIS4A_V20.getAsProcessIdentifier ();
+    IProcessIdentifier aProcessID = EPredefinedProcessIdentifier.BIS4A_V2.getAsProcessIdentifier ();
     IParticipantIdentifier aReceiver = null;
     String sTestFilename = null;
     IReadableResource aTestResource = null;
@@ -248,7 +248,7 @@ public final class MainAS2TestClient
     {
       aReceiver = IF.createParticipantIdentifierWithDefaultScheme ("9932:856922195");
       aDocTypeID = EPredefinedDocumentTypeIdentifier.ORDER_T001_BIS03A_V20.getAsDocumentTypeIdentifier ();
-      aProcessID = EPredefinedProcessIdentifier.BIS03A_V20.getAsProcessIdentifier ();
+      aProcessID = EPredefinedProcessIdentifier.BIS3A_V2.getAsProcessIdentifier ();
       sTestFilename = "xml/as2-order.xml";
     }
     if (false)
@@ -260,7 +260,7 @@ public final class MainAS2TestClient
       // Next two settings, to specify I'm sending an order, NOT an invoice
       aDocTypeID = EPredefinedDocumentTypeIdentifier.ORDER_T001_BIS03A_V20.getAsDocumentTypeIdentifier ();
       aDocTypeID = IF.createDocumentTypeIdentifierWithDefaultScheme ("urn:oasis:names:specification:ubl:schema:xsd:Order-2::Order#urn:www.cenbii.eu:transaction:biitrns001:ver2.0:extended:urn:www.peppol.eu:bis:peppol3a:ver2.0::2.1");
-      aProcessID = EPredefinedProcessIdentifier.BIS03A_V20.getAsProcessIdentifier ();
+      aProcessID = EPredefinedProcessIdentifier.BIS3A_V2.getAsProcessIdentifier ();
 
       sTestFilename = "xml/ordine-FA-2017-896-RIETI.xml";
       aSML = ESML.DIGIT_TEST;
@@ -331,7 +331,7 @@ public final class MainAS2TestClient
       // Elcom Test Invoice (on SML)
       aReceiver = IF.createParticipantIdentifierWithDefaultScheme ("0088:5060412690004");
       aDocTypeID = EPredefinedDocumentTypeIdentifier.INVOICE_T010_BIS5A_V20.getAsDocumentTypeIdentifier ();
-      aProcessID = EPredefinedProcessIdentifier.BIS5A_V20.getAsProcessIdentifier ();
+      aProcessID = EPredefinedProcessIdentifier.BIS5A_V2.getAsProcessIdentifier ();
       sTestFilename = "xml/as2-test-at-gov.xml";
       bDebugOutgoing = false;
       bDebugIncoming = false;

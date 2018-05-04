@@ -92,7 +92,7 @@ public final class MainAS2TestClientMultipleLocalHost
     /** The PEPPOL document type to use. */
     final IDocumentTypeIdentifier aDocTypeID = EPredefinedDocumentTypeIdentifier.INVOICE_T010_BIS4A_V20.getAsDocumentTypeIdentifier ();
     /** The PEPPOL process to use. */
-    final IProcessIdentifier aProcessID = EPredefinedProcessIdentifier.BIS4A_V20.getAsProcessIdentifier ();
+    final IProcessIdentifier aProcessID = EPredefinedProcessIdentifier.BIS4A_V2.getAsProcessIdentifier ();
     IParticipantIdentifier aReceiver = null;
     String sTestFilename = null;
     IReadableResource aTestResource = null;
