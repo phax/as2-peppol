@@ -18,9 +18,7 @@ package com.helger.peppol.as2client;
 
 import java.io.File;
 import java.net.URI;
-import java.security.Security;
 
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -69,10 +67,6 @@ public final class MainAS2TestClientGHX
   {
     // Set Proxy Settings from property file.
     SMPClientConfiguration.getConfigFile ().applyAllNetworkSystemProperties ();
-
-    // Must be first!
-    if (Security.getProvider (BouncyCastleProvider.PROVIDER_NAME) == null)
-      Security.addProvider (new BouncyCastleProvider ());
 
     // Enable or disable debug mode
     GlobalDebug.setDebugModeDirect (false);
