@@ -17,6 +17,7 @@ This project is licensed under the Apache 2 License.
 
 * v3.0.2 - work in progess
   * Updated to ph-commons 9.1.2
+  * Updated to as2-lib 4.1.0
 * v3.0.1 - 2018-04-05
   * Updated to as2-lib 4.0.2 fixing usage of BC PKCS 12 keystore instead of JDK PKCS 12 keystore
   * Exceptions in MDN processing are now propagated to the outside world
