@@ -320,9 +320,9 @@ public final class MainAS2TestClient
       aProcessID = IF.createProcessIdentifierWithDefaultScheme ("urn:www.cenbii.eu:profile:bii05:ver2.0");
       bDebugIncoming = true;
     }
-    if (false)
+    if (true)
     {
-      // Elcom Test Invoice (on SML)
+      // Elcom Test Invoice (on SMK)
       aReceiver = IF.createParticipantIdentifierWithDefaultScheme ("0088:5060412690004");
       aDocTypeID = EPredefinedDocumentTypeIdentifier.INVOICE_T010_BIS5A_V20.getAsDocumentTypeIdentifier ();
       aProcessID = EPredefinedProcessIdentifier.BIS5A_V2.getAsProcessIdentifier ();
@@ -330,6 +330,7 @@ public final class MainAS2TestClient
       bDebugOutgoing = false;
       bDebugIncoming = false;
       eMICAlg = ECryptoAlgorithmSign.DIGEST_SHA1;
+      aSML = ESML.DIGIT_PRODUCTION;
     }
     if (false)
     {
@@ -341,7 +342,7 @@ public final class MainAS2TestClient
       eMICAlg = ECryptoAlgorithmSign.DIGEST_SHA_256;
       aSML = ESML.DIGIT_TEST;
     }
-    if (true)
+    if (false)
     {
       // Jonas test 1
       aReceiver = IF.createParticipantIdentifierWithDefaultScheme ("9937:lt343639811");
