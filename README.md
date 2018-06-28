@@ -2,7 +2,6 @@
 
 [![Build Status](https://travis-ci.org/phax/as2-peppol-client.svg?branch=master)](https://travis-ci.org/phax/as2-peppol-client)
 ﻿
-
 An example AS2 client to easily send AS2 messages to PEPPOL.
 This AS2 client is based on my **[as2-lib](https://github.com/phax/as2-lib)** library.
 
@@ -15,9 +14,11 @@ This project is licensed under the Apache 2 License.
 
 # News and Noteworthy
 
-* v3.0.2 - work in progess
+* v3.0.2 - 2018-06-28
   * Updated to ph-commons 9.1.2
   * Updated to as2-lib 4.1.0
+  * Updated ph-bdve to 5.0
+  * Removed mandatory dependency to ph-bdve-simplerinvoicing
 * v3.0.1 - 2018-04-05
   * Updated to as2-lib 4.0.2 fixing usage of BC PKCS 12 keystore instead of JDK PKCS 12 keystore
   * Exceptions in MDN processing are now propagated to the outside world
@@ -83,7 +84,7 @@ Add the following to your `pom.xml` to use this artifact:
 <dependency>
   <groupId>com.helger</groupId>
   <artifactId>as2-peppol-client</artifactId>
-  <version>3.0.1</version>
+  <version>3.0.2</version>
 </dependency>
 ```
 
