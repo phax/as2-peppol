@@ -16,3 +16,6 @@ hs_err_pid*
 /target/
 /as2-sent-data/
 **/*.iml
+/.settings/ 
+/.project 
+/.classpath 
