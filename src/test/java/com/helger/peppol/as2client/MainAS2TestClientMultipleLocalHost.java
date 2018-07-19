@@ -69,7 +69,7 @@ public final class MainAS2TestClientMultipleLocalHost
   /** The PEPPOL sender participant ID */
   private static final IParticipantIdentifier SENDER_PEPPOL_ID = IF.createParticipantIdentifierWithDefaultScheme ("9999:test-sender");
 
-  private static final Logger s_aLogger = LoggerFactory.getLogger (MainAS2TestClientMultipleLocalHost.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger (MainAS2TestClientMultipleLocalHost.class);
 
   static
   {
@@ -149,24 +149,24 @@ public final class MainAS2TestClientMultipleLocalHost
                                                                    .setValidationKey (aValidationKey)
                                                                    .sendSynchronous ();
         if (aResponse.hasException ())
-          s_aLogger.warn (aResponse.getAsString ());
+          LOGGER.warn (aResponse.getAsString ());
 
-        s_aLogger.info ("Done " + i);
+        LOGGER.info ("Done " + i);
       }
       catch (final AS2ClientBuilderValidationException ex)
       {
         for (final ValidationResult aVR : ex.getValidationResult ())
           if (aVR.isFailure ())
-            s_aLogger.error (aVR.toString ());
+            LOGGER.error (aVR.toString ());
           else
-            s_aLogger.info (aVR.toString ());
+            LOGGER.info (aVR.toString ());
       }
       catch (final AS2ClientBuilderException ex)
       {
         ex.printStackTrace ();
       }
     aSC.stop ();
-    s_aLogger.info ("Sending " +
+    LOGGER.info ("Sending " +
                     nCount +
                     " docs took " +
                     aSC.getSeconds () +

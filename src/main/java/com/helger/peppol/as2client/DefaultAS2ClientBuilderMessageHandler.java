@@ -34,7 +34,7 @@ import org.slf4j.LoggerFactory;
 @NotThreadSafe
 public class DefaultAS2ClientBuilderMessageHandler implements IAS2ClientBuilderMessageHandler
 {
-  private static final Logger s_aLogger = LoggerFactory.getLogger (DefaultAS2ClientBuilderMessageHandler.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger (DefaultAS2ClientBuilderMessageHandler.class);
 
   private int m_nWarn = 0;
   private int m_nError = 0;
@@ -42,7 +42,7 @@ public class DefaultAS2ClientBuilderMessageHandler implements IAS2ClientBuilderM
   public void warn (@Nonnull final String sMessage)
   {
     m_nWarn++;
-    s_aLogger.warn (sMessage);
+    LOGGER.warn (sMessage);
   }
 
   @Nonnegative

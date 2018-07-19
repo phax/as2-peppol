@@ -76,7 +76,7 @@ public final class MainAS2TestClient
   /** Your AS2 sender email address */
   private static final String SENDER_EMAIL = "peppol@example.org";
 
-  private static final Logger s_aLogger = LoggerFactory.getLogger (MainAS2TestClient.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger (MainAS2TestClient.class);
 
   static
   {
@@ -364,9 +364,9 @@ public final class MainAS2TestClient
     // Debug incoming (AS2 MDN)?
     if (bDebugIncoming)
       HTTPHelper.setHTTPIncomingDumperFactory ( () -> (aHeaderLines, aPayload, aMsg) -> {
-        s_aLogger.info ("Received Headers: " + StringHelper.getImploded ("\n  ", aHeaderLines));
-        s_aLogger.info ("Received Payload: " + new String (aPayload, StandardCharsets.UTF_8));
-        s_aLogger.info ("Received Message: " + aMsg);
+        LOGGER.info ("Received Headers: " + StringHelper.getImploded ("\n  ", aHeaderLines));
+        LOGGER.info ("Received Payload: " + new String (aPayload, StandardCharsets.UTF_8));
+        LOGGER.info ("Received Message: " + aMsg);
       });
 
     // Read resource by filename
@@ -382,12 +382,12 @@ public final class MainAS2TestClient
       final String sProxyHost = aPACHelper.findProxyForURL (aSMPURI.toURL ().toExternalForm (), aSMPURI.getHost ());
       if (sProxyHost != null)
       {
-        s_aLogger.info ("Using proxy '" + sProxyHost + "'");
+        LOGGER.info ("Using proxy '" + sProxyHost + "'");
         final URL aURL = URLHelper.getAsURL (sProxyHost);
         if (aURL != null)
         {
           aProxy = new HttpHost (aURL.getHost (), aURL.getPort ());
-          s_aLogger.info ("  Resolved proxy to '" + aProxy + "'");
+          LOGGER.info ("  Resolved proxy to '" + aProxy + "'");
         }
       }
     }
@@ -427,20 +427,20 @@ public final class MainAS2TestClient
                                                                  .setContentTransferEncoding (eCTE)
                                                                  .sendSynchronous ();
       if (aResponse.hasException ())
-        s_aLogger.warn (aResponse.getAsString ());
+        LOGGER.warn (aResponse.getAsString ());
 
       if (aDebugOS != null)
-        s_aLogger.info ("Outgoing request:\n" + aDebugOS.getAsString (StandardCharsets.UTF_8));
+        LOGGER.info ("Outgoing request:\n" + aDebugOS.getAsString (StandardCharsets.UTF_8));
 
-      s_aLogger.info ("Done");
+      LOGGER.info ("Done");
     }
     catch (final AS2ClientBuilderValidationException ex)
     {
       for (final ValidationResult aVR : ex.getValidationResult ())
         if (aVR.isFailure ())
-          s_aLogger.error (aVR.toString ());
+          LOGGER.error (aVR.toString ());
         else
-          s_aLogger.info (aVR.toString ());
+          LOGGER.info (aVR.toString ());
     }
     catch (final AS2ClientBuilderException ex)
     {

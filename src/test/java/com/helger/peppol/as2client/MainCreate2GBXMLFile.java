@@ -40,23 +40,23 @@ import oasis.names.specification.ubl.schema.xsd.invoice_21.InvoiceType;
  */
 public class MainCreate2GBXMLFile
 {
-  private static final Logger s_aLogger = LoggerFactory.getLogger (MainCreate2GBXMLFile.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger (MainCreate2GBXMLFile.class);
 
   public static void main (final String [] args) throws IOException
   {
-    s_aLogger.info ("Reading");
+    LOGGER.info ("Reading");
     final InvoiceType aInvoice = UBL21Reader.invoice ()
                                             .read (new FileSystemResource ("src/test/resources/xml/as2-test-at-gov.xml"));
 
     final String sNote = StringHelper.getRepeated ('X', 1024);
     final long nNotes = 2 * CGlobal.BYTES_PER_GIGABYTE / sNote.length ();
-    s_aLogger.info ("Adding " + nNotes + " notes");
+    LOGGER.info ("Adding " + nNotes + " notes");
     for (long i = 0; i < nNotes; ++i)
       aInvoice.addNote (new NoteType (sNote));
-    s_aLogger.info ("Writing");
+    LOGGER.info ("Writing");
     UBL21Writer.invoice ()
                .write (aInvoice,
                        new GZIPOutputStream (new FileSystemResource ("src/test/resources/xml/as2-test-at-gov-2gb.gz").getOutputStream (EAppend.TRUNCATE)));
-    s_aLogger.info ("Done");
+    LOGGER.info ("Done");
   }
 }

@@ -61,7 +61,7 @@ public final class MainAS2TestClientGHX
   /** The PEPPOL process to use. */
   private static final IProcessIdentifier PROCESS = IF.createProcessIdentifierWithDefaultScheme ("123");
 
-  private static final Logger s_aLogger = LoggerFactory.getLogger (MainAS2TestClientGHX.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger (MainAS2TestClientGHX.class);
 
   static
   {
@@ -109,8 +109,8 @@ public final class MainAS2TestClientGHX
                                                                .setValidationKey (PeppolValidation360.VID_OPENPEPPOL_T10_V2)
                                                                .sendSynchronous ();
     if (aResponse.hasException ())
-      s_aLogger.warn (aResponse.getAsString ());
+      LOGGER.warn (aResponse.getAsString ());
 
-    s_aLogger.info ("Done");
+    LOGGER.info ("Done");
   }
 }

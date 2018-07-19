@@ -104,7 +104,7 @@ public class AS2ClientBuilder
   /** PEPPOL prefix for AS2 ID and key aliases */
   public static final String APP_PREFIX = "APP_";
 
-  private static final Logger s_aLogger = LoggerFactory.getLogger (AS2ClientBuilder.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger (AS2ClientBuilder.class);
 
   private IAS2ClientBuilderMessageHandler m_aMessageHandler = new DefaultAS2ClientBuilderMessageHandler ();
   private IKeyStoreType m_aKeyStoreType;
@@ -721,8 +721,8 @@ public class AS2ClientBuilder
               SignedServiceMetadataType aServiceMetadata = null;
               try
               {
-                if (s_aLogger.isDebugEnabled ())
-                  s_aLogger.debug ("Performing SMP lookup for receiver '" +
+                if (LOGGER.isDebugEnabled ())
+                  LOGGER.debug ("Performing SMP lookup for receiver '" +
                                    m_aPeppolReceiverID.getURIEncoded () +
                                    "' on document type '" +
                                    m_aPeppolDocumentTypeID.getURIEncoded () +
@@ -734,18 +734,18 @@ public class AS2ClientBuilder
               }
               catch (final SMPClientNotFoundException ex)
               {
-                if (s_aLogger.isDebugEnabled ())
-                  s_aLogger.debug ("No such SMP service registration", ex);
+                if (LOGGER.isDebugEnabled ())
+                  LOGGER.debug ("No such SMP service registration", ex);
                 else
-                  s_aLogger.error ("No such SMP service registration: " + ex.getMessage ());
+                  LOGGER.error ("No such SMP service registration: " + ex.getMessage ());
                 // Fall through
               }
               catch (final SMPClientException ex)
               {
-                if (s_aLogger.isDebugEnabled ())
-                  s_aLogger.debug ("Error querying the SMP", ex);
+                if (LOGGER.isDebugEnabled ())
+                  LOGGER.debug ("Error querying the SMP", ex);
                 else
-                  s_aLogger.error ("Error querying the SMP: " + ex.getMessage ());
+                  LOGGER.error ("Error querying the SMP: " + ex.getMessage ());
                 // Fall through
               }
 
@@ -799,8 +799,8 @@ public class AS2ClientBuilder
             }
             else
             {
-              if (s_aLogger.isDebugEnabled ())
-                s_aLogger.debug ("Not performing SMP lookup because all target fields are already set!");
+              if (LOGGER.isDebugEnabled ())
+                LOGGER.debug ("Not performing SMP lookup because all target fields are already set!");
             }
           }
     }
@@ -819,8 +819,8 @@ public class AS2ClientBuilder
       // No key alias is specified, so use the same as the receiver ID (which
       // may be null)
       m_sReceiverAS2KeyAlias = m_sReceiverAS2ID;
-      if (s_aLogger.isDebugEnabled ())
-        s_aLogger.debug ("The receiver AS2 key alias was defaulted to the AS2 receiver ID ('" +
+      if (LOGGER.isDebugEnabled ())
+        LOGGER.debug ("The receiver AS2 key alias was defaulted to the AS2 receiver ID ('" +
                          m_sReceiverAS2ID +
                          "')");
     }
@@ -1096,7 +1096,7 @@ public class AS2ClientBuilder
                                                m_aBusinessDocumentRes.getPath () +
                                                "' as XML");
         aBusinessDocumentXML = aXMLDocument.getDocumentElement ();
-        s_aLogger.info ("Successfully parsed the business document");
+        LOGGER.info ("Successfully parsed the business document");
       }
       catch (final SAXException ex)
       {

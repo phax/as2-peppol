@@ -74,7 +74,7 @@ public final class MainAS2TestClientUpNxt
   /** Your AS2 sender email address */
   private static final String SENDER_EMAIL = "peppol@example.org";
 
-  private static final Logger s_aLogger = LoggerFactory.getLogger (MainAS2TestClientUpNxt.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger (MainAS2TestClientUpNxt.class);
 
   static
   {
@@ -149,9 +149,9 @@ public final class MainAS2TestClientUpNxt
     // Debug incoming (AS2 MDN)?
     if (false)
       HTTPHelper.setHTTPIncomingDumperFactory ( () -> (aHeaderLines, aPayload, aMsg) -> {
-        s_aLogger.info ("Received Headers: " + StringHelper.getImploded ("\n  ", aHeaderLines));
-        s_aLogger.info ("Received Payload: " + new String (aPayload, StandardCharsets.UTF_8));
-        s_aLogger.info ("Received Message: " + aMsg);
+        LOGGER.info ("Received Headers: " + StringHelper.getImploded ("\n  ", aHeaderLines));
+        LOGGER.info ("Received Payload: " + new String (aPayload, StandardCharsets.UTF_8));
+        LOGGER.info ("Received Message: " + aMsg);
       });
 
     final URI aSMPURI = URL_PROVIDER.getSMPURIOfParticipant (aReceiver, aSML);
@@ -197,19 +197,19 @@ public final class MainAS2TestClientUpNxt
        .setValidationKey (aValidationKey)
        .sendSynchronous ();
       if (aResponse.hasException ())
-        s_aLogger.warn (aResponse.getAsString ());
+        LOGGER.warn (aResponse.getAsString ());
 
       if (aDebugOS != null)
-        s_aLogger.info ("Outgoing request:\n" + aDebugOS.getAsString (StandardCharsets.UTF_8));
+        LOGGER.info ("Outgoing request:\n" + aDebugOS.getAsString (StandardCharsets.UTF_8));
 
-      s_aLogger.info ("Done");
+      LOGGER.info ("Done");
     }
     catch (final AS2ClientBuilderValidationException ex)
     {
       for (final ValidationResult aVR : ex.getValidationResult ())
         for (final IError aError : aVR.getErrorList ())
           if (aError.isError ())
-            s_aLogger.error (aError.getAsString (Locale.US));
+            LOGGER.error (aError.getAsString (Locale.US));
     }
     catch (final AS2ClientBuilderException ex)
     {
