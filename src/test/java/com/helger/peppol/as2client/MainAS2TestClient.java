@@ -320,7 +320,7 @@ public final class MainAS2TestClient
       aProcessID = IF.createProcessIdentifierWithDefaultScheme ("urn:www.cenbii.eu:profile:bii05:ver2.0");
       bDebugIncoming = true;
     }
-    if (true)
+    if (false)
     {
       // Elcom Test Invoice (on SMK)
       aReceiver = IF.createParticipantIdentifierWithDefaultScheme ("0088:5060412690004");
@@ -349,6 +349,13 @@ public final class MainAS2TestClient
       sTestFilename = "xml/Use Case 1.a_ExampleFile_PEPPOL BIS.xml";
       // aSML = ESML.DIGIT_TEST;
       // bDebugOutgoing = true;
+    }
+    if (true)
+    {
+      // Kivanc test
+      aReceiver = IF.createParticipantIdentifierWithDefaultScheme ("9952:4700625017");
+      sTestFilename = "xml/as2-T10-0022-FullSpec_OK.xml";
+      aSML = ESML.DIGIT_TEST;
     }
 
     // Debug outgoing (AS2 message)?
