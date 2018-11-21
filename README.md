@@ -14,6 +14,8 @@ This project is licensed under the Apache 2 License.
 
 # News and Noteworthy
 
+* v3.0.3 - work in progress
+    * Requires ph-commons 9.2.0
 * v3.0.2 - 2018-06-28
   * Updated to ph-commons 9.1.2
   * Updated to as2-lib 4.1.0

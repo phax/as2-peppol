@@ -34,7 +34,6 @@ import org.slf4j.LoggerFactory;
 import org.unece.cefact.namespaces.sbdh.StandardBusinessDocument;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.xml.sax.SAXException;
 
 import com.helger.as2lib.cert.IStorableCertificateFactory;
 import com.helger.as2lib.client.AS2Client;
@@ -723,12 +722,12 @@ public class AS2ClientBuilder
               {
                 if (LOGGER.isDebugEnabled ())
                   LOGGER.debug ("Performing SMP lookup for receiver '" +
-                                   m_aPeppolReceiverID.getURIEncoded () +
-                                   "' on document type '" +
-                                   m_aPeppolDocumentTypeID.getURIEncoded () +
-                                   "' and process ID '" +
-                                   m_aPeppolProcessID.getURIEncoded () +
-                                   "' using transport profile for AS2");
+                                m_aPeppolReceiverID.getURIEncoded () +
+                                "' on document type '" +
+                                m_aPeppolDocumentTypeID.getURIEncoded () +
+                                "' and process ID '" +
+                                m_aPeppolProcessID.getURIEncoded () +
+                                "' using transport profile for AS2");
 
                 aServiceMetadata = m_aSMPClient.getServiceRegistration (m_aPeppolReceiverID, m_aPeppolDocumentTypeID);
               }
@@ -820,9 +819,7 @@ public class AS2ClientBuilder
       // may be null)
       m_sReceiverAS2KeyAlias = m_sReceiverAS2ID;
       if (LOGGER.isDebugEnabled ())
-        LOGGER.debug ("The receiver AS2 key alias was defaulted to the AS2 receiver ID ('" +
-                         m_sReceiverAS2ID +
-                         "')");
+        LOGGER.debug ("The receiver AS2 key alias was defaulted to the AS2 receiver ID ('" + m_sReceiverAS2ID + "')");
     }
   }
 
@@ -1088,23 +1085,13 @@ public class AS2ClientBuilder
     Element aBusinessDocumentXML = null;
     if (m_aBusinessDocumentRes != null)
     {
-      try
-      {
-        final Document aXMLDocument = DOMReader.readXMLDOM (m_aBusinessDocumentRes);
-        if (aXMLDocument == null)
-          throw new AS2ClientBuilderException ("Failed to read business document '" +
-                                               m_aBusinessDocumentRes.getPath () +
-                                               "' as XML");
-        aBusinessDocumentXML = aXMLDocument.getDocumentElement ();
-        LOGGER.info ("Successfully parsed the business document");
-      }
-      catch (final SAXException ex)
-      {
+      final Document aXMLDocument = DOMReader.readXMLDOM (m_aBusinessDocumentRes);
+      if (aXMLDocument == null)
         throw new AS2ClientBuilderException ("Failed to read business document '" +
                                              m_aBusinessDocumentRes.getPath () +
-                                             "' as XML",
-                                             ex);
-      }
+                                             "' as XML");
+      aBusinessDocumentXML = aXMLDocument.getDocumentElement ();
+      LOGGER.info ("Successfully parsed the business document");
     }
     else
     {
