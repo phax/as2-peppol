@@ -33,7 +33,7 @@ import com.helger.as2lib.crypto.ECryptoAlgorithmSign;
 import com.helger.as2lib.util.dump.HTTPOutgoingDumperStreamBased;
 import com.helger.as2lib.util.http.HTTPHelper;
 import com.helger.bdve.executorset.VESID;
-import com.helger.bdve.peppol.PeppolValidation360;
+import com.helger.bdve.peppol.PeppolValidation370;
 import com.helger.bdve.result.ValidationResult;
 import com.helger.commons.CGlobal;
 import com.helger.commons.debug.GlobalDebug;
@@ -132,7 +132,7 @@ public final class MainAS2TestClient
     String sReceiverKeyAlias = null;
     String sReceiverAddress = null;
     ISMLInfo aSML = ESML.DIGIT_PRODUCTION;
-    final VESID aValidationKey = true ? null : PeppolValidation360.VID_OPENPEPPOL_T10_V2;
+    final VESID aValidationKey = true ? null : PeppolValidation370.VID_OPENPEPPOL_T10_V2;
     URI aSMPURI = null;
     ECryptoAlgorithmSign eMICAlg = ECryptoAlgorithmSign.DIGEST_SHA_1;
     HttpHost aProxy = SMPClientConfiguration.getHttpProxy ();

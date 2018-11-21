@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
 import com.helger.as2lib.client.AS2ClientResponse;
 import com.helger.as2lib.crypto.ECryptoAlgorithmSign;
 import com.helger.bdve.executorset.VESID;
-import com.helger.bdve.peppol.PeppolValidation360;
+import com.helger.bdve.peppol.PeppolValidation370;
 import com.helger.bdve.result.ValidationResult;
 import com.helger.commons.debug.GlobalDebug;
 import com.helger.commons.io.resource.ClassPathResource;
@@ -94,7 +94,7 @@ public final class MainAS2TestClientMultipleLocalHost
     String sReceiverKeyAlias = null;
     String sReceiverAddress = null;
     ISMLInfo aSML = ESML.DIGIT_PRODUCTION;
-    final VESID aValidationKey = true ? null : PeppolValidation360.VID_OPENPEPPOL_T10_V2;
+    final VESID aValidationKey = true ? null : PeppolValidation370.VID_OPENPEPPOL_T10_V2;
     final URI aSMPURI = null;
     final ECryptoAlgorithmSign eMICAlg = ECryptoAlgorithmSign.DIGEST_SHA_1;
     final HttpHost aProxy = SMPClientConfiguration.getHttpProxy ();
@@ -167,11 +167,11 @@ public final class MainAS2TestClientMultipleLocalHost
       }
     aSC.stop ();
     LOGGER.info ("Sending " +
-                    nCount +
-                    " docs took " +
-                    aSC.getSeconds () +
-                    "secs which is " +
-                    aSC.getMillis () / nCount +
-                    " msec per document");
+                 nCount +
+                 " docs took " +
+                 aSC.getSeconds () +
+                 "secs which is " +
+                 aSC.getMillis () / nCount +
+                 " msec per document");
   }
 }
