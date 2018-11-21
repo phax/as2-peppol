@@ -118,7 +118,7 @@ public final class MainAS2TestClient
     return _getSenderAS2ID (bProd);
   }
 
-  @SuppressWarnings ({ "null", "resource" })
+  @SuppressWarnings ({ "null", "deprecation" })
   public static void main (final String [] args) throws Exception
   {
     /** The PEPPOL document type to use. */
