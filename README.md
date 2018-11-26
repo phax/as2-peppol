@@ -14,8 +14,9 @@ This project is licensed under the Apache 2 License.
 
 # News and Noteworthy
 
-* v3.0.3 - work in progress
+* v3.0.3 - 2018-11-26
     * Requires ph-commons 9.2.0
+    * Includes ph-bdve 5.1.0 with PEPPOL validation 3.7.0 
 * v3.0.2 - 2018-06-28
   * Updated to ph-commons 9.1.2
   * Updated to as2-lib 4.1.0
@@ -82,11 +83,12 @@ If you need a username and password for your proxy see [here](http://rolandtapke
 
 # Maven usage
 Add the following to your `pom.xml` to use this artifact:
+
 ```xml
 <dependency>
   <groupId>com.helger</groupId>
   <artifactId>as2-peppol-client</artifactId>
-  <version>3.0.2</version>
+  <version>3.0.3</version>
 </dependency>
 ```
 
