@@ -14,40 +14,42 @@ This project is licensed under the Apache 2 License.
 
 # News and Noteworthy
 
+* v3.0.4 - 2019-03-22
+    * Updated to as2-lib 4.2.2
 * v3.0.3 - 2018-11-26
     * Requires ph-commons 9.2.0
     * Includes ph-bdve 5.1.0 with PEPPOL validation 3.7.0 
 * v3.0.2 - 2018-06-28
-  * Updated to ph-commons 9.1.2
-  * Updated to as2-lib 4.1.0
-  * Updated ph-bdve to 5.0
-  * Removed mandatory dependency to ph-bdve-simplerinvoicing
+    * Updated to ph-commons 9.1.2
+    * Updated to as2-lib 4.1.0
+    * Updated ph-bdve to 5.0
+    * Removed mandatory dependency to ph-bdve-simplerinvoicing
 * v3.0.1 - 2018-04-05
-  * Updated to as2-lib 4.0.2 fixing usage of BC PKCS 12 keystore instead of JDK PKCS 12 keystore
-  * Exceptions in MDN processing are now propagated to the outside world
+    * Updated to as2-lib 4.0.2 fixing usage of BC PKCS 12 keystore instead of JDK PKCS 12 keystore
+    * Exceptions in MDN processing are now propagated to the outside world
 * v3.0.0 - 2018-02-12
-  * Updated to ph-commons 9.0.1
-  * The `StandardBusinessDocument` send out, uses the default XML namespace prefix ("") instead of "sh"
-  * Updated to BouncyCastle 1.59
-  * Arbitrary key store types can now be used for sending (no more limitation to PKCS12)
+    * Updated to ph-commons 9.0.1
+    * The `StandardBusinessDocument` send out, uses the default XML namespace prefix ("") instead of "sh"
+    * Updated to BouncyCastle 1.59
+    * Arbitrary key store types can now be used for sending (no more limitation to PKCS12)
 * v2.0.7 - 2017-07-27
-  * Added possibility to customize `Content-Transfer-Encoding` used
-  * Using ph-bdve 3.2.0 which improves validation artefact ClassLoader handling
+    * Added possibility to customize `Content-Transfer-Encoding` used
+    * Using ph-bdve 3.2.0 which improves validation artefact ClassLoader handling
 * v2.0.6 - 2017-06-19
-  * Updated to ph-bdve 3.1.3 for XSLT validation fix
+    * Updated to ph-bdve 3.1.3 for XSLT validation fix
 * v2.0.5 - 2017-05-23
-  * Added possibility to provide a custom namespace context
+    * Added possibility to provide a custom namespace context
 * v2.0.4 - 2017-05-18
-  * Updated to ph-bdve 3.1.0 (PEPPOL validation 3.4.0)
+    * Updated to ph-bdve 3.1.0 (PEPPOL validation 3.4.0)
 * v2.0.3 - 2017-03-20
-  * Improved customizability of `AS2ClientBuilder`
+    * Improved customizability of `AS2ClientBuilder`
 * v2.0.2 - 2017-03-01
-  * Using ph-bdve 3 for validation
+    * Using ph-bdve 3 for validation
 * v2.0.1 - 2017-01-16
-  * Just a new release with no new features
-  * Binds to ph-commons 8.6.x
+    * Just a new release with no new features
+    * Binds to ph-commons 8.6.x
 * v2.0.0 - 2016-08-22
-  * Updated to JDK 8
+    * Updated to JDK 8
 
 # Configuration
 
@@ -71,7 +73,8 @@ The test files reside in the `src/main/resources/xml` folder and are referenced 
 
 ## Usage of a proxy server
 
-To use a proxy server, add the following items to the `smp-client.properties` configuration file (of course with adopted values): 
+To use a proxy server, add the following items to the `smp-client.properties` configuration file (of course with adopted values):
+ 
 ```
 http.proxyHost=1.2.3.4
 http.proxyPort=8080
@@ -88,7 +91,7 @@ Add the following to your `pom.xml` to use this artifact:
 <dependency>
   <groupId>com.helger</groupId>
   <artifactId>as2-peppol-client</artifactId>
-  <version>3.0.3</version>
+  <version>3.0.4</version>
 </dependency>
 ```
 
