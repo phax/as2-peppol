@@ -101,7 +101,8 @@ public class AS2ClientBuilder
   /** Default AS2 message ID format */
   public static final String DEFAULT_AS2_MESSAGE_ID_FORMAT = "OpenPEPPOL-$date.ddMMyyyyHHmmssZ$-$rand.1234$@$msg.sender.as2_id$_$msg.receiver.as2_id$";
   /** PEPPOL prefix for AS2 ID and key aliases */
-  public static final String APP_PREFIX = "APP_";
+  public static final String APP_PREFIX_V2 = "APP_";
+  public static final String APP_PREFIX_V3 = "PDK";
 
   private static final Logger LOGGER = LoggerFactory.getLogger (AS2ClientBuilder.class);
 
@@ -256,7 +257,8 @@ public class AS2ClientBuilder
   /**
    * Set the AS2 sender ID (your ID). It is mapped to the "AS2-From" header. For
    * PEPPOL the AS2 sender ID must be the common name (CN) of the sender's AP
-   * certificate subject. Therefore it usually starts with {@value #APP_PREFIX}.
+   * certificate subject. Therefore it usually starts with
+   * {@value #APP_PREFIX_V2} or {@link #APP_PREFIX_V3}
    *
    * @param sSenderAS2ID
    *        The AS2 sender ID to be used. May not be <code>null</code>.
@@ -868,11 +870,13 @@ public class AS2ClientBuilder
     if (StringHelper.hasNoText (m_sSenderAS2ID))
       m_aMessageHandler.error ("The AS2 sender ID is missing");
     else
-      if (!m_sSenderAS2ID.startsWith (APP_PREFIX))
+      if (!m_sSenderAS2ID.startsWith (APP_PREFIX_V2) && !m_sSenderAS2ID.startsWith (APP_PREFIX_V3))
         m_aMessageHandler.warn ("The AS2 sender ID '" +
                                 m_sSenderAS2ID +
                                 "' should start with '" +
-                                APP_PREFIX +
+                                APP_PREFIX_V2 +
+                                "' or '" +
+                                APP_PREFIX_V3 +
                                 "' as required by the PEPPOL specification");
 
     if (StringHelper.hasNoText (m_sSenderAS2Email))
@@ -886,11 +890,13 @@ public class AS2ClientBuilder
     if (StringHelper.hasNoText (m_sSenderAS2KeyAlias))
       m_aMessageHandler.error ("The AS2 sender key alias is missing");
     else
-      if (!m_sSenderAS2KeyAlias.startsWith (APP_PREFIX))
+      if (!m_sSenderAS2KeyAlias.startsWith (APP_PREFIX_V2) && !m_sSenderAS2KeyAlias.startsWith (APP_PREFIX_V3))
         m_aMessageHandler.warn ("The AS2 sender key alias '" +
                                 m_sSenderAS2KeyAlias +
                                 "' should start with '" +
-                                APP_PREFIX +
+                                APP_PREFIX_V2 +
+                                "' or '" +
+                                APP_PREFIX_V3 +
                                 "' for the use with the dynamic AS2 partnerships");
       else
         if (m_sSenderAS2ID != null && !m_sSenderAS2ID.equals (m_sSenderAS2KeyAlias))
@@ -903,21 +909,25 @@ public class AS2ClientBuilder
     if (StringHelper.hasNoText (m_sReceiverAS2ID))
       m_aMessageHandler.error ("The AS2 receiver ID is missing");
     else
-      if (!m_sReceiverAS2ID.startsWith (APP_PREFIX))
+      if (!m_sReceiverAS2ID.startsWith (APP_PREFIX_V2) && !m_sReceiverAS2ID.startsWith (APP_PREFIX_V3))
         m_aMessageHandler.warn ("The AS2 receiver ID '" +
                                 m_sReceiverAS2ID +
                                 "' should start with '" +
-                                APP_PREFIX +
+                                APP_PREFIX_V2 +
+                                "' or '" +
+                                APP_PREFIX_V3 +
                                 "' as required by the PEPPOL specification");
 
     if (StringHelper.hasNoText (m_sReceiverAS2KeyAlias))
       m_aMessageHandler.error ("The AS2 receiver key alias is missing");
     else
-      if (!m_sReceiverAS2KeyAlias.startsWith (APP_PREFIX))
+      if (!m_sReceiverAS2KeyAlias.startsWith (APP_PREFIX_V2) && !m_sReceiverAS2KeyAlias.startsWith (APP_PREFIX_V3))
         m_aMessageHandler.warn ("The AS2 receiver key alias '" +
                                 m_sReceiverAS2KeyAlias +
                                 "' should start with '" +
-                                APP_PREFIX +
+                                APP_PREFIX_V2 +
+                                "' or '" +
+                                APP_PREFIX_V3 +
                                 "' for the use with the dynamic AS2 partnerships");
       else
         if (m_sReceiverAS2ID != null && !m_sReceiverAS2ID.equals (m_sReceiverAS2KeyAlias))

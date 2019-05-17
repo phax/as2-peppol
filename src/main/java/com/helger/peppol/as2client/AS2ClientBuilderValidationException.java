@@ -30,12 +30,20 @@ public class AS2ClientBuilderValidationException extends AS2ClientBuilderExcepti
 {
   private final ValidationResultList m_aValidationResult;
 
+  /**
+   * @param aValidationResult
+   *        The validation result list that usually contains at least one error.
+   */
   public AS2ClientBuilderValidationException (@Nonnull final ValidationResultList aValidationResult)
   {
     super ("Error validating business document");
     m_aValidationResult = ValueEnforcer.notNull (aValidationResult, "ValidationResult");
   }
 
+  /**
+   * @return The validation results as provided in the constructor. Never
+   *         <code>null</code>.
+   */
   @Nonnull
   public ValidationResultList getValidationResult ()
   {

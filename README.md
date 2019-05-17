@@ -14,6 +14,9 @@ This project is licensed under the Apache 2 License.
 
 # News and Noteworthy
 
+* v3.0.6 - work in progress
+    * Updated to as2-lib 4.3.0, thereby simplifying the Random topic
+    * Added support for AS2 prefix "PDK"
 * v3.0.5 - 2019-05-16
     * Updated to ph-bdve 5.1.8 to support PEPPOL Spring Release 2019 validation artefacts
 * v3.0.4 - 2019-03-22
