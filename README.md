@@ -14,6 +14,8 @@ This project is licensed under the Apache 2 License.
 
 # News and Noteworthy
 
+* v3.0.7 - work in progress
+    * New interface `IAS2ClientBuilderValidatonResultHandler` to customize validation result handling (see [issue #3](https://github.com/phax/as2-peppol-client/issues/3))
 * v3.0.6 - 2019-05-17
     * Updated to as2-lib 4.3.0, thereby simplifying the Random topic
     * Added support for AS2 prefix "PDK"

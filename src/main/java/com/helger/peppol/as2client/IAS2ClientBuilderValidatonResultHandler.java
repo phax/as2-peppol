@@ -31,6 +31,20 @@ import com.helger.bdve.result.ValidationResultList;
 public interface IAS2ClientBuilderValidatonResultHandler extends Serializable
 {
   /**
+   * Invoked, if no validation error is present. This method is invoked if only
+   * warnings are present.
+   *
+   * @param aValidationResult
+   *        The full validation results. Never <code>null</code>.
+   * @throws AS2ClientBuilderException
+   *         Implementation dependent
+   */
+  default void onValidationSuccess (@Nonnull final ValidationResultList aValidationResult) throws AS2ClientBuilderException
+  {
+    // empty
+  }
+
+  /**
    * Invoked, if at least one validation error is present.
    *
    * @param aValidationResult
@@ -38,5 +52,8 @@ public interface IAS2ClientBuilderValidatonResultHandler extends Serializable
    * @throws AS2ClientBuilderException
    *         Implementation dependent
    */
-  void onValidationErrors (@Nonnull ValidationResultList aValidationResult) throws AS2ClientBuilderException;
+  default void onValidationErrors (@Nonnull final ValidationResultList aValidationResult) throws AS2ClientBuilderException
+  {
+    throw new AS2ClientBuilderValidationException (aValidationResult);
+  }
 }

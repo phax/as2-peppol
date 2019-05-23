@@ -139,9 +139,8 @@ public class AS2ClientBuilder
   };
   private INamespaceContext m_aNamespaceContext;
   private EContentTransferEncoding m_eCTE = EContentTransferEncoding.AS2_DEFAULT;
-  private IAS2ClientBuilderValidatonResultHandler m_aValidationResultHandler = x -> {
-    throw new AS2ClientBuilderValidationException (x);
-  };
+  private IAS2ClientBuilderValidatonResultHandler m_aValidationResultHandler = new IAS2ClientBuilderValidatonResultHandler ()
+  {};
   private transient ValidationExecutorSetRegistry m_aVESRegistry;
 
   /**
@@ -1076,6 +1075,8 @@ public class AS2ClientBuilder
                                                                            (Locale) null);
     if (aValidationResult.containsAtLeastOneError ())
       m_aValidationResultHandler.onValidationErrors (aValidationResult);
+    else
+      m_aValidationResultHandler.onValidationSuccess (aValidationResult);
   }
 
   /**
