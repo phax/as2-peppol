@@ -137,9 +137,12 @@ public class AS2ClientBuilder
     // Use this special sender module factory
     return ret.setAS2SenderModuleFactory (PeppolAS2SenderModule::new);
   };
-  private ValidationExecutorSetRegistry m_aVESRegistry;
   private INamespaceContext m_aNamespaceContext;
   private EContentTransferEncoding m_eCTE = EContentTransferEncoding.AS2_DEFAULT;
+  private IAS2ClientBuilderValidatonResultHandler m_aValidationResultHandler = x -> {
+    throw new AS2ClientBuilderValidationException (x);
+  };
+  private transient ValidationExecutorSetRegistry m_aVESRegistry;
 
   /**
    * Default constructor.
@@ -686,6 +689,24 @@ public class AS2ClientBuilder
   }
 
   /**
+   * Set the handler for validation errors. By default an exception is thrown.
+   * With the provided handler, you can change that behaviour and e.g. just log
+   * it.
+   *
+   * @param aValidationResultHandler
+   *        The validation handler to be set. May not be <code>null</code>.
+   * @return this for chaining
+   * @since 3.0.7
+   */
+  @Nonnull
+  public AS2ClientBuilder setValidatonResultHandler (@Nonnull final IAS2ClientBuilderValidatonResultHandler aValidationResultHandler)
+  {
+    ValueEnforcer.notNull (aValidationResultHandler, "ValidationResultHandler");
+    m_aValidationResultHandler = aValidationResultHandler;
+    return this;
+  }
+
+  /**
    * This method is responsible for performing the SMP client lookup if an SMP
    * client was specified via {@link #setSMPClient(SMPClientReadOnly)}. If any
    * of the prerequisites mentioned there is not fulfilled a warning is emitted
@@ -1054,7 +1075,7 @@ public class AS2ClientBuilder
     final ValidationResultList aValidationResult = aVEM.executeValidation (ValidationSource.create (null, aXML),
                                                                            (Locale) null);
     if (aValidationResult.containsAtLeastOneError ())
-      throw new AS2ClientBuilderValidationException (aValidationResult);
+      m_aValidationResultHandler.onValidationErrors (aValidationResult);
   }
 
   /**
