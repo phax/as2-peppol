@@ -44,6 +44,7 @@ import com.helger.commons.io.resource.URLResource;
 import com.helger.commons.io.resource.wrapped.GZIPReadableResource;
 import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
 import com.helger.commons.string.StringHelper;
+import com.helger.commons.system.SystemProperties;
 import com.helger.commons.url.URLHelper;
 import com.helger.mail.cte.EContentTransferEncoding;
 import com.helger.network.proxy.autoconf.ProxyAutoConfigHelper;
@@ -86,6 +87,10 @@ public final class MainAS2TestClient
 
     // Enable or disable debug mode
     GlobalDebug.setDebugModeDirect (false);
+
+    SystemProperties.setPropertyValue ("AS2.dumpDecryptedDirectory", "as2-in-decrypted");
+    SystemProperties.setPropertyValue ("AS2.httpDumpDirectoryIncoming", "as2-in-http");
+    SystemProperties.setPropertyValue ("AS2.httpDumpDirectoryOutgoing", "as2-out-http");
   }
 
   @Nonnull

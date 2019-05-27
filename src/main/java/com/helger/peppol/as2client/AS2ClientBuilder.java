@@ -42,6 +42,9 @@ import com.helger.as2lib.client.AS2ClientResponse;
 import com.helger.as2lib.client.AS2ClientSettings;
 import com.helger.as2lib.crypto.ECryptoAlgorithmSign;
 import com.helger.as2lib.disposition.DispositionOptions;
+import com.helger.as2lib.message.IBaseMessage;
+import com.helger.as2lib.util.dump.IHTTPOutgoingDumper;
+import com.helger.as2lib.util.http.HTTPHelper;
 import com.helger.bdve.execute.ValidationExecutionManager;
 import com.helger.bdve.executorset.IValidationExecutorSet;
 import com.helger.bdve.executorset.VESID;
@@ -52,6 +55,7 @@ import com.helger.bdve.source.ValidationSource;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.OverrideOnDemand;
 import com.helger.commons.email.EmailAddressHelper;
+import com.helger.commons.functional.IFunction;
 import com.helger.commons.functional.ISupplier;
 import com.helger.commons.http.CHttpHeader;
 import com.helger.commons.io.resource.FileSystemResource;
@@ -1259,7 +1263,16 @@ public class AS2ClientBuilder
       // Local Fiddler proxy
       aAS2Client.setHttpProxy (new Proxy (Proxy.Type.HTTP, new InetSocketAddress ("127.0.0.1", 8888)));
     }
-    final AS2ClientResponse aResponse = aAS2Client.sendSynchronous (aAS2ClientSettings, aRequest);
-    return aResponse;
+
+    final IFunction <? super IBaseMessage, ? extends IHTTPOutgoingDumper> aOldFactory = HTTPHelper.getHTTPOutgoingDumperFactory ();
+    try
+    {
+      final AS2ClientResponse aResponse = aAS2Client.sendSynchronous (aAS2ClientSettings, aRequest);
+      return aResponse;
+    }
+    finally
+    {
+      HTTPHelper.setHTTPOutgoingDumperFactory (aOldFactory);
+    }
   }
 }

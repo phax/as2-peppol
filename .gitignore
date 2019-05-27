@@ -19,3 +19,6 @@ hs_err_pid*
 /.settings/ 
 /.project 
 /.classpath 
+/as2-in-decrypted/
+/as2-in-http/
+/as2-out-http/
