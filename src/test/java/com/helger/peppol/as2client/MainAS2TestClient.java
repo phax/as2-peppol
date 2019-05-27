@@ -37,6 +37,7 @@ import com.helger.bdve.peppol.PeppolValidation370;
 import com.helger.bdve.result.ValidationResult;
 import com.helger.commons.CGlobal;
 import com.helger.commons.debug.GlobalDebug;
+import com.helger.commons.io.file.SimpleFileIO;
 import com.helger.commons.io.resource.ClassPathResource;
 import com.helger.commons.io.resource.IReadableResource;
 import com.helger.commons.io.resource.URLResource;
@@ -109,7 +110,7 @@ public final class MainAS2TestClient
   private static final String _getSenderAS2ID (final boolean bProd)
   {
     // Pro: 306 Test: 309
-    return bProd ? "APP_1000000306" : "APP_1000000309";
+    return bProd ? "PDK000270" : "PDK000270";
   }
 
   /** Your AS2 key alias in the PKCS12 key store */
@@ -132,7 +133,7 @@ public final class MainAS2TestClient
     String sReceiverKeyAlias = null;
     String sReceiverAddress = null;
     ISMLInfo aSML = ESML.DIGIT_PRODUCTION;
-    final VESID aValidationKey = true ? null : PeppolValidation370.VID_OPENPEPPOL_T10_V2;
+    VESID aValidationKey = null;
     URI aSMPURI = null;
     ECryptoAlgorithmSign eMICAlg = ECryptoAlgorithmSign.DIGEST_SHA_1;
     HttpHost aProxy = SMPClientConfiguration.getHttpProxy ();
@@ -281,12 +282,13 @@ public final class MainAS2TestClient
       bDebugOutgoing = true;
       eCTE = EContentTransferEncoding.BINARY;
     }
-    if (false)
+    if (true)
     {
       // BRZ test endpoint
       aReceiver = IF.createParticipantIdentifierWithDefaultScheme ("9915:test");
       sTestFilename = "xml/as2-test-at-gov.xml";
       aSML = ESML.DIGIT_TEST;
+      aValidationKey = PeppolValidation370.VID_OPENPEPPOL_T10_V2;
     }
     if (false)
     {
@@ -350,7 +352,7 @@ public final class MainAS2TestClient
       // aSML = ESML.DIGIT_TEST;
       // bDebugOutgoing = true;
     }
-    if (true)
+    if (false)
     {
       // Kivanc test
       aReceiver = IF.createParticipantIdentifierWithDefaultScheme ("9952:4700625017");
@@ -411,9 +413,24 @@ public final class MainAS2TestClient
     try
     {
       final boolean bProd = aSML == ESML.DIGIT_PRODUCTION;
+
+      final File aKeyStoreFile = new File (_getKeyStorePath (bProd));
+      final byte [] aKeyStoreBytes = SimpleFileIO.getAllFileBytes (aKeyStoreFile);
+
+      final IAS2ClientBuilderValidatonResultHandler aValidationResultHandler = new IAS2ClientBuilderValidatonResultHandler ()
+      {
+        public void onValidationErrors (final com.helger.bdve.result.ValidationResultList aValidationResult) throws AS2ClientBuilderException
+        {
+          for (final ValidationResult aVR : aValidationResult)
+            if (aVR.isFailure ())
+              LOGGER.error (aVR.toString ());
+            else
+              LOGGER.info (aVR.toString ());
+        }
+      };
       final AS2ClientResponse aResponse = new AS2ClientBuilder ().setSMPClient (aSMPClient)
                                                                  .setKeyStore (_getKeyStoreType (bProd),
-                                                                               new File (_getKeyStorePath (bProd)),
+                                                                               aKeyStoreBytes,
                                                                                _getKeyStorePassword (bProd))
                                                                  .setSaveKeyStoreChangesToFile (false)
                                                                  .setSenderAS2ID (_getSenderAS2ID (bProd))
@@ -431,6 +448,7 @@ public final class MainAS2TestClient
                                                                  .setPeppolDocumentTypeID (aDocTypeID)
                                                                  .setPeppolProcessID (aProcessID)
                                                                  .setValidationKey (aValidationKey)
+                                                                 .setValidatonResultHandler (aValidationResultHandler)
                                                                  .setContentTransferEncoding (eCTE)
                                                                  .sendSynchronous ();
       if (aResponse.hasException ())

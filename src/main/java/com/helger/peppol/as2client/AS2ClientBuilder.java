@@ -109,6 +109,7 @@ public class AS2ClientBuilder
   private IAS2ClientBuilderMessageHandler m_aMessageHandler = new DefaultAS2ClientBuilderMessageHandler ();
   private IKeyStoreType m_aKeyStoreType;
   private File m_aKeyStoreFile;
+  private byte [] m_aKeyStoreBytes;
   private String m_sKeyStorePassword;
   private boolean m_bSaveKeyStoreChangesToFile = IStorableCertificateFactory.DEFAULT_SAVE_CHANGES_TO_FILE;
   private String m_sAS2Subject = DEFAULT_AS2_SUBJECT;
@@ -221,12 +222,40 @@ public class AS2ClientBuilder
   {
     m_aKeyStoreType = aKeyStoreType;
     m_aKeyStoreFile = aKeyStoreFile;
+    m_aKeyStoreBytes = null;
     m_sKeyStorePassword = sKeyStorePassword;
     return this;
   }
 
   /**
-   * Change the behavior if all changes to the keystore should trigger a saving
+   * Set the key store type, content and password for the AS2 client. The key
+   * store must be an existing containing at least the key alias of the sender
+   * (see {@link #setSenderAS2ID(String)}). Changes to the keystore will NOT be
+   * saved.
+   *
+   * @param aKeyStoreType
+   *        The key store type. May not be <code>null</code>.
+   * @param aKeyStoreBytes
+   *        The key store bytes. May not be <code>null</code>.
+   * @param sKeyStorePassword
+   *        The password to the key store. May not be <code>null</code> but
+   *        empty.
+   * @return this for chaining
+   */
+  @Nonnull
+  public AS2ClientBuilder setKeyStore (@Nullable final IKeyStoreType aKeyStoreType,
+                                       @Nullable final byte [] aKeyStoreBytes,
+                                       @Nullable final String sKeyStorePassword)
+  {
+    m_aKeyStoreType = aKeyStoreType;
+    m_aKeyStoreFile = null;
+    m_aKeyStoreBytes = aKeyStoreBytes;
+    m_sKeyStorePassword = sKeyStorePassword;
+    return this;
+  }
+
+  /**
+   * Change the behavior if all changes to the key store should trigger a saving
    * to the original file.
    *
    * @param bSaveKeyStoreChangesToFile
@@ -861,9 +890,7 @@ public class AS2ClientBuilder
     if (m_aKeyStoreType == null)
       m_aMessageHandler.error ("No AS2 key store type is defined");
 
-    if (m_aKeyStoreFile == null)
-      m_aMessageHandler.error ("No AS2 key store file is defined");
-    else
+    if (m_aKeyStoreFile != null)
     {
       if (!m_aKeyStoreFile.exists ())
         m_aMessageHandler.error ("The provided AS2 key store file '" +
@@ -879,8 +906,11 @@ public class AS2ClientBuilder
             m_aMessageHandler.error ("The provided AS2 key store file '" +
                                      m_aKeyStoreFile.getAbsolutePath () +
                                      "' is not writable. As it is dynamically modified, it must be writable.");
-
     }
+    else
+      if (m_aKeyStoreBytes == null)
+        m_aMessageHandler.error ("No AS2 key store is defined");
+
     if (m_sKeyStorePassword == null)
       m_aMessageHandler.error ("No AS2 key store password provided. If you need an empty password, please provide an empty String!");
 
@@ -1074,7 +1104,10 @@ public class AS2ClientBuilder
     final ValidationResultList aValidationResult = aVEM.executeValidation (ValidationSource.create (null, aXML),
                                                                            (Locale) null);
     if (aValidationResult.containsAtLeastOneError ())
+    {
       m_aValidationResultHandler.onValidationErrors (aValidationResult);
+      LOGGER.warn ("Continue to send AS2 message, although validation errors are contained!");
+    }
     else
       m_aValidationResultHandler.onValidationSuccess (aValidationResult);
   }
@@ -1148,7 +1181,10 @@ public class AS2ClientBuilder
     // Start building the AS2 client settings
     final AS2ClientSettings aAS2ClientSettings = new AS2ClientSettings ();
     // Key store
-    aAS2ClientSettings.setKeyStore (m_aKeyStoreType, m_aKeyStoreFile, m_sKeyStorePassword);
+    if (m_aKeyStoreFile != null)
+      aAS2ClientSettings.setKeyStore (m_aKeyStoreType, m_aKeyStoreFile, m_sKeyStorePassword);
+    else
+      aAS2ClientSettings.setKeyStore (m_aKeyStoreType, m_aKeyStoreBytes, m_sKeyStorePassword);
     aAS2ClientSettings.setSaveKeyStoreChangesToFile (m_bSaveKeyStoreChangesToFile);
 
     // Fixed sender
