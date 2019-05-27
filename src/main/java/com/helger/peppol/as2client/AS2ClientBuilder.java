@@ -66,10 +66,10 @@ import com.helger.commons.mime.CMimeType;
 import com.helger.commons.string.StringHelper;
 import com.helger.commons.url.URLHelper;
 import com.helger.mail.cte.EContentTransferEncoding;
+import com.helger.peppol.identifier.IDocumentTypeIdentifier;
+import com.helger.peppol.identifier.IParticipantIdentifier;
+import com.helger.peppol.identifier.IProcessIdentifier;
 import com.helger.peppol.identifier.factory.PeppolIdentifierFactory;
-import com.helger.peppol.identifier.generic.doctype.IDocumentTypeIdentifier;
-import com.helger.peppol.identifier.generic.participant.IParticipantIdentifier;
-import com.helger.peppol.identifier.generic.process.IProcessIdentifier;
 import com.helger.peppol.identifier.peppol.PeppolIdentifierHelper;
 import com.helger.peppol.sbdh.PeppolSBDHDocument;
 import com.helger.peppol.sbdh.write.PeppolSBDHDocumentWriter;
@@ -81,7 +81,6 @@ import com.helger.peppol.smpclient.exception.SMPClientException;
 import com.helger.peppol.smpclient.exception.SMPClientNotFoundException;
 import com.helger.sbdh.CSBDH;
 import com.helger.sbdh.SBDMarshaller;
-import com.helger.security.keystore.EKeyStoreType;
 import com.helger.security.keystore.IKeyStoreType;
 import com.helger.xml.namespace.INamespaceContext;
 import com.helger.xml.namespace.MapBasedNamespaceContext;
@@ -179,28 +178,6 @@ public class AS2ClientBuilder
   {
     m_aMessageHandler = ValueEnforcer.notNull (aMessageHandler, "MessageHandler");
     return this;
-  }
-
-  /**
-   * Set the key store file and password for the AS2 client. The key store must
-   * be an existing file of type PKCS12 containing at least the key alias of the
-   * sender (see {@link #setSenderAS2ID(String)}). The key store file must be
-   * writable as dynamically certificates of partners are added.
-   *
-   * @param aKeyStoreFile
-   *        The existing key store file. Must exist and may not be
-   *        <code>null</code>.
-   * @param sKeyStorePassword
-   *        The password to the key store. May not be <code>null</code> but
-   *        empty.
-   * @return this for chaining
-   */
-  @Nonnull
-  @Deprecated
-  public AS2ClientBuilder setPKCS12KeyStore (@Nullable final File aKeyStoreFile,
-                                             @Nullable final String sKeyStorePassword)
-  {
-    return setKeyStore (EKeyStoreType.PKCS12, aKeyStoreFile, sKeyStorePassword);
   }
 
   /**
@@ -323,15 +300,16 @@ public class AS2ClientBuilder
   }
 
   /**
-   * Set the key alias of the sender's key in the key store (see
-   * {@link #setPKCS12KeyStore(File, String)}). For PEPPOL the key alias of the
-   * sender should be identical to the AS2 sender ID (
-   * {@link #setSenderAS2ID(String)}), so it should also start with "APP_" (I
-   * think case insensitive for PKCS12 key stores).
+   * Set the key alias of the sender's key in the key store. For PEPPOL the key
+   * alias of the sender should be identical to the AS2 sender ID (
+   * {@link #setSenderAS2ID(String)}), so it should also start with "APP_" or
+   * "PKD" (I think case insensitive for PKCS12 key stores).
    *
    * @param sSenderAS2KeyAlias
    *        The sender key alias to be used. May not be <code>null</code>.
    * @return this for chaining
+   * @see #setKeyStore(IKeyStoreType, byte[], String)
+   * @see #setKeyStore(IKeyStoreType, File, String)
    */
   @Nonnull
   public AS2ClientBuilder setSenderAS2KeyAlias (@Nullable final String sSenderAS2KeyAlias)
@@ -358,15 +336,16 @@ public class AS2ClientBuilder
   }
 
   /**
-   * Set the key alias of the receiver's key in the key store (see
-   * {@link #setPKCS12KeyStore(File, String)}). For PEPPOL the key alias of the
-   * receiver should be identical to the AS2 receiver ID (
-   * {@link #setReceiverAS2ID(String)}), so it should also start with "APP_" (I
-   * think case insensitive for PKCS12 key stores).
+   * Set the key alias of the receiver's key in the key store. For PEPPOL the
+   * key alias of the receiver should be identical to the AS2 receiver ID (
+   * {@link #setReceiverAS2ID(String)}), so it should also start with "APP_" or
+   * "PKD" (I think case insensitive for PKCS12 key stores).
    *
    * @param sReceiverAS2KeyAlias
    *        The receiver key alias to be used. May not be <code>null</code>.
    * @return this for chaining
+   * @see #setKeyStore(IKeyStoreType, byte[], String)
+   * @see #setKeyStore(IKeyStoreType, File, String)
    */
   @Nonnull
   public AS2ClientBuilder setReceiverAS2KeyAlias (@Nullable final String sReceiverAS2KeyAlias)

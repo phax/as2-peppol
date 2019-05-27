@@ -15,8 +15,9 @@ This project is licensed under the Apache 2 License.
 # News and Noteworthy
 
 * v3.0.7 - work in progress
+    * Updated to as2-lib 4.4.0
+    * Updated to peppol-commons 7.0.0
     * New interface `IAS2ClientBuilderValidatonResultHandler` to customize validation result handling (see [issue #3](https://github.com/phax/as2-peppol-client/issues/3))
-    * Updated to as2-lib 4.3.1
     * Added possibility to provide a read-only keystore from a byte array (see [issue #4](https://github.com/phax/as2-peppol-client/issues/4))
 * v3.0.6 - 2019-05-17
     * Updated to as2-lib 4.3.0, thereby simplifying the Random topic
