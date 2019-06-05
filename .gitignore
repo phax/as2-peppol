@@ -22,3 +22,4 @@ hs_err_pid*
 /as2-in-decrypted/
 /as2-in-http/
 /as2-out-http/
+*.dump

@@ -30,6 +30,7 @@ import org.slf4j.LoggerFactory;
 import com.helger.as2lib.client.AS2ClientResponse;
 import com.helger.as2lib.client.AS2ClientSettings;
 import com.helger.as2lib.crypto.ECryptoAlgorithmSign;
+import com.helger.as2lib.util.dump.HTTPOutgoingDumperFileBased;
 import com.helger.as2lib.util.dump.HTTPOutgoingDumperStreamBased;
 import com.helger.as2lib.util.http.HTTPHelper;
 import com.helger.bdve.executorset.VESID;
@@ -146,6 +147,7 @@ public final class MainAS2TestClient
     int nReadTimeoutMS = AS2ClientSettings.DEFAULT_READ_TIMEOUT_MS;
     String sWPAD = null;
     boolean bDebugOutgoing = false;
+    String sOutgoingDumpFilename = null;
     boolean bDebugIncoming = false;
     EContentTransferEncoding eCTE = EContentTransferEncoding.AS2_DEFAULT;
 
@@ -294,6 +296,8 @@ public final class MainAS2TestClient
       sTestFilename = "xml/as2-test-at-gov.xml";
       aSML = ESML.DIGIT_TEST;
       aValidationKey = PeppolValidation370.VID_OPENPEPPOL_T10_V2;
+      bDebugOutgoing = true;
+      sOutgoingDumpFilename = "outgoing.dump";
     }
     if (false)
     {
@@ -370,7 +374,12 @@ public final class MainAS2TestClient
     if (bDebugOutgoing)
     {
       aDebugOS = new NonBlockingByteArrayOutputStream ();
-      HTTPHelper.setHTTPOutgoingDumperFactory (aMsg -> new HTTPOutgoingDumperStreamBased (aDebugOS));
+      final String sFinalOutgoingDumpFilename = sOutgoingDumpFilename;
+      HTTPHelper.setHTTPOutgoingDumperFactory (aMsg -> {
+        if (sFinalOutgoingDumpFilename != null)
+          return new HTTPOutgoingDumperFileBased (new File (sFinalOutgoingDumpFilename));
+        return new HTTPOutgoingDumperStreamBased (System.out);
+      });
     }
     else
       aDebugOS = null;
