@@ -105,7 +105,8 @@ public class AS2ClientBuilder
   public static final String DEFAULT_AS2_MESSAGE_ID_FORMAT = "OpenPEPPOL-$date.ddMMyyyyHHmmssZ$-$rand.1234$@$msg.sender.as2_id$_$msg.receiver.as2_id$";
   /** PEPPOL prefix for AS2 ID and key aliases */
   public static final String APP_PREFIX_V2 = "APP_";
-  public static final String APP_PREFIX_V3 = "PDK";
+  /** "P" + country code (e.g. "DK" for Denmark or "OP" for OpenPEPPOL */
+  public static final String APP_PREFIX_V3 = "P";
 
   private static final Logger LOGGER = LoggerFactory.getLogger (AS2ClientBuilder.class);
 
