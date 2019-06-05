@@ -81,7 +81,7 @@ public final class MainAS2TestClientEcosio
     String sReceiverAddress = null;
 
     // localhost test endpoint
-    final IParticipantIdentifier aReceiver = IF.createParticipantIdentifierWithDefaultScheme ("9999:test-ecosio");
+    final IParticipantIdentifier aReceiver = IF.createParticipantIdentifierWithDefaultScheme ("0088:ecosio");
     final String sTestFilename = "xml/as2-test-at-gov.xml";
 
     if (true)
