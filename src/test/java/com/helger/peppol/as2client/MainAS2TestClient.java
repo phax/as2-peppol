@@ -377,7 +377,11 @@ public final class MainAS2TestClient
       final String sFinalOutgoingDumpFilename = sOutgoingDumpFilename;
       HTTPHelper.setHTTPOutgoingDumperFactory (aMsg -> {
         if (sFinalOutgoingDumpFilename != null)
-          return new HTTPOutgoingDumperFileBased (new File (sFinalOutgoingDumpFilename));
+        {
+          final HTTPOutgoingDumperFileBased d = new HTTPOutgoingDumperFileBased (new File (sFinalOutgoingDumpFilename));
+          d.setDumpHeader (false);
+          return d;
+        }
         return new HTTPOutgoingDumperStreamBased (System.out);
       });
     }
