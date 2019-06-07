@@ -49,8 +49,6 @@ import com.helger.commons.system.SystemProperties;
 import com.helger.commons.url.URLHelper;
 import com.helger.mail.cte.EContentTransferEncoding;
 import com.helger.network.proxy.autoconf.ProxyAutoConfigHelper;
-import com.helger.peppol.identifier.peppol.doctype.EPredefinedDocumentTypeIdentifier;
-import com.helger.peppol.identifier.peppol.process.EPredefinedProcessIdentifier;
 import com.helger.peppol.sml.ESML;
 import com.helger.peppol.sml.ISMLInfo;
 import com.helger.peppol.smpclient.SMPClientConfiguration;
@@ -62,6 +60,8 @@ import com.helger.peppolid.IParticipantIdentifier;
 import com.helger.peppolid.IProcessIdentifier;
 import com.helger.peppolid.factory.IIdentifierFactory;
 import com.helger.peppolid.factory.PeppolIdentifierFactory;
+import com.helger.peppolid.peppol.doctype.EPredefinedDocumentTypeIdentifier;
+import com.helger.peppolid.peppol.process.EPredefinedProcessIdentifier;
 import com.helger.security.keystore.EKeyStoreType;
 import com.helger.security.keystore.IKeyStoreType;
 
