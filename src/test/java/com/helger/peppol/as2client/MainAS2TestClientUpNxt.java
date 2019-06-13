@@ -31,6 +31,7 @@ import com.helger.as2lib.client.AS2ClientResponse;
 import com.helger.as2lib.client.AS2ClientSettings;
 import com.helger.as2lib.crypto.ECryptoAlgorithmSign;
 import com.helger.as2lib.util.dump.HTTPOutgoingDumperStreamBased;
+import com.helger.as2lib.util.dump.IHTTPOutgoingDumper;
 import com.helger.as2lib.util.http.HTTPHelper;
 import com.helger.bdve.executorset.VESID;
 import com.helger.bdve.executorset.ValidationExecutorSetRegistry;
@@ -116,7 +117,7 @@ public final class MainAS2TestClientUpNxt
     return _getSenderAS2ID ();
   }
 
-  @SuppressWarnings ("null")
+  @SuppressWarnings ({ "null", "resource" })
   public static void main (final String [] args) throws Exception
   {
     /** The PEPPOL document type to use. */
@@ -138,10 +139,11 @@ public final class MainAS2TestClientUpNxt
 
     // Debug outgoing (AS2 message)?
     NonBlockingByteArrayOutputStream aDebugOS;
+    IHTTPOutgoingDumper aOutgoingDumper = null;
     if (true)
     {
       aDebugOS = new NonBlockingByteArrayOutputStream ();
-      HTTPHelper.setHTTPOutgoingDumperFactory (aMsg -> new HTTPOutgoingDumperStreamBased (aDebugOS));
+      aOutgoingDumper = new HTTPOutgoingDumperStreamBased (aDebugOS).setDumpComment (false);
     }
     else
       aDebugOS = null;
@@ -195,6 +197,7 @@ public final class MainAS2TestClientUpNxt
        .setPeppolDocumentTypeID (aDocTypeID)
        .setPeppolProcessID (aProcessID)
        .setValidationKey (aValidationKey)
+       .setOutgoingDumper (aOutgoingDumper)
        .sendSynchronous ();
       if (aResponse.hasException ())
         LOGGER.warn (aResponse.getAsString ());
@@ -217,6 +220,7 @@ public final class MainAS2TestClientUpNxt
     }
     finally
     {
+      StreamHelper.close (aOutgoingDumper);
       StreamHelper.close (aDebugOS);
     }
   }

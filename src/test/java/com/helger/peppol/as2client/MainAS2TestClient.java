@@ -32,6 +32,7 @@ import com.helger.as2lib.client.AS2ClientSettings;
 import com.helger.as2lib.crypto.ECryptoAlgorithmSign;
 import com.helger.as2lib.util.dump.HTTPOutgoingDumperFileBased;
 import com.helger.as2lib.util.dump.HTTPOutgoingDumperStreamBased;
+import com.helger.as2lib.util.dump.IHTTPOutgoingDumper;
 import com.helger.as2lib.util.http.HTTPHelper;
 import com.helger.bdve.executorset.VESID;
 import com.helger.bdve.peppol.PeppolValidation370;
@@ -125,7 +126,7 @@ public final class MainAS2TestClient
     return _getSenderAS2ID (bProd);
   }
 
-  @SuppressWarnings ({ "null", "deprecation" })
+  @SuppressWarnings ({ "null", "deprecation", "resource" })
   public static void main (final String [] args) throws Exception
   {
     /** The PEPPOL document type to use. */
@@ -147,7 +148,7 @@ public final class MainAS2TestClient
     int nReadTimeoutMS = AS2ClientSettings.DEFAULT_READ_TIMEOUT_MS;
     String sWPAD = null;
     boolean bDebugOutgoing = false;
-    String sOutgoingDumpFilename = null;
+    String sOutgoingDumpFilename = "outgoing.dump";
     boolean bDebugIncoming = false;
     EContentTransferEncoding eCTE = EContentTransferEncoding.AS2_DEFAULT;
 
@@ -297,7 +298,9 @@ public final class MainAS2TestClient
       aSML = ESML.DIGIT_TEST;
       aValidationKey = PeppolValidation370.VID_OPENPEPPOL_T10_V2;
       bDebugOutgoing = true;
-      sOutgoingDumpFilename = "outgoing.dump";
+      // Dump on console
+      if (false)
+        sOutgoingDumpFilename = null;
     }
     if (false)
     {
@@ -370,23 +373,21 @@ public final class MainAS2TestClient
     }
 
     // Debug outgoing (AS2 message)?
-    NonBlockingByteArrayOutputStream aDebugOS;
+    NonBlockingByteArrayOutputStream aDebugOS = null;
+    IHTTPOutgoingDumper aOutgoingDumper = null;
     if (bDebugOutgoing)
     {
-      aDebugOS = new NonBlockingByteArrayOutputStream ();
-      final String sFinalOutgoingDumpFilename = sOutgoingDumpFilename;
-      HTTPHelper.setHTTPOutgoingDumperFactory (aMsg -> {
-        if (sFinalOutgoingDumpFilename != null)
-        {
-          final HTTPOutgoingDumperFileBased d = new HTTPOutgoingDumperFileBased (new File (sFinalOutgoingDumpFilename));
-          d.setDumpHeader (false);
-          return d;
-        }
-        return new HTTPOutgoingDumperStreamBased (System.out);
-      });
+      if (StringHelper.hasText (sOutgoingDumpFilename))
+      {
+        aOutgoingDumper = new HTTPOutgoingDumperFileBased (new File (sOutgoingDumpFilename)).setDumpComment (false)
+                                                                                            .setDumpHeader (false);
+      }
+      else
+      {
+        aDebugOS = new NonBlockingByteArrayOutputStream ();
+        aOutgoingDumper = new HTTPOutgoingDumperStreamBased (aDebugOS).setDumpComment (false);
+      }
     }
-    else
-      aDebugOS = null;
 
     // Debug incoming (AS2 MDN)?
     if (bDebugIncoming)
@@ -468,6 +469,7 @@ public final class MainAS2TestClient
                                                                  .setValidationKey (aValidationKey)
                                                                  .setValidatonResultHandler (aValidationResultHandler)
                                                                  .setContentTransferEncoding (eCTE)
+                                                                 .setOutgoingDumper (aOutgoingDumper)
                                                                  .sendSynchronous ();
       if (aResponse.hasException ())
         LOGGER.warn (aResponse.getAsString ());

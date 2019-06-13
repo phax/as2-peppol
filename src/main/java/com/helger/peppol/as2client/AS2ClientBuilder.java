@@ -42,9 +42,8 @@ import com.helger.as2lib.client.AS2ClientResponse;
 import com.helger.as2lib.client.AS2ClientSettings;
 import com.helger.as2lib.crypto.ECryptoAlgorithmSign;
 import com.helger.as2lib.disposition.DispositionOptions;
-import com.helger.as2lib.message.IBaseMessage;
 import com.helger.as2lib.util.dump.IHTTPOutgoingDumper;
-import com.helger.as2lib.util.http.HTTPHelper;
+import com.helger.as2lib.util.http.IHTTPOutgoingDumperFactory;
 import com.helger.bdve.execute.ValidationExecutionManager;
 import com.helger.bdve.executorset.IValidationExecutorSet;
 import com.helger.bdve.executorset.VESID;
@@ -55,7 +54,6 @@ import com.helger.bdve.source.ValidationSource;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.OverrideOnDemand;
 import com.helger.commons.email.EmailAddressHelper;
-import com.helger.commons.functional.IFunction;
 import com.helger.commons.functional.ISupplier;
 import com.helger.commons.http.CHttpHeader;
 import com.helger.commons.io.resource.FileSystemResource;
@@ -147,6 +145,7 @@ public class AS2ClientBuilder
   private IAS2ClientBuilderValidatonResultHandler m_aValidationResultHandler = new IAS2ClientBuilderValidatonResultHandler ()
   {};
   private transient ValidationExecutorSetRegistry m_aVESRegistry;
+  private IHTTPOutgoingDumperFactory m_aHttpOutgoingDumperFactory;
 
   /**
    * Default constructor.
@@ -719,6 +718,37 @@ public class AS2ClientBuilder
   }
 
   /**
+   * Set an optional dumper for the outgoing messages.<br>
+   *
+   * @param aHttpOutgoingDumper
+   *        The dumper to be used. Pass <code>null</code> for no dumping (which
+   *        is the default).
+   * @return this for chaining
+   * @since 3.0.7
+   */
+  @Nonnull
+  public AS2ClientBuilder setOutgoingDumper (@Nullable final IHTTPOutgoingDumper aHttpOutgoingDumper)
+  {
+    return setOutgoingDumperFactory (aHttpOutgoingDumper == null ? null : aMsg -> aHttpOutgoingDumper);
+  }
+
+  /**
+   * Set an optional dumper factory for the outgoing messages.<br>
+   *
+   * @param aHttpOutgoingDumperFactory
+   *        The dumper factory to be used. Pass <code>null</code> for no dumping
+   *        (which is the default).
+   * @return this for chaining
+   * @since 3.0.7
+   */
+  @Nonnull
+  public AS2ClientBuilder setOutgoingDumperFactory (@Nullable final IHTTPOutgoingDumperFactory aHttpOutgoingDumperFactory)
+  {
+    m_aHttpOutgoingDumperFactory = aHttpOutgoingDumperFactory;
+    return this;
+  }
+
+  /**
    * This method is responsible for performing the SMP client lookup if an SMP
    * client was specified via {@link #setSMPClient(SMPClientReadOnly)}. If any
    * of the prerequisites mentioned there is not fulfilled a warning is emitted
@@ -1195,6 +1225,8 @@ public class AS2ClientBuilder
     // Add a custom header to request an MDN for IBM implementation
     aAS2ClientSettings.customHeaders ().addHeader (CHttpHeader.DISPOSITION_NOTIFICATION_TO, "dummy");
 
+    aAS2ClientSettings.setHttpOutgoingDumperFactory (m_aHttpOutgoingDumperFactory);
+
     final AS2ClientRequest aRequest = new AS2ClientRequest (m_sAS2Subject);
 
     // 5. assemble and send
@@ -1244,15 +1276,7 @@ public class AS2ClientBuilder
       aAS2Client.setHttpProxy (new Proxy (Proxy.Type.HTTP, new InetSocketAddress ("127.0.0.1", 8888)));
     }
 
-    final IFunction <? super IBaseMessage, ? extends IHTTPOutgoingDumper> aOldFactory = HTTPHelper.getHTTPOutgoingDumperFactory ();
-    try
-    {
-      final AS2ClientResponse aResponse = aAS2Client.sendSynchronous (aAS2ClientSettings, aRequest);
-      return aResponse;
-    }
-    finally
-    {
-      HTTPHelper.setHTTPOutgoingDumperFactory (aOldFactory);
-    }
+    final AS2ClientResponse aResponse = aAS2Client.sendSynchronous (aAS2ClientSettings, aRequest);
+    return aResponse;
   }
 }
