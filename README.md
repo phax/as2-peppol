@@ -14,7 +14,7 @@ This project is licensed under the Apache 2 License.
 
 # News and Noteworthy
 
-* v3.0.7 - work in progress
+* v3.0.7 - 2019-06-17
     * Updated to as2-lib 4.4.0
     * Updated to peppol-commons 7.0.0
     * New interface `IAS2ClientBuilderValidatonResultHandler` to customize validation result handling (see [issue #3](https://github.com/phax/as2-peppol-client/issues/3))
@@ -101,7 +101,7 @@ Add the following to your `pom.xml` to use this artifact:
 <dependency>
   <groupId>com.helger</groupId>
   <artifactId>as2-peppol-client</artifactId>
-  <version>3.0.5</version>
+  <version>3.0.7</version>
 </dependency>
 ```
 
