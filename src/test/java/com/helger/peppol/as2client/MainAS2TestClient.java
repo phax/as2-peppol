@@ -152,6 +152,18 @@ public final class MainAS2TestClient
     boolean bDebugIncoming = false;
     EContentTransferEncoding eCTE = EContentTransferEncoding.AS2_DEFAULT;
 
+    if (true)
+    {
+      // BRZ test endpoint
+      aReceiver = IF.createParticipantIdentifierWithDefaultScheme ("9915:test");
+      sTestFilename = "xml/as2-test-at-gov.xml";
+      aSML = ESML.DIGIT_TEST;
+      aValidationKey = PeppolValidation370.VID_OPENPEPPOL_T10_V2;
+      bDebugOutgoing = true;
+      // Dump on console
+      if (false)
+        sOutgoingDumpFilename = null;
+    }
     if (false)
     {
       // mysupply test client
@@ -289,18 +301,6 @@ public final class MainAS2TestClient
       aSML = ESML.DIGIT_TEST;
       bDebugOutgoing = true;
       eCTE = EContentTransferEncoding.BINARY;
-    }
-    if (true)
-    {
-      // BRZ test endpoint
-      aReceiver = IF.createParticipantIdentifierWithDefaultScheme ("9915:test");
-      sTestFilename = "xml/as2-test-at-gov.xml";
-      aSML = ESML.DIGIT_TEST;
-      aValidationKey = PeppolValidation370.VID_OPENPEPPOL_T10_V2;
-      bDebugOutgoing = true;
-      // Dump on console
-      if (false)
-        sOutgoingDumpFilename = null;
     }
     if (false)
     {
