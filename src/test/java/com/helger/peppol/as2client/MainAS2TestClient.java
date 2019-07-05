@@ -483,6 +483,8 @@ public final class MainAS2TestClient
                                                                  .sendSynchronous ();
       if (aResponse.hasException ())
         LOGGER.warn (aResponse.getAsString ());
+      if (aResponse.hasMDN ())
+        LOGGER.info ("Certificate of MDN:\n" + aResponse.getMDNVerificationCertificate ());
 
       if (aDebugOS != null)
         LOGGER.info ("Outgoing request:\n" + aDebugOS.getAsString (StandardCharsets.UTF_8));
@@ -499,7 +501,7 @@ public final class MainAS2TestClient
     }
     catch (final AS2ClientBuilderException ex)
     {
-      ex.printStackTrace ();
+      LOGGER.error ("AS2 client error", ex);
     }
   }
 }
