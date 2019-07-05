@@ -152,7 +152,7 @@ public final class MainAS2TestClient
     boolean bDebugIncoming = false;
     EContentTransferEncoding eCTE = EContentTransferEncoding.AS2_DEFAULT;
 
-    if (true)
+    if (false)
     {
       // BRZ test endpoint
       aReceiver = IF.createParticipantIdentifierWithDefaultScheme ("9915:test");
@@ -163,6 +163,16 @@ public final class MainAS2TestClient
       // Dump on console
       if (false)
         sOutgoingDumpFilename = null;
+    }
+    if (true)
+    {
+      // SAP production test endpoint
+      aReceiver = IF.createParticipantIdentifierWithDefaultScheme ("9944:NL008209893B04");
+      sTestFilename = "xml/as2-sap.xml";
+      aSML = ESML.DIGIT_PRODUCTION;
+      // Billing BIS v3
+      aDocTypeID = EPredefinedDocumentTypeIdentifier.INVOICE_EN16931_PEPPOL_V30.getAsDocumentTypeIdentifier ();
+      aProcessID = EPredefinedProcessIdentifier.BIS5A_V3.getAsProcessIdentifier ();
     }
     if (false)
     {
