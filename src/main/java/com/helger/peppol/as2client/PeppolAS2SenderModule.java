@@ -35,7 +35,7 @@ public class PeppolAS2SenderModule extends AS2SenderModule
   {
     final OpenAS2Exception oae2 = new OpenAS2Exception ("Message was sent but an error occured while receiving the MDN",
                                                         ex);
-    oae2.addSource (OpenAS2Exception.SOURCE_MESSAGE, aMsg);
+    oae2.setSourceMsg (aMsg);
     // Compared to the base implementation, this version propagates the message
     // to the outside
     throw oae2;
