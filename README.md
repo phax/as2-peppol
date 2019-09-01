@@ -14,6 +14,8 @@ This project is licensed under the Apache 2 License.
 
 # News and Noteworthy
 
+* v3.0.8 - work in progress
+    * Updated to as2-lib 4.4.2
 * v3.0.7 - 2019-06-17
     * Updated to as2-lib 4.4.0
     * Updated to peppol-commons 7.0.0
