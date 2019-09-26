@@ -14,6 +14,8 @@ This project is licensed under the Apache 2 License.
 
 # News and Noteworthy
 
+* v3.0.9 - 2019-09-26
+    * Updated to as2-lib 4.4.4
 * v3.0.8 - 2019-09-11
     * Updated to as2-lib 4.4.2
     * Updated to ph-bdve 5.1.12 with PEPPOL validation 3.8.1
@@ -104,7 +106,7 @@ Add the following to your `pom.xml` to use this artifact:
 <dependency>
   <groupId>com.helger</groupId>
   <artifactId>as2-peppol-client</artifactId>
-  <version>3.0.8</version>
+  <version>3.0.9</version>
 </dependency>
 ```
 
