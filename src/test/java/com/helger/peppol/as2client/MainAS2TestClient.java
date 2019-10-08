@@ -152,7 +152,7 @@ public final class MainAS2TestClient
     boolean bDebugIncoming = false;
     EContentTransferEncoding eCTE = EContentTransferEncoding.AS2_DEFAULT;
 
-    if (false)
+    if (true)
     {
       // BRZ test endpoint
       aReceiver = IF.createParticipantIdentifierWithDefaultScheme ("9915:test");
@@ -160,11 +160,13 @@ public final class MainAS2TestClient
       aSML = ESML.DIGIT_TEST;
       aValidationKey = PeppolValidation370.VID_OPENPEPPOL_T10_V2;
       bDebugOutgoing = true;
+      if (false)
+        eCTE = EContentTransferEncoding.BASE64;
       // Dump on console
       if (false)
         sOutgoingDumpFilename = null;
     }
-    if (true)
+    if (false)
     {
       // SAP production test endpoint
       aReceiver = IF.createParticipantIdentifierWithDefaultScheme ("9944:NL008209893B04");
@@ -483,8 +485,10 @@ public final class MainAS2TestClient
                                                                  .sendSynchronous ();
       if (aResponse.hasException ())
         LOGGER.warn (aResponse.getAsString ());
-      if (aResponse.hasMDN ())
-        LOGGER.info ("Certificate of MDN:\n" + aResponse.getMDNVerificationCertificate ());
+
+      if (false)
+        if (aResponse.hasMDN ())
+          LOGGER.info ("Certificate of MDN:\n" + aResponse.getMDNVerificationCertificate ());
 
       if (aDebugOS != null)
         LOGGER.info ("Outgoing request:\n" + aDebugOS.getAsString (StandardCharsets.UTF_8));

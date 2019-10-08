@@ -16,6 +16,8 @@ This project is licensed under the Apache 2 License.
 
 * v3.0.10 - work in progress
     * Updated to as2-lib 4.4.5
+    * Made the usage of `DataHandler` the default, but made it customizable.
+    * Made the outgoing MIME type customizable. 
 * v3.0.9 - 2019-09-26
     * Updated to as2-lib 4.4.4
 * v3.0.8 - 2019-09-11

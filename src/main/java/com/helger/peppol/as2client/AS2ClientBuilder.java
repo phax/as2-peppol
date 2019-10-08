@@ -24,6 +24,7 @@ import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.Locale;
 
+import javax.activation.DataHandler;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.OverridingMethodsMustInvokeSuper;
@@ -61,6 +62,7 @@ import com.helger.commons.io.resource.IReadableResource;
 import com.helger.commons.io.resource.inmemory.ReadableResourceByteArray;
 import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
 import com.helger.commons.mime.CMimeType;
+import com.helger.commons.mime.IMimeType;
 import com.helger.commons.string.StringHelper;
 import com.helger.commons.url.URLHelper;
 import com.helger.mail.cte.EContentTransferEncoding;
@@ -107,6 +109,8 @@ public class AS2ClientBuilder
   public static final String APP_PREFIX_V2 = "APP_";
   /** "P" + country code (e.g. "DK" for Denmark or "OP" for OpenPEPPOL */
   public static final String APP_PREFIX_V3 = "P";
+  /** The default mime type to be used for outgoing messages */
+  public static final IMimeType DEFAULT_MIME_TYPE = CMimeType.APPLICATION_XML;
 
   private static final Logger LOGGER = LoggerFactory.getLogger (AS2ClientBuilder.class);
 
@@ -148,6 +152,8 @@ public class AS2ClientBuilder
   {};
   private transient ValidationExecutorSetRegistry m_aVESRegistry;
   private IHTTPOutgoingDumperFactory m_aHttpOutgoingDumperFactory;
+  private boolean m_bUseDataHandler = true;
+  private IMimeType m_aMimeType = DEFAULT_MIME_TYPE;
 
   /**
    * Default constructor.
@@ -751,6 +757,64 @@ public class AS2ClientBuilder
   }
 
   /**
+   * @return <code>true</code> if the data should be internally passed with a
+   *         {@link DataHandler} or <code>false</code> if the data should be
+   *         passed in as String. The default is <code>true</code>.
+   * @since 3.0.10
+   */
+  public boolean isUseDataHandler ()
+  {
+    return m_bUseDataHandler;
+  }
+
+  /**
+   * Use a {@link DataHandler} for transmission or a String? This method is an
+   * internal method and should not be called except you are facing a very
+   * specific problem as outlined in e.g.
+   * https://github.com/phax/as2-lib/issues/45
+   *
+   * @param bUseDataHandler
+   *        <code>true</code> to use the {@link DataHandler}, <code>false</code>
+   *        to use the string.
+   * @return this for chaining
+   * @since 3.0.10
+   */
+  @Nonnull
+  public AS2ClientBuilder setUseDataHandler (final boolean bUseDataHandler)
+  {
+    m_bUseDataHandler = bUseDataHandler;
+    return this;
+  }
+
+  /**
+   * @return The MIME type to be used for the payload. The default is
+   *         {@link #DEFAULT_MIME_TYPE}. Never <code>null</code>.
+   * @since 3.0.10
+   */
+  @Nonnull
+  public IMimeType getMimeType ()
+  {
+    return m_aMimeType;
+  }
+
+  /**
+   * Set the MIME type to be used. By default {@link #DEFAULT_MIME_TYPE} is
+   * used.
+   *
+   * @param aMimeType
+   *        The new MIME type to be used. May NOT be <code>null</code>.
+   * @return this for chaining
+   * @since 3.0.10
+   */
+  @Nonnull
+  public AS2ClientBuilder setMimeType (@Nonnull final IMimeType aMimeType)
+  {
+    ValueEnforcer.notNull (aMimeType, "MimeType");
+    m_aMimeType = aMimeType;
+    return this;
+  }
+
+  /**
    * This method is responsible for performing the SMP client lookup if an SMP
    * client was specified via {@link #setSMPClient(SMPClientReadOnly)}. If any
    * of the prerequisites mentioned there is not fulfilled a warning is emitted
@@ -1252,21 +1316,22 @@ public class AS2ClientBuilder
       if (aSBDMarshaller.write (aSBD, aBAOS).isFailure ())
         throw new AS2ClientBuilderException ("Failed to serialize SBD!");
 
-      if (true)
+      if (m_bUseDataHandler)
       {
         // Use data to force the usage of "application/xml" Content-Type in the
         // DataHandler
-        aRequest.setData (aBAOS.toByteArray ());
+        aRequest.setData (new DataHandler (aBAOS.toByteArray (), m_aMimeType.getAsString ()));
       }
       else
       {
         // Using a String is better when having a
         // com.sun.xml.ws.encoding.XmlDataContentHandler installed!
         aRequest.setData (aBAOS.getAsString (StandardCharsets.UTF_8), StandardCharsets.UTF_8);
+
+        // Explicitly add application/xml even though the "setData" may have
+        // suggested something else (like text/plain)
+        aRequest.setContentType (m_aMimeType.getAsString ());
       }
-      // Explicitly add application/xml even though the "setData" may have
-      // suggested something else (like text/plain)
-      aRequest.setContentType (CMimeType.APPLICATION_XML.getAsString ());
 
       // Set the custom content transfer encoding
       aRequest.setContentTransferEncoding (m_eCTE);
