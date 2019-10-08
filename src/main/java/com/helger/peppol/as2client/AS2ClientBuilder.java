@@ -43,7 +43,7 @@ import com.helger.as2lib.client.AS2ClientSettings;
 import com.helger.as2lib.crypto.ECryptoAlgorithmSign;
 import com.helger.as2lib.disposition.DispositionOptions;
 import com.helger.as2lib.util.dump.IHTTPOutgoingDumper;
-import com.helger.as2lib.util.http.IHTTPOutgoingDumperFactory;
+import com.helger.as2lib.util.dump.IHTTPOutgoingDumperFactory;
 import com.helger.bdve.execute.ValidationExecutionManager;
 import com.helger.bdve.executorset.IValidationExecutorSet;
 import com.helger.bdve.executorset.VESID;
@@ -1252,9 +1252,10 @@ public class AS2ClientBuilder
       if (aSBDMarshaller.write (aSBD, aBAOS).isFailure ())
         throw new AS2ClientBuilderException ("Failed to serialize SBD!");
 
-      if (false)
+      if (true)
       {
-        // Use data to force
+        // Use data to force the usage of "application/xml" Content-Type in the
+        // DataHandler
         aRequest.setData (aBAOS.toByteArray ());
       }
       else
