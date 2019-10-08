@@ -43,6 +43,7 @@ import com.helger.as2lib.client.AS2ClientResponse;
 import com.helger.as2lib.client.AS2ClientSettings;
 import com.helger.as2lib.crypto.ECryptoAlgorithmSign;
 import com.helger.as2lib.disposition.DispositionOptions;
+import com.helger.as2lib.util.dump.IHTTPIncomingDumper;
 import com.helger.as2lib.util.dump.IHTTPOutgoingDumper;
 import com.helger.as2lib.util.dump.IHTTPOutgoingDumperFactory;
 import com.helger.bdve.execute.ValidationExecutionManager;
@@ -152,6 +153,7 @@ public class AS2ClientBuilder
   {};
   private transient ValidationExecutorSetRegistry m_aVESRegistry;
   private IHTTPOutgoingDumperFactory m_aHttpOutgoingDumperFactory;
+  private IHTTPIncomingDumper m_aHttpIncomingDumper;
   private boolean m_bUseDataHandler = true;
   private IMimeType m_aMimeType = DEFAULT_MIME_TYPE;
 
@@ -757,6 +759,21 @@ public class AS2ClientBuilder
   }
 
   /**
+   * Set a custom incoming dumper for this request.
+   *
+   * @param aHttpIncomingDumper
+   *        The dumper to be used. May be <code>null</code>.
+   * @return this for chaining
+   * @since 3.0.10
+   */
+  @Nonnull
+  public AS2ClientBuilder setIncomingDumper (@Nullable final IHTTPIncomingDumper aHttpIncomingDumper)
+  {
+    m_aHttpIncomingDumper = aHttpIncomingDumper;
+    return this;
+  }
+
+  /**
    * @return <code>true</code> if the data should be internally passed with a
    *         {@link DataHandler} or <code>false</code> if the data should be
    *         passed in as String. The default is <code>true</code>.
@@ -1193,6 +1210,53 @@ public class AS2ClientBuilder
   }
 
   /**
+   * @return The {@link AS2ClientSettings} to be used, based on the input
+   *         parameters. Never <code>null</code>.
+   */
+  @Nonnull
+  @OverridingMethodsMustInvokeSuper
+  public AS2ClientSettings createAS2ClientSettings ()
+  {
+    // Start building the AS2 client settings
+    final AS2ClientSettings aAS2ClientSettings = new AS2ClientSettings ();
+    // Key store
+    if (m_aKeyStoreFile != null)
+      aAS2ClientSettings.setKeyStore (m_aKeyStoreType, m_aKeyStoreFile, m_sKeyStorePassword);
+    else
+      aAS2ClientSettings.setKeyStore (m_aKeyStoreType, m_aKeyStoreBytes, m_sKeyStorePassword);
+    aAS2ClientSettings.setSaveKeyStoreChangesToFile (m_bSaveKeyStoreChangesToFile);
+
+    // Fixed sender
+    aAS2ClientSettings.setSenderData (m_sSenderAS2ID, m_sSenderAS2Email, m_sSenderAS2KeyAlias);
+
+    // Dynamic receiver
+    aAS2ClientSettings.setReceiverData (m_sReceiverAS2ID, m_sReceiverAS2KeyAlias, m_sReceiverAS2Url);
+    aAS2ClientSettings.setReceiverCertificate (m_aReceiverCert);
+
+    // AS2 stuff - no need to change anything in this block
+    aAS2ClientSettings.setPartnershipName (aAS2ClientSettings.getSenderAS2ID () +
+                                           "-" +
+                                           aAS2ClientSettings.getReceiverAS2ID ());
+    aAS2ClientSettings.setMDNOptions (new DispositionOptions ().setMICAlg (m_eSigningAlgo)
+                                                               .setMICAlgImportance (DispositionOptions.IMPORTANCE_REQUIRED)
+                                                               .setProtocol (DispositionOptions.PROTOCOL_PKCS7_SIGNATURE)
+                                                               .setProtocolImportance (DispositionOptions.IMPORTANCE_REQUIRED));
+    aAS2ClientSettings.setEncryptAndSign (null, m_eSigningAlgo);
+    aAS2ClientSettings.setMessageIDFormat (m_sMessageIDFormat);
+
+    aAS2ClientSettings.setConnectTimeoutMS (m_nConnectTimeoutMS);
+    aAS2ClientSettings.setReadTimeoutMS (m_nReadTimeoutMS);
+
+    aAS2ClientSettings.setHttpOutgoingDumperFactory (m_aHttpOutgoingDumperFactory);
+    aAS2ClientSettings.setHttpIncomingDumper (m_aHttpIncomingDumper);
+
+    // Add a custom header to request an MDN for IBM implementation
+    aAS2ClientSettings.customHeaders ().addHeader (CHttpHeader.DISPOSITION_NOTIFICATION_TO, "dummy");
+
+    return aAS2ClientSettings;
+  }
+
+  /**
    * This is the main sending routine. It performs the following steps:
    * <ol>
    * <li>Verify that all required parameters are present and valid -
@@ -1258,40 +1322,7 @@ public class AS2ClientBuilder
     aSBDHDoc.setProcess (m_aPeppolProcessID.getScheme (), m_aPeppolProcessID.getValue ());
 
     // 4. set client properties
-    // Start building the AS2 client settings
-    final AS2ClientSettings aAS2ClientSettings = new AS2ClientSettings ();
-    // Key store
-    if (m_aKeyStoreFile != null)
-      aAS2ClientSettings.setKeyStore (m_aKeyStoreType, m_aKeyStoreFile, m_sKeyStorePassword);
-    else
-      aAS2ClientSettings.setKeyStore (m_aKeyStoreType, m_aKeyStoreBytes, m_sKeyStorePassword);
-    aAS2ClientSettings.setSaveKeyStoreChangesToFile (m_bSaveKeyStoreChangesToFile);
-
-    // Fixed sender
-    aAS2ClientSettings.setSenderData (m_sSenderAS2ID, m_sSenderAS2Email, m_sSenderAS2KeyAlias);
-
-    // Dynamic receiver
-    aAS2ClientSettings.setReceiverData (m_sReceiverAS2ID, m_sReceiverAS2KeyAlias, m_sReceiverAS2Url);
-    aAS2ClientSettings.setReceiverCertificate (m_aReceiverCert);
-
-    // AS2 stuff - no need to change anything in this block
-    aAS2ClientSettings.setPartnershipName (aAS2ClientSettings.getSenderAS2ID () +
-                                           "-" +
-                                           aAS2ClientSettings.getReceiverAS2ID ());
-    aAS2ClientSettings.setMDNOptions (new DispositionOptions ().setMICAlg (m_eSigningAlgo)
-                                                               .setMICAlgImportance (DispositionOptions.IMPORTANCE_REQUIRED)
-                                                               .setProtocol (DispositionOptions.PROTOCOL_PKCS7_SIGNATURE)
-                                                               .setProtocolImportance (DispositionOptions.IMPORTANCE_REQUIRED));
-    aAS2ClientSettings.setEncryptAndSign (null, m_eSigningAlgo);
-    aAS2ClientSettings.setMessageIDFormat (m_sMessageIDFormat);
-
-    aAS2ClientSettings.setConnectTimeoutMS (m_nConnectTimeoutMS);
-    aAS2ClientSettings.setReadTimeoutMS (m_nReadTimeoutMS);
-
-    // Add a custom header to request an MDN for IBM implementation
-    aAS2ClientSettings.customHeaders ().addHeader (CHttpHeader.DISPOSITION_NOTIFICATION_TO, "dummy");
-
-    aAS2ClientSettings.setHttpOutgoingDumperFactory (m_aHttpOutgoingDumperFactory);
+    final AS2ClientSettings aAS2ClientSettings = createAS2ClientSettings ();
 
     final AS2ClientRequest aRequest = new AS2ClientRequest (m_sAS2Subject);
 

@@ -160,7 +160,7 @@ public final class MainAS2TestClient
       aSML = ESML.DIGIT_TEST;
       aValidationKey = PeppolValidation370.VID_OPENPEPPOL_T10_V2;
       bDebugOutgoing = true;
-      if (false)
+      if (true)
         eCTE = EContentTransferEncoding.BASE64;
       // Dump on console
       if (false)
