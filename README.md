@@ -14,7 +14,7 @@ This project is licensed under the Apache 2 License.
 
 # News and Noteworthy
 
-* v3.0.10 - work in progress
+* v3.0.10 - 2019-11-11
     * Updated to as2-lib 4.4.5
     * Made the usage of `DataHandler` the default, but made it customizable.
     * Made the outgoing MIME type customizable. 
@@ -111,7 +111,7 @@ Add the following to your `pom.xml` to use this artifact:
 <dependency>
   <groupId>com.helger</groupId>
   <artifactId>as2-peppol-client</artifactId>
-  <version>3.0.9</version>
+  <version>3.0.10</version>
 </dependency>
 ```
 
