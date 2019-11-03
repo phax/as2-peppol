@@ -14,7 +14,9 @@ This project is licensed under the Apache 2 License.
 
 # News and Noteworthy
 
-* v3.0.10 - 2019-11-11
+* v3.0.11 - 2019-11-03
+    * Updated to ph-bdve 5.1.14 with PEPPOL validation 3.9.0
+* v3.0.10 - 2019-10-11
     * Updated to as2-lib 4.4.5
     * Made the usage of `DataHandler` the default, but made it customizable.
     * Made the outgoing MIME type customizable. 
@@ -111,7 +113,7 @@ Add the following to your `pom.xml` to use this artifact:
 <dependency>
   <groupId>com.helger</groupId>
   <artifactId>as2-peppol-client</artifactId>
-  <version>3.0.10</version>
+  <version>3.0.11</version>
 </dependency>
 ```
 
