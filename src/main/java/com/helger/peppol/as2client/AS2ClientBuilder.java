@@ -1149,6 +1149,20 @@ public class AS2ClientBuilder
   }
 
   /**
+   * @return the default {@link ValidationExecutorSetRegistry} used internally.
+   *         Never <code>null</code>.
+   * @since 3.0.12
+   */
+  @Nonnull
+  public static ValidationExecutorSetRegistry createDefaultValidationRegistry ()
+  {
+    final ValidationExecutorSetRegistry aVESRegistry = new ValidationExecutorSetRegistry ();
+    PeppolValidation.initStandard (aVESRegistry);
+    PeppolValidation.initThirdParty (aVESRegistry);
+    return aVESRegistry;
+  }
+
+  /**
    * Create a new {@link ValidationExecutorSetRegistry} to be used with this
    * client builder. By default the {@link PeppolValidation} artefacts are
    * contained. If additional artefacts like SimplerInvoicing or EN16931 is to
@@ -1163,10 +1177,45 @@ public class AS2ClientBuilder
   @Nonnull
   protected ValidationExecutorSetRegistry createValidationRegistry ()
   {
-    final ValidationExecutorSetRegistry aVESRegistry = new ValidationExecutorSetRegistry ();
-    PeppolValidation.initStandard (aVESRegistry);
-    PeppolValidation.initThirdParty (aVESRegistry);
-    return aVESRegistry;
+    return createDefaultValidationRegistry ();
+  }
+
+  /**
+   * Validate a business document based on the provided parameters.
+   * 
+   * @param aVESRegistry
+   *        Registry of VES. May not be <code>null</code>.
+   * @param aVESID
+   *        The VES ID to be used. May not be <code>null</code>.
+   * @param aValidationResultHandler
+   *        The result handler. May not be <code>null</code>.
+   * @param aXML
+   *        The XML DOM element to be validated. May not be <code>null</code>.
+   * @throws AS2ClientBuilderException
+   *         in case validation failed or something else goes wrong.
+   * @since 3.0.12
+   */
+  public static void validateBusinessDocument (@Nonnull final ValidationExecutorSetRegistry aVESRegistry,
+                                               @Nonnull final VESID aVESID,
+                                               @Nonnull final IAS2ClientBuilderValidatonResultHandler aValidationResultHandler,
+                                               @Nonnull final Element aXML) throws AS2ClientBuilderException
+  {
+    final IValidationExecutorSet aVES = aVESRegistry.getOfID (aVESID);
+    if (aVES == null)
+      throw new AS2ClientBuilderException ("The validation executor set ID " +
+                                           aVESID.getAsSingleID () +
+                                           " is unknown!");
+
+    final ValidationExecutionManager aVEM = aVES.createExecutionManager ();
+    final ValidationResultList aValidationResult = aVEM.executeValidation (ValidationSource.create (null, aXML),
+                                                                           (Locale) null);
+    if (aValidationResult.containsAtLeastOneError ())
+    {
+      aValidationResultHandler.onValidationErrors (aValidationResult);
+      LOGGER.warn ("Continue to send AS2 message, although validation errors are contained!");
+    }
+    else
+      aValidationResultHandler.onValidationSuccess (aValidationResult);
   }
 
   /**
@@ -1191,22 +1240,7 @@ public class AS2ClientBuilder
       // Create lazily
       m_aVESRegistry = createValidationRegistry ();
     }
-    final IValidationExecutorSet aVES = m_aVESRegistry.getOfID (m_aVESID);
-    if (aVES == null)
-      throw new AS2ClientBuilderException ("The validation executor set ID " +
-                                           m_aVESID.getAsSingleID () +
-                                           " is unknown!");
-
-    final ValidationExecutionManager aVEM = aVES.createExecutionManager ();
-    final ValidationResultList aValidationResult = aVEM.executeValidation (ValidationSource.create (null, aXML),
-                                                                           (Locale) null);
-    if (aValidationResult.containsAtLeastOneError ())
-    {
-      m_aValidationResultHandler.onValidationErrors (aValidationResult);
-      LOGGER.warn ("Continue to send AS2 message, although validation errors are contained!");
-    }
-    else
-      m_aValidationResultHandler.onValidationSuccess (aValidationResult);
+    validateBusinessDocument (m_aVESRegistry, m_aVESID, m_aValidationResultHandler, aXML);
   }
 
   /**
@@ -1316,7 +1350,7 @@ public class AS2ClientBuilder
     // 3. build PEPPOL SBDH data
     final PeppolSBDHDocument aSBDHDoc = PeppolSBDHDocument.create (aBusinessDocumentXML,
                                                                    PeppolIdentifierFactory.INSTANCE);
-    aSBDHDoc.setSenderWithDefaultScheme (m_aPeppolSenderID.getValue ());
+    aSBDHDoc.setSender (m_aPeppolSenderID.getScheme (), m_aPeppolSenderID.getValue ());
     aSBDHDoc.setReceiver (m_aPeppolReceiverID.getScheme (), m_aPeppolReceiverID.getValue ());
     aSBDHDoc.setDocumentType (m_aPeppolDocumentTypeID.getScheme (), m_aPeppolDocumentTypeID.getValue ());
     aSBDHDoc.setProcess (m_aPeppolProcessID.getScheme (), m_aPeppolProcessID.getValue ());

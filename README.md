@@ -14,6 +14,8 @@ This project is licensed under the Apache 2 License.
 
 # News and Noteworthy
 
+* v3.0.12 - work in progress
+    * Added static helper methods in `AS2ClientBuilder`
 * v3.0.11 - 2019-11-03
     * Updated to ph-bdve 5.1.14 with PEPPOL validation 3.9.0
 * v3.0.10 - 2019-10-11
