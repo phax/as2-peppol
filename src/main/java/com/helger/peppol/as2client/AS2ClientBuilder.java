@@ -80,6 +80,7 @@ import com.helger.peppol.smpclient.exception.SMPClientException;
 import com.helger.peppol.smpclient.exception.SMPClientNotFoundException;
 import com.helger.peppol.utils.EPeppolCertificateCheckResult;
 import com.helger.peppol.utils.PeppolCerticateChecker;
+import com.helger.peppol.utils.PeppolCertificateHelper;
 import com.helger.peppolid.IDocumentTypeIdentifier;
 import com.helger.peppolid.IParticipantIdentifier;
 import com.helger.peppolid.IProcessIdentifier;
@@ -984,9 +985,9 @@ public class AS2ClientBuilder
                 if (m_sReceiverAS2ID == null)
                   try
                   {
-                    m_sReceiverAS2ID = AS2ClientHelper.getSubjectCommonName (m_aReceiverCert);
+                    m_sReceiverAS2ID = PeppolCertificateHelper.getSubjectCN (m_aReceiverCert);
                   }
-                  catch (final CertificateException ex)
+                  catch (final Exception ex)
                   {
                     getMessageHandler ().error ("Failed to get the Receiver AS ID from the provided certificate", ex);
                   }
