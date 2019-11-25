@@ -22,6 +22,7 @@ import java.net.Proxy;
 import java.nio.charset.StandardCharsets;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.time.LocalDateTime;
 import java.util.Locale;
 
 import javax.activation.DataHandler;
@@ -55,6 +56,7 @@ import com.helger.bdve.result.ValidationResultList;
 import com.helger.bdve.source.ValidationSource;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.OverrideOnDemand;
+import com.helger.commons.datetime.PDTFactory;
 import com.helger.commons.email.EmailAddressHelper;
 import com.helger.commons.functional.ISupplier;
 import com.helger.commons.http.CHttpHeader;
@@ -75,6 +77,8 @@ import com.helger.peppol.smp.SignedServiceMetadataType;
 import com.helger.peppol.smpclient.SMPClientReadOnly;
 import com.helger.peppol.smpclient.exception.SMPClientException;
 import com.helger.peppol.smpclient.exception.SMPClientNotFoundException;
+import com.helger.peppol.utils.EPeppolCertificateCheckResult;
+import com.helger.peppol.utils.PeppolCerticateChecker;
 import com.helger.peppolid.IDocumentTypeIdentifier;
 import com.helger.peppolid.IParticipantIdentifier;
 import com.helger.peppolid.IProcessIdentifier;
@@ -129,6 +133,18 @@ public class AS2ClientBuilder
   private String m_sReceiverAS2KeyAlias;
   private String m_sReceiverAS2Url;
   private X509Certificate m_aReceiverCert;
+  private IAS2ClientBuilderCertificateCheckResultHandler m_aReceiverCertCheckResultHandler = (aCert,
+                                                                                              aCheckDT,
+                                                                                              eCertCheckResult) -> {
+    if (eCertCheckResult.isInvalid ())
+    {
+      // By default an invalid certificate leads to a rejection
+      getMessageHandler ().error ("The received AP certificate is not valid (at " +
+                                  aCheckDT +
+                                  ") and cannot be used for sending. Aborting. Reason: " +
+                                  eCertCheckResult.getReason ());
+    }
+  };
   private ECryptoAlgorithmSign m_eSigningAlgo = DEFAULT_SIGNING_ALGORITHM;
   private String m_sMessageIDFormat = DEFAULT_AS2_MESSAGE_ID_FORMAT;
   private int m_nConnectTimeoutMS = AS2ClientSettings.DEFAULT_CONNECT_TIMEOUT_MS;
@@ -391,6 +407,24 @@ public class AS2ClientBuilder
   public AS2ClientBuilder setReceiverCertificate (@Nullable final X509Certificate aReceiverCert)
   {
     m_aReceiverCert = aReceiverCert;
+    return this;
+  }
+
+  /**
+   * Set the handler for the AP certificate check result. By setting a custom
+   * handler here, it is possible to (silently) ignore any certificate
+   * verification errors and send anyway.
+   *
+   * @param aCertificateCheckResultHandler
+   *        The receiver certificate check result handler. May not be
+   *        <code>null</code>.
+   * @return this for chaining
+   */
+  @Nonnull
+  public AS2ClientBuilder setReceiverCertificateCheckResultHandler (@Nonnull final IAS2ClientBuilderCertificateCheckResultHandler aCertificateCheckResultHandler)
+  {
+    ValueEnforcer.notNull (aCertificateCheckResultHandler, "CertificateCheckResultHandler");
+    m_aReceiverCertCheckResultHandler = aCertificateCheckResultHandler;
     return this;
   }
 
@@ -933,6 +967,17 @@ public class AS2ClientBuilder
                   {
                     getMessageHandler ().error ("Failed to build X.509 certificate from SMP client response", ex);
                   }
+
+                // Verify the certificate
+                {
+                  final LocalDateTime aNow = PDTFactory.getCurrentLocalDateTime ();
+                  final EPeppolCertificateCheckResult eCertCheckResult = PeppolCerticateChecker.checkPeppolAPCertificate (m_aReceiverCert,
+                                                                                                                          aNow);
+
+                  // Interpret the result
+                  m_aReceiverCertCheckResultHandler.onCertificateCheckResult (m_aReceiverCert, aNow, eCertCheckResult);
+                }
+
                 if (m_sReceiverAS2ID == null)
                   try
                   {
@@ -1182,7 +1227,7 @@ public class AS2ClientBuilder
 
   /**
    * Validate a business document based on the provided parameters.
-   * 
+   *
    * @param aVESRegistry
    *        Registry of VES. May not be <code>null</code>.
    * @param aVESID
