@@ -29,6 +29,7 @@ import org.bouncycastle.asn1.x500.style.IETFUtils;
 import org.bouncycastle.cert.jcajce.JcaX509CertificateHolder;
 
 import com.helger.commons.ValueEnforcer;
+import com.helger.peppol.utils.PeppolCertificateHelper;
 
 /**
  * Common functionality for AS2 clients
@@ -47,8 +48,12 @@ public final class AS2ClientHelper
    * @return The common name of the certificate subject
    * @throws CertificateEncodingException
    *         In case of an internal error
+   * @deprecated Use
+   *             {@link PeppolCertificateHelper#getSubjectCN(X509Certificate)}
+   *             instead
    */
   @Nonnull
+  @Deprecated
   public static String getSubjectCommonName (@Nonnull final X509Certificate aCert) throws CertificateEncodingException
   {
     ValueEnforcer.notNull (aCert, "Certificate");

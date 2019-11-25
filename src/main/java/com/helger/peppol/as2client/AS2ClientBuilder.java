@@ -66,6 +66,7 @@ import com.helger.commons.io.resource.inmemory.ReadableResourceByteArray;
 import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
 import com.helger.commons.mime.CMimeType;
 import com.helger.commons.mime.IMimeType;
+import com.helger.commons.state.ETriState;
 import com.helger.commons.string.StringHelper;
 import com.helger.commons.url.URLHelper;
 import com.helger.mail.cte.EContentTransferEncoding;
@@ -972,7 +973,9 @@ public class AS2ClientBuilder
                 {
                   final LocalDateTime aNow = PDTFactory.getCurrentLocalDateTime ();
                   final EPeppolCertificateCheckResult eCertCheckResult = PeppolCerticateChecker.checkPeppolAPCertificate (m_aReceiverCert,
-                                                                                                                          aNow);
+                                                                                                                          aNow,
+                                                                                                                          ETriState.UNDEFINED,
+                                                                                                                          ETriState.UNDEFINED);
 
                   // Interpret the result
                   m_aReceiverCertCheckResultHandler.onCertificateCheckResult (m_aReceiverCert, aNow, eCertCheckResult);
