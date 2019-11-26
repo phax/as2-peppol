@@ -234,9 +234,9 @@ public final class MainAS2TestClientSBDH
           for (final ValidationResult aVR : aValidationResult)
           {
             if (aVR.isFailure ())
-              throw new AS2ClientBuilderException ("I wont send the document, because validation failed: " +
-                                                   aVR.toString ());
-            LOGGER.info (aVR.toString ());
+              LOGGER.error (aVR.toString ());
+            else
+              LOGGER.info (aVR.toString ());
           }
         }
       };
@@ -275,8 +275,6 @@ public final class MainAS2TestClientSBDH
                                                                  .setPeppolReceiverID (aReceiver)
                                                                  .setPeppolDocumentTypeID (aDocTypeID)
                                                                  .setPeppolProcessID (aProcessID)
-                                                                 .setValidationKey (null)
-                                                                 .setValidatonResultHandler (null)
                                                                  .setContentTransferEncoding (eCTE)
                                                                  .setOutgoingDumper (aOutgoingDumper)
                                                                  .sendSynchronousSBDH (aBAOS);
