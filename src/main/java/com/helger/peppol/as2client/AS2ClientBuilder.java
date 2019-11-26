@@ -79,7 +79,7 @@ import com.helger.peppol.smpclient.SMPClientReadOnly;
 import com.helger.peppol.smpclient.exception.SMPClientException;
 import com.helger.peppol.smpclient.exception.SMPClientNotFoundException;
 import com.helger.peppol.utils.EPeppolCertificateCheckResult;
-import com.helger.peppol.utils.PeppolCerticateChecker;
+import com.helger.peppol.utils.PeppolCertificateChecker;
 import com.helger.peppol.utils.PeppolCertificateHelper;
 import com.helger.peppolid.IDocumentTypeIdentifier;
 import com.helger.peppolid.IParticipantIdentifier;
@@ -973,7 +973,7 @@ public class AS2ClientBuilder
                 // Verify the certificate
                 {
                   final LocalDateTime aNow = PDTFactory.getCurrentLocalDateTime ();
-                  final EPeppolCertificateCheckResult eCertCheckResult = PeppolCerticateChecker.checkPeppolAPCertificate (m_aReceiverCert,
+                  final EPeppolCertificateCheckResult eCertCheckResult = PeppolCertificateChecker.checkPeppolAPCertificate (m_aReceiverCert,
                                                                                                                           aNow,
                                                                                                                           ETriState.UNDEFINED,
                                                                                                                           ETriState.UNDEFINED);
