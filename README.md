@@ -18,6 +18,7 @@ This project is licensed under the Apache 2 License.
     * Added static helper methods in `AS2ClientBuilder`
     * Updated to peppol-commons 7.0.4
     * Added an extended AP certificate check (see [issue #6](https://github.com/phax/as2-peppol-client/issues/6))
+    * Added possibility to send a previously created SBDH (see [issue #5](https://github.com/phax/as2-peppol-client/issues/5))
 * v3.0.11 - 2019-11-03
     * Updated to ph-bdve 5.1.14 with PEPPOL validation 3.9.0
 * v3.0.10 - 2019-10-11

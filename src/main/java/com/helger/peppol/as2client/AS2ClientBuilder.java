@@ -24,6 +24,7 @@ import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.time.LocalDateTime;
 import java.util.Locale;
+import java.util.UUID;
 
 import javax.activation.DataHandler;
 import javax.annotation.Nonnull;
@@ -70,6 +71,7 @@ import com.helger.commons.state.ETriState;
 import com.helger.commons.string.StringHelper;
 import com.helger.commons.url.URLHelper;
 import com.helger.mail.cte.EContentTransferEncoding;
+import com.helger.peppol.sbdh.CPeppolSBDH;
 import com.helger.peppol.sbdh.PeppolSBDHDocument;
 import com.helger.peppol.sbdh.write.PeppolSBDHDocumentWriter;
 import com.helger.peppol.smp.ESMPTransportProfile;
@@ -116,8 +118,13 @@ public class AS2ClientBuilder
   public static final String APP_PREFIX_V2 = "APP_";
   /** "P" + country code (e.g. "DK" for Denmark or "OP" for OpenPEPPOL */
   public static final String APP_PREFIX_V3 = "P";
+  /** By default a data handler should be used */
+  public static final boolean DEFAULT_USE_DATA_HANDLER = true;
   /** The default mime type to be used for outgoing messages */
   public static final IMimeType DEFAULT_MIME_TYPE = CMimeType.APPLICATION_XML;
+  /** The default validation handler doing nothing */
+  public static final IAS2ClientBuilderValidatonResultHandler DEFAULT_VALIDATION_RESULT_HANDLER = new IAS2ClientBuilderValidatonResultHandler ()
+  {};
 
   private static final Logger LOGGER = LoggerFactory.getLogger (AS2ClientBuilder.class);
 
@@ -167,12 +174,11 @@ public class AS2ClientBuilder
   };
   private INamespaceContext m_aNamespaceContext;
   private EContentTransferEncoding m_eCTE = EContentTransferEncoding.AS2_DEFAULT;
-  private IAS2ClientBuilderValidatonResultHandler m_aValidationResultHandler = new IAS2ClientBuilderValidatonResultHandler ()
-  {};
+  private IAS2ClientBuilderValidatonResultHandler m_aValidationResultHandler = DEFAULT_VALIDATION_RESULT_HANDLER;
   private transient ValidationExecutorSetRegistry m_aVESRegistry;
   private IHTTPOutgoingDumperFactory m_aHttpOutgoingDumperFactory;
   private IHTTPIncomingDumper m_aHttpIncomingDumper;
-  private boolean m_bUseDataHandler = true;
+  private boolean m_bUseDataHandler = DEFAULT_USE_DATA_HANDLER;
   private IMimeType m_aMimeType = DEFAULT_MIME_TYPE;
 
   /**
@@ -553,15 +559,15 @@ public class AS2ClientBuilder
    * transmitted. It must be an XML document - other documents are not supported
    * by PEPPOL. This should NOT be the SBDH as this is added internally.
    *
-   * @param aBusinessDocument
+   * @param aBusinessDocumentRes
    *        The resource pointing to the business document to be set. May be
    *        <code>null</code>.
    * @return this for chaining
    */
   @Nonnull
-  public AS2ClientBuilder setBusinessDocument (@Nullable final IReadableResource aBusinessDocument)
+  public AS2ClientBuilder setBusinessDocument (@Nullable final IReadableResource aBusinessDocumentRes)
   {
-    m_aBusinessDocumentRes = aBusinessDocument;
+    m_aBusinessDocumentRes = aBusinessDocumentRes;
     return this;
   }
 
@@ -569,14 +575,14 @@ public class AS2ClientBuilder
    * Set the W3C Element that represents the main business document to be
    * transmitted. This should NOT be the SBDH as this is added internally.
    *
-   * @param aBusinessDocument
+   * @param aBusinessDocumentElement
    *        The business document to be set. May be <code>null</code>.
    * @return this for chaining
    */
   @Nonnull
-  public AS2ClientBuilder setBusinessDocument (@Nullable final Element aBusinessDocument)
+  public AS2ClientBuilder setBusinessDocument (@Nullable final Element aBusinessDocumentElement)
   {
-    m_aBusinessDocumentElement = aBusinessDocument;
+    m_aBusinessDocumentElement = aBusinessDocumentElement;
     return this;
   }
 
@@ -974,9 +980,9 @@ public class AS2ClientBuilder
                 {
                   final LocalDateTime aNow = PDTFactory.getCurrentLocalDateTime ();
                   final EPeppolCertificateCheckResult eCertCheckResult = PeppolCertificateChecker.checkPeppolAPCertificate (m_aReceiverCert,
-                                                                                                                          aNow,
-                                                                                                                          ETriState.UNDEFINED,
-                                                                                                                          ETriState.UNDEFINED);
+                                                                                                                            aNow,
+                                                                                                                            ETriState.UNDEFINED,
+                                                                                                                            ETriState.UNDEFINED);
 
                   // Interpret the result
                   m_aReceiverCertCheckResultHandler.onCertificateCheckResult (m_aReceiverCert, aNow, eCertCheckResult);
@@ -1020,18 +1026,7 @@ public class AS2ClientBuilder
     }
   }
 
-  /**
-   * Verify the content of all contained fields so that all know issues are
-   * captured before sending. This method is automatically called before the
-   * message is send (see {@link #sendSynchronous()}). All verification warnings
-   * and errors are handled via the message handler.
-   *
-   * @throws AS2ClientBuilderException
-   *         In case the message handler throws an exception in case of an
-   *         error.
-   * @see #setMessageHandler(IAS2ClientBuilderMessageHandler)
-   */
-  public void verifyContent () throws AS2ClientBuilderException
+  private void _verifyContent (final boolean bSendBusinessDocument) throws AS2ClientBuilderException
   {
     if (m_aKeyStoreType == null)
       m_aMessageHandler.error ("No AS2 key store type is defined");
@@ -1148,13 +1143,16 @@ public class AS2ClientBuilder
     if (StringHelper.hasNoText (m_sMessageIDFormat))
       m_aMessageHandler.error ("The AS2 message ID format is missing.");
 
-    if (m_aBusinessDocumentRes == null && m_aBusinessDocumentElement == null)
-      m_aMessageHandler.error ("The XML business document to be send is missing.");
-    else
-      if (m_aBusinessDocumentRes != null && !m_aBusinessDocumentRes.exists ())
-        m_aMessageHandler.error ("The XML business document to be send '" +
-                                 m_aBusinessDocumentRes.getPath () +
-                                 "' does not exist.");
+    if (bSendBusinessDocument)
+    {
+      if (m_aBusinessDocumentRes == null && m_aBusinessDocumentElement == null)
+        m_aMessageHandler.error ("The XML business document to be send is missing.");
+      else
+        if (m_aBusinessDocumentRes != null && !m_aBusinessDocumentRes.exists ())
+          m_aMessageHandler.error ("The XML business document to be send '" +
+                                   m_aBusinessDocumentRes.getPath () +
+                                   "' does not exist.");
+    }
 
     if (m_aPeppolSenderID == null)
       m_aMessageHandler.error ("The PEPPOL sender participant ID is missing");
@@ -1188,13 +1186,32 @@ public class AS2ClientBuilder
                                 m_aPeppolProcessID.getURIEncoded () +
                                 "' is using a non-standard scheme!");
 
-    if (m_aVESID == null)
-      m_aMessageHandler.warn ("The validation executor set ID determining the business document validation is missing. Therefore the outgoing business document is NOT validated!");
+    if (bSendBusinessDocument)
+    {
+      if (m_aVESID == null)
+        m_aMessageHandler.warn ("The validation executor set ID determining the business document validation is missing. Therefore the outgoing business document is NOT validated!");
+    }
 
     // Ensure that if a non-throwing message handler is installed, that the
     // sending is not performed!
     if (m_aMessageHandler.getErrorCount () > 0)
       throw new AS2ClientBuilderException ("Not all required fields are present so the PEPPOL AS2 client call can NOT be performed. See the message handler for details!");
+  }
+
+  /**
+   * Verify the content of all contained fields so that all know issues are
+   * captured before sending. This method is automatically called before the
+   * message is send (see {@link #sendSynchronous()}). All verification warnings
+   * and errors are handled via the message handler.
+   *
+   * @throws AS2ClientBuilderException
+   *         In case the message handler throws an exception in case of an
+   *         error.
+   * @see #setMessageHandler(IAS2ClientBuilderMessageHandler)
+   */
+  public void verifyContent () throws AS2ClientBuilderException
+  {
+    _verifyContent (true);
   }
 
   /**
@@ -1292,6 +1309,56 @@ public class AS2ClientBuilder
     validateBusinessDocument (m_aVESRegistry, m_aVESID, m_aValidationResultHandler, aXML);
   }
 
+  @Nonnull
+  public static StandardBusinessDocument createSBDH (@Nonnull final IParticipantIdentifier aSenderID,
+                                                     @Nonnull final IParticipantIdentifier aReceiverID,
+                                                     @Nonnull final IDocumentTypeIdentifier aDocTypeID,
+                                                     @Nonnull final IProcessIdentifier aProcID,
+                                                     @Nullable final String sInstanceIdentifier,
+                                                     @Nullable final String sUBLVersion,
+                                                     @Nonnull final Element aPayloadElement)
+  {
+    final PeppolSBDHDocument aData = new PeppolSBDHDocument (PeppolIdentifierFactory.INSTANCE);
+    aData.setSender (aSenderID.getScheme (), aSenderID.getValue ());
+    aData.setReceiver (aReceiverID.getScheme (), aReceiverID.getValue ());
+    aData.setDocumentType (aDocTypeID.getScheme (), aDocTypeID.getValue ());
+    aData.setProcess (aProcID.getScheme (), aProcID.getValue ());
+    aData.setDocumentIdentification (aPayloadElement.getNamespaceURI (),
+                                     StringHelper.hasText (sUBLVersion) ? sUBLVersion : CPeppolSBDH.TYPE_VERSION_21,
+                                     aPayloadElement.getLocalName (),
+                                     StringHelper.hasText (sInstanceIdentifier) ? sInstanceIdentifier
+                                                                                : UUID.randomUUID ().toString (),
+                                     PDTFactory.getCurrentLocalDateTime ());
+    aData.setBusinessMessage (aPayloadElement);
+    final StandardBusinessDocument aSBD = new PeppolSBDHDocumentWriter ().createStandardBusinessDocument (aData);
+    return aSBD;
+  }
+
+  @Nonnull
+  public static NonBlockingByteArrayOutputStream getSerializedSBDH (@Nonnull final StandardBusinessDocument aSBD,
+                                                                    @Nullable final INamespaceContext aNamespaceContext) throws AS2ClientBuilderException
+  {
+    // Version with huge memory consumption
+    try (final NonBlockingByteArrayOutputStream aBAOS = new NonBlockingByteArrayOutputStream ())
+    {
+      final SBDMarshaller aSBDMarshaller = new SBDMarshaller ();
+
+      // Set custom namespace context (work around an OpusCapita problem)
+      if (aNamespaceContext != null)
+        aSBDMarshaller.setNamespaceContext (aNamespaceContext);
+      else
+      {
+        // Ensure default marshaller without a prefix is used!
+        aSBDMarshaller.setNamespaceContext (new MapBasedNamespaceContext ().setDefaultNamespaceURI (CSBDH.SBDH_NS));
+      }
+
+      // Write to BAOS
+      if (aSBDMarshaller.write (aSBD, aBAOS).isFailure ())
+        throw new AS2ClientBuilderException ("Failed to serialize SBD!");
+      return aBAOS;
+    }
+  }
+
   /**
    * @return The {@link AS2ClientSettings} to be used, based on the input
    *         parameters. Never <code>null</code>.
@@ -1346,7 +1413,7 @@ public class AS2ClientBuilder
    * {@link #verifyContent()}</li>
    * <li>The business document is read as XML. In case of an error, an exception
    * is thrown.</li>
-   * <li>The Standard Business Document (SBD) is created, all PEPPOL required
+   * <li>The Standard Business Document (SBD) is created, all Peppol required
    * fields are set and the business document is embedded.</li>
    * <li>The SBD is serialized and send via AS2</li>
    * <li>The AS2 response incl. the MDN is returned for further evaluation.</li>
@@ -1358,6 +1425,8 @@ public class AS2ClientBuilder
    *         In case the the business document is invalid XML or in case
    *         {@link #verifyContent()} throws an exception because of invalid or
    *         incomplete settings.
+   * @see #sendSynchronousSBDH(NonBlockingByteArrayOutputStream) in case you
+   *      have the SBDH ready
    */
   @Nonnull
   public AS2ClientResponse sendSynchronous () throws AS2ClientBuilderException
@@ -1397,12 +1466,13 @@ public class AS2ClientBuilder
       validateOutgoingBusinessDocument (aBusinessDocumentXML);
 
     // 3. build PEPPOL SBDH data
-    final PeppolSBDHDocument aSBDHDoc = PeppolSBDHDocument.create (aBusinessDocumentXML,
-                                                                   PeppolIdentifierFactory.INSTANCE);
-    aSBDHDoc.setSender (m_aPeppolSenderID.getScheme (), m_aPeppolSenderID.getValue ());
-    aSBDHDoc.setReceiver (m_aPeppolReceiverID.getScheme (), m_aPeppolReceiverID.getValue ());
-    aSBDHDoc.setDocumentType (m_aPeppolDocumentTypeID.getScheme (), m_aPeppolDocumentTypeID.getValue ());
-    aSBDHDoc.setProcess (m_aPeppolProcessID.getScheme (), m_aPeppolProcessID.getValue ());
+    final StandardBusinessDocument aSBD = createSBDH (m_aPeppolSenderID,
+                                                      m_aPeppolReceiverID,
+                                                      m_aPeppolDocumentTypeID,
+                                                      m_aPeppolProcessID,
+                                                      null,
+                                                      null,
+                                                      aBusinessDocumentXML);
 
     // 4. set client properties
     final AS2ClientSettings aAS2ClientSettings = createAS2ClientSettings ();
@@ -1411,45 +1481,26 @@ public class AS2ClientBuilder
 
     // 5. assemble and send
     // Version with huge memory consumption
-    final StandardBusinessDocument aSBD = new PeppolSBDHDocumentWriter ().createStandardBusinessDocument (aSBDHDoc);
-
-    try (final NonBlockingByteArrayOutputStream aBAOS = new NonBlockingByteArrayOutputStream ())
+    final NonBlockingByteArrayOutputStream aBAOS = getSerializedSBDH (aSBD, m_aNamespaceContext);
+    if (m_bUseDataHandler)
     {
-      final SBDMarshaller aSBDMarshaller = new SBDMarshaller ();
-
-      // Set custom namespace context (work around an OpusCapita problem)
-      if (m_aNamespaceContext != null)
-        aSBDMarshaller.setNamespaceContext (m_aNamespaceContext);
-      else
-      {
-        // Ensure default marshaller without a prefix is used!
-        aSBDMarshaller.setNamespaceContext (new MapBasedNamespaceContext ().setDefaultNamespaceURI (CSBDH.SBDH_NS));
-      }
-
-      // Write to BAOS
-      if (aSBDMarshaller.write (aSBD, aBAOS).isFailure ())
-        throw new AS2ClientBuilderException ("Failed to serialize SBD!");
-
-      if (m_bUseDataHandler)
-      {
-        // Use data to force the usage of "application/xml" Content-Type in the
-        // DataHandler
-        aRequest.setData (new DataHandler (aBAOS.toByteArray (), m_aMimeType.getAsString ()));
-      }
-      else
-      {
-        // Using a String is better when having a
-        // com.sun.xml.ws.encoding.XmlDataContentHandler installed!
-        aRequest.setData (aBAOS.getAsString (StandardCharsets.UTF_8), StandardCharsets.UTF_8);
-
-        // Explicitly add application/xml even though the "setData" may have
-        // suggested something else (like text/plain)
-        aRequest.setContentType (m_aMimeType.getAsString ());
-      }
-
-      // Set the custom content transfer encoding
-      aRequest.setContentTransferEncoding (m_eCTE);
+      // Use data to force the usage of "application/xml" Content-Type in the
+      // DataHandler
+      aRequest.setData (new DataHandler (aBAOS.toByteArray (), m_aMimeType.getAsString ()));
     }
+    else
+    {
+      // Using a String is better when having a
+      // com.sun.xml.ws.encoding.XmlDataContentHandler installed!
+      aRequest.setData (aBAOS.getAsString (StandardCharsets.UTF_8), StandardCharsets.UTF_8);
+
+      // Explicitly add application/xml even though the "setData" may have
+      // suggested something else (like text/plain)
+      aRequest.setContentType (m_aMimeType.getAsString ());
+    }
+
+    // Set the custom content transfer encoding
+    aRequest.setContentTransferEncoding (m_eCTE);
 
     final AS2Client aAS2Client = m_aAS2ClientFactory.get ();
     if (false)
@@ -1458,6 +1509,71 @@ public class AS2ClientBuilder
       aAS2Client.setHttpProxy (new Proxy (Proxy.Type.HTTP, new InetSocketAddress ("127.0.0.1", 8888)));
     }
 
+    final AS2ClientResponse aResponse = aAS2Client.sendSynchronous (aAS2ClientSettings, aRequest);
+    return aResponse;
+  }
+
+  /**
+   * This is an alternative sending routine that assumes than an SBDH is already
+   * available. It performs the following steps:
+   * <ol>
+   * <li>Verify that all required parameters are present and valid -
+   * {@link #verifyContent()}</li>
+   * <li>The SBD is send via AS2</li>
+   * <li>The AS2 response incl. the MDN is returned for further evaluation.</li>
+   * </ol>
+   *
+   * @param aBAOS
+   *        The serialized SBDH. May not be <code>null</code>.
+   * @return The AS2 response returned by the AS2 sender. This is never
+   *         <code>null</code>.
+   * @throws AS2ClientBuilderException
+   *         In case the the business document is invalid XML or in case
+   *         {@link #verifyContent()} throws an exception because of invalid or
+   *         incomplete settings.
+   * @see #sendSynchronous() if you don't have the SBDH
+   */
+  @Nonnull
+  public AS2ClientResponse sendSynchronousSBDH (@Nonnull final NonBlockingByteArrayOutputStream aBAOS) throws AS2ClientBuilderException
+  {
+    ValueEnforcer.notNull (aBAOS, "BAOS");
+
+    // Perform SMP client lookup
+    performSMPClientLookup ();
+
+    // Set derivable values
+    setDefaultDerivedValues ();
+
+    // Verify the whole data set
+    _verifyContent (false);
+
+    // 4. set client properties
+    final AS2ClientSettings aAS2ClientSettings = createAS2ClientSettings ();
+
+    final AS2ClientRequest aRequest = new AS2ClientRequest (m_sAS2Subject);
+
+    // 5. assemble and send
+    if (m_bUseDataHandler)
+    {
+      // Use data to force the usage of "application/xml" Content-Type in the
+      // DataHandler
+      aRequest.setData (new DataHandler (aBAOS.toByteArray (), m_aMimeType.getAsString ()));
+    }
+    else
+    {
+      // Using a String is better when having a
+      // com.sun.xml.ws.encoding.XmlDataContentHandler installed!
+      aRequest.setData (aBAOS.getAsString (StandardCharsets.UTF_8), StandardCharsets.UTF_8);
+
+      // Explicitly add application/xml even though the "setData" may have
+      // suggested something else (like text/plain)
+      aRequest.setContentType (m_aMimeType.getAsString ());
+    }
+
+    // Set the custom content transfer encoding
+    aRequest.setContentTransferEncoding (m_eCTE);
+
+    final AS2Client aAS2Client = m_aAS2ClientFactory.get ();
     final AS2ClientResponse aResponse = aAS2Client.sendSynchronous (aAS2ClientSettings, aRequest);
     return aResponse;
   }
