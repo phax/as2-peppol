@@ -23,7 +23,7 @@ import com.helger.as2lib.message.AS2Message;
 import com.helger.as2lib.processor.sender.AS2SenderModule;
 
 /**
- * Specialized sender module for the client.
+ * Specialized sender module for the AS2 client.
  *
  * @author Philip Helger
  */

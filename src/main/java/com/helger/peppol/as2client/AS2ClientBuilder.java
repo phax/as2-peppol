@@ -126,7 +126,52 @@ public class AS2ClientBuilder
   public static final IAS2ClientBuilderValidatonResultHandler DEFAULT_VALIDATION_RESULT_HANDLER = new IAS2ClientBuilderValidatonResultHandler ()
   {};
 
+  /**
+   * Default {@link AS2Client} supplier to be used. You can derive from this
+   * class to add e.g. a proxy to the AS2Client or configure it in other ways.
+   *
+   * @author Philip Helger
+   * @since 3.1.0
+   */
+  public static class AS2ClientSupplier implements ISupplier <AS2Client>
+  {
+    @Nonnull
+    @OverridingMethodsMustInvokeSuper
+    public AS2Client get ()
+    {
+      final AS2Client ret = new AS2Client ();
+      // Use this special sender module factory
+      ret.setAS2SenderModuleFactory (PeppolAS2SenderModule::new);
+      return ret;
+    }
+  }
+
   private static final Logger LOGGER = LoggerFactory.getLogger (AS2ClientBuilder.class);
+
+  /**
+   * The default implementation of
+   * {@link IAS2ClientBuilderCertificateCheckResultHandler} that can be used as
+   * a basis in derived classes.
+   * 
+   * @author Philip Helger
+   * @since 3.1.0
+   */
+  protected class CertificateCheckResultHandler implements IAS2ClientBuilderCertificateCheckResultHandler
+  {
+    public void onCertificateCheckResult (@Nonnull final X509Certificate aAPCertificate,
+                                          @Nonnull final LocalDateTime aCheckDT,
+                                          @Nonnull final EPeppolCertificateCheckResult eCertCheckResult) throws AS2ClientBuilderException
+    {
+      if (eCertCheckResult.isInvalid ())
+      {
+        // By default an invalid certificate leads to a rejection
+        getMessageHandler ().error ("The received AP certificate is not valid (at " +
+                                    aCheckDT +
+                                    ") and cannot be used for sending. Aborting. Reason: " +
+                                    eCertCheckResult.getReason ());
+      }
+    }
+  }
 
   private IAS2ClientBuilderMessageHandler m_aMessageHandler = new DefaultAS2ClientBuilderMessageHandler ();
   private IKeyStoreType m_aKeyStoreType;
@@ -142,18 +187,7 @@ public class AS2ClientBuilder
   private String m_sReceiverAS2KeyAlias;
   private String m_sReceiverAS2Url;
   private X509Certificate m_aReceiverCert;
-  private IAS2ClientBuilderCertificateCheckResultHandler m_aReceiverCertCheckResultHandler = (aCert,
-                                                                                              aCheckDT,
-                                                                                              eCertCheckResult) -> {
-    if (eCertCheckResult.isInvalid ())
-    {
-      // By default an invalid certificate leads to a rejection
-      getMessageHandler ().error ("The received AP certificate is not valid (at " +
-                                  aCheckDT +
-                                  ") and cannot be used for sending. Aborting. Reason: " +
-                                  eCertCheckResult.getReason ());
-    }
-  };
+  private IAS2ClientBuilderCertificateCheckResultHandler m_aReceiverCertCheckResultHandler = new CertificateCheckResultHandler ();
   private ECryptoAlgorithmSign m_eSigningAlgo = DEFAULT_SIGNING_ALGORITHM;
   private String m_sMessageIDFormat = DEFAULT_AS2_MESSAGE_ID_FORMAT;
   private int m_nConnectTimeoutMS = AS2ClientSettings.DEFAULT_CONNECT_TIMEOUT_MS;
@@ -167,12 +201,8 @@ public class AS2ClientBuilder
   private IProcessIdentifier m_aPeppolProcessID;
   private VESID m_aVESID;
   private SMPClientReadOnly m_aSMPClient;
-  private ISupplier <AS2Client> m_aAS2ClientFactory = () -> {
-    final AS2Client ret = new AS2Client ();
-    // Use this special sender module factory
-    return ret.setAS2SenderModuleFactory (PeppolAS2SenderModule::new);
-  };
-  private INamespaceContext m_aNamespaceContext;
+  private ISupplier <AS2Client> m_aAS2ClientFactory = new AS2ClientSupplier ();
+  private INamespaceContext m_aSBDHNamespaceContext;
   private EContentTransferEncoding m_eCTE = EContentTransferEncoding.AS2_DEFAULT;
   private IAS2ClientBuilderValidatonResultHandler m_aValidationResultHandler = DEFAULT_VALIDATION_RESULT_HANDLER;
   private transient ValidationExecutorSetRegistry m_aVESRegistry;
@@ -734,11 +764,34 @@ public class AS2ClientBuilder
    *        indicate the usage of the default namespace context.
    * @return this for chaining
    * @since 2.0.5
+   * @deprecated Use {@link #setSBDHNamespaceContext(INamespaceContext)} instead
    */
+  @Deprecated
   @Nonnull
   public AS2ClientBuilder setNamespaceContext (@Nullable final INamespaceContext aNamespaceContext)
   {
-    m_aNamespaceContext = aNamespaceContext;
+    return setSBDHNamespaceContext (aNamespaceContext);
+  }
+
+  /**
+   * Set the custom namespace context to be used for marshalling the SBDH
+   * document. By default the SBDH namespace URI {@link CSBDH#SBDH_NS} is mapped
+   * to the default prefix (""). Prior to v3 it was mapped to the "sh" prefix
+   * but that caused problems with certain Oxalis versions that scan for
+   * <code>&lt;StandardBusinessDocument</code> in the incoming byte sequence
+   * (which is a classical beginners error).<br>
+   * Note: don't call this, if you have the SBDH already available.
+   *
+   * @param aSBDHNamespaceContext
+   *        The new namespace context to be used. May be <code>null</code> to
+   *        indicate the usage of the default namespace context.
+   * @return this for chaining
+   * @since 2.0.5
+   */
+  @Nonnull
+  public AS2ClientBuilder setSBDHNamespaceContext (@Nullable final INamespaceContext aSBDHNamespaceContext)
+  {
+    m_aSBDHNamespaceContext = aSBDHNamespaceContext;
     return this;
   }
 
@@ -1228,7 +1281,7 @@ public class AS2ClientBuilder
   /**
    * Create a new {@link ValidationExecutorSetRegistry} to be used for Peppol
    * validation. It's okay to create it once, and reuse it for all validations.
-   * 
+   *
    * @return the default {@link ValidationExecutorSetRegistry} used internally.
    *         Never <code>null</code>.
    * @since 3.1.0
@@ -1540,7 +1593,7 @@ public class AS2ClientBuilder
 
     // 5. assemble and send
     // Version with huge memory consumption
-    final NonBlockingByteArrayOutputStream aBAOS = getSerializedSBDH (aSBD, m_aNamespaceContext);
+    final NonBlockingByteArrayOutputStream aBAOS = getSerializedSBDH (aSBD, m_aSBDHNamespaceContext);
     if (m_bUseDataHandler)
     {
       // Use data to force the usage of "application/xml" Content-Type in the
