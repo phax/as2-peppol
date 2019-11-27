@@ -525,7 +525,9 @@ public class AS2ClientBuilder
   /**
    * Set the resource that represents the main business document to be
    * transmitted. It must be an XML document - other documents are not supported
-   * by PEPPOL. This should NOT be the SBDH as this is added internally.
+   * by PEPPOL.<br>
+   * Note: This should NOT be the SBDH as this is added internally.<br>
+   * Note: don't call this, if you have the SBDH already available.
    *
    * @param aBusinessDocument
    *        The file containing the business document to be set. May be
@@ -541,7 +543,9 @@ public class AS2ClientBuilder
   /**
    * Set the resource that represents the main business document to be
    * transmitted. It must be an XML document - other documents are not supported
-   * by PEPPOL. This should NOT be the SBDH as this is added internally.
+   * by PEPPOL.<br>
+   * Note: This should NOT be the SBDH as this is added internally.<br>
+   * Note: don't call this, if you have the SBDH already available.
    *
    * @param aBusinessDocument
    *        The byte array content of the business document to be set. May be
@@ -557,7 +561,9 @@ public class AS2ClientBuilder
   /**
    * Set the resource that represents the main business document to be
    * transmitted. It must be an XML document - other documents are not supported
-   * by PEPPOL. This should NOT be the SBDH as this is added internally.
+   * by PEPPOL.<br>
+   * Note: This should NOT be the SBDH as this is added internally.<br>
+   * Note: don't call this, if you have the SBDH already available.
    *
    * @param aBusinessDocumentRes
    *        The resource pointing to the business document to be set. May be
@@ -573,7 +579,9 @@ public class AS2ClientBuilder
 
   /**
    * Set the W3C Element that represents the main business document to be
-   * transmitted. This should NOT be the SBDH as this is added internally.
+   * transmitted.<br>
+   * Note: This should NOT be the SBDH as this is added internally.<br>
+   * Note: don't call this, if you have the SBDH already available.
    *
    * @param aBusinessDocumentElement
    *        The business document to be set. May be <code>null</code>.
@@ -646,7 +654,8 @@ public class AS2ClientBuilder
 
   /**
    * Set the validation executor set ID to be used for validating the business
-   * document before sending.
+   * document before sending.<br>
+   * Note: don't call this, if you have the SBDH already available.
    *
    * @param aVESID
    *        The VESID to be used. May be <code>null</code>.
@@ -717,7 +726,8 @@ public class AS2ClientBuilder
    * to the default prefix (""). Prior to v3 it was mapped to the "sh" prefix
    * but that caused problems with certain Oxalis versions that scan for
    * <code>&lt;StandardBusinessDocument</code> in the incoming byte sequence
-   * (which is a classical beginners error).
+   * (which is a classical beginners error).<br>
+   * Note: don't call this, if you have the SBDH already available.
    *
    * @param aNamespaceContext
    *        The new namespace context to be used. May be <code>null</code> to
@@ -754,7 +764,8 @@ public class AS2ClientBuilder
   /**
    * Set the handler for validation errors. By default an exception is thrown.
    * With the provided handler, you can change that behaviour and e.g. just log
-   * it.
+   * it.<br>
+   * Note: don't call this, if you have the SBDH already available.
    *
    * @param aValidationResultHandler
    *        The validation handler to be set. May not be <code>null</code>.
@@ -1215,9 +1226,12 @@ public class AS2ClientBuilder
   }
 
   /**
+   * Create a new {@link ValidationExecutorSetRegistry} to be used for Peppol
+   * validation. It's okay to create it once, and reuse it for all validations.
+   * 
    * @return the default {@link ValidationExecutorSetRegistry} used internally.
    *         Never <code>null</code>.
-   * @since 3.0.12
+   * @since 3.1.0
    */
   @Nonnull
   public static ValidationExecutorSetRegistry createDefaultValidationRegistry ()
@@ -1237,6 +1251,7 @@ public class AS2ClientBuilder
    *
    * @return The created {@link ValidationExecutorSetRegistry} and never
    *         <code>null</code>.
+   * @see #createDefaultValidationRegistry()
    * @since 2.0.3
    */
   @OverrideOnDemand
@@ -1258,8 +1273,9 @@ public class AS2ClientBuilder
    * @param aXML
    *        The XML DOM element to be validated. May not be <code>null</code>.
    * @throws AS2ClientBuilderException
-   *         in case validation failed or something else goes wrong.
-   * @since 3.0.12
+   *         in case validation failed or something else goes wrong - depending
+   *         on the result handler
+   * @since 3.1.0
    */
   public static void validateBusinessDocument (@Nonnull final ValidationExecutorSetRegistry aVESRegistry,
                                                @Nonnull final VESID aVESID,
@@ -1297,6 +1313,8 @@ public class AS2ClientBuilder
    * @throws AS2ClientBuilderValidationException
    *         In case validation failed.
    * @see #setValidationKey(VESID)
+   * @see #validateBusinessDocument(ValidationExecutorSetRegistry, VESID,
+   *      IAS2ClientBuilderValidatonResultHandler, Element)
    */
   @OverrideOnDemand
   protected void validateOutgoingBusinessDocument (@Nonnull final Element aXML) throws AS2ClientBuilderException
@@ -1309,6 +1327,30 @@ public class AS2ClientBuilder
     validateBusinessDocument (m_aVESRegistry, m_aVESID, m_aValidationResultHandler, aXML);
   }
 
+  /**
+   * Create a {@link StandardBusinessDocument} out of the provided information
+   *
+   * @param aSenderID
+   *        Sender participant ID. May not be <code>null</code>.
+   * @param aReceiverID
+   *        Receiver participant ID. May not be <code>null</code>.
+   * @param aDocTypeID
+   *        Document type ID. May not be <code>null</code>.
+   * @param aProcID
+   *        Process ID. May not be <code>null</code>.
+   * @param sInstanceIdentifier
+   *        Optional instance identifier. May be <code>null</code> in which case
+   *        a random UUID is will be used.
+   * @param sUBLVersion
+   *        The UBL version to use. May be <code>null</code> in which case the
+   *        default "2.1" will be used.
+   * @param aPayloadElement
+   *        The payload element to be included in the SBD. May not be
+   *        <code>null</code>.
+   * @return The ready made {@link StandardBusinessDocument} according to the
+   *         Peppol needs. Never <code>null</code>.
+   * @since 3.1.0
+   */
   @Nonnull
   public static StandardBusinessDocument createSBDH (@Nonnull final IParticipantIdentifier aSenderID,
                                                      @Nonnull final IParticipantIdentifier aReceiverID,
@@ -1330,10 +1372,27 @@ public class AS2ClientBuilder
                                                                                 : UUID.randomUUID ().toString (),
                                      PDTFactory.getCurrentLocalDateTime ());
     aData.setBusinessMessage (aPayloadElement);
-    final StandardBusinessDocument aSBD = new PeppolSBDHDocumentWriter ().createStandardBusinessDocument (aData);
-    return aSBD;
+    return new PeppolSBDHDocumentWriter ().createStandardBusinessDocument (aData);
   }
 
+  /**
+   * Convert the passed {@link StandardBusinessDocument} to a serialized version
+   * using the best serialization method.
+   *
+   * @param aSBD
+   *        The {@link StandardBusinessDocument} to be validated. May not be
+   *        <code>null</code>.
+   * @param aNamespaceContext
+   *        An optional namespace context for XML serialization to be used. May
+   *        be <code>null</code> in which case a default namespace context will
+   *        be used.
+   * @return The create {@link NonBlockingByteArrayOutputStream} that contains
+   *         the serialized XML. Never <code>null</code>.
+   * @throws AS2ClientBuilderException
+   *         in case serialization failed, because e.g. the
+   *         {@link StandardBusinessDocument} is incomplete.
+   * @since 3.1.0
+   */
   @Nonnull
   public static NonBlockingByteArrayOutputStream getSerializedSBDH (@Nonnull final StandardBusinessDocument aSBD,
                                                                     @Nullable final INamespaceContext aNamespaceContext) throws AS2ClientBuilderException
@@ -1532,6 +1591,7 @@ public class AS2ClientBuilder
    *         {@link #verifyContent()} throws an exception because of invalid or
    *         incomplete settings.
    * @see #sendSynchronous() if you don't have the SBDH
+   * @since 3.1.0
    */
   @Nonnull
   public AS2ClientResponse sendSynchronousSBDH (@Nonnull final NonBlockingByteArrayOutputStream aBAOS) throws AS2ClientBuilderException
@@ -1544,7 +1604,7 @@ public class AS2ClientBuilder
     // Set derivable values
     setDefaultDerivedValues ();
 
-    // Verify the whole data set
+    // Verify the whole data set (but without the specific payload stuff)
     _verifyContent (false);
 
     // 4. set client properties

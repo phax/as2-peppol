@@ -12,12 +12,54 @@ for a detailed description on how it works and how it fits in the overall PEPPOL
 
 This project is licensed under the Apache 2 License.
 
+# Configuration
+
+A keystore in the format JKS or PKCS12 must be available that must contain your Peppol AP certificate.
+
+See https://github.com/phax/peppol-commons#peppol-smp-client for the list of configuration items of the Peppol SMP client.
+
+
+# Sending a document
+
+A test class is `src/test/java/.../MainAS2TestClient` and you need to adopt the variables according to your needs to make it work.
+
+Before being ready to send a document, the recipient participant identifier as well as the test document must be selected. This happens currently directly in the `main` method and you have to choose the recipient you want.
+
+The test files reside in the `src/main/resources/xml` folder and are referenced via classpath relative lookups.
+
+## Usage of a proxy server
+
+To use a proxy server, add the following items to the `smp-client.properties` configuration file (of course with adopted values):
+ 
+```
+http.proxyHost=1.2.3.4
+http.proxyPort=8080
+https.proxyHost=1.2.3.4
+https.proxyPort=8080
+```
+
+
+# Maven usage
+Add the following to your `pom.xml` to use this artifact:
+
+```xml
+<dependency>
+  <groupId>com.helger</groupId>
+  <artifactId>as2-peppol-client</artifactId>
+  <version>3.1.0</version>
+</dependency>
+```
+
+The binary version of this library can be found on http://repo2.maven.org/maven2/com/helger/as2-peppol-client/ 
+It depends on several other libraries so I suggest you are going for the Maven source integration.
+
 # News and Noteworthy
 
-* v3.1.0 - work in progress
+* v3.1.0 - 2019-11-27
     * Added static helper methods in `AS2ClientBuilder`
     * Updated to peppol-commons 7.0.4
     * Added an extended AP certificate check (see [issue #6](https://github.com/phax/as2-peppol-client/issues/6))
+    * Made some sanity methods statically available in `AS2ClientBuilder`
     * Added possibility to send a previously created SBDH (see [issue #5](https://github.com/phax/as2-peppol-client/issues/5))
 * v3.0.11 - 2019-11-03
     * Updated to ph-bdve 5.1.14 with PEPPOL validation 3.9.0
@@ -77,53 +119,6 @@ This project is licensed under the Apache 2 License.
     * Binds to ph-commons 8.6.x
 * v2.0.0 - 2016-08-22
     * Updated to JDK 8
-
-# Configuration
-
-A keystore in the format PKCS12 must be available.
-By default it is expected to be called `client-certs.p12` residing in the `as2-client-data` folder. It must contain one certificate, namely your PEPPOL AP certificate.
-
-To convert a JKS keystore to a PKCS12 keystore you can e.g. use [Portecle](http://portecle.sourceforge.net/) - a user friendly GUI application for creating, managing and examining keystores, keys, certificates, certificate requests, certificate revocation lists and more.
-
-A test class is `MainAS2TestClient` and you need to adopt the constants on top to make it work.
-  * **PKCS12_CERTSTORE_PATH** file path to the PKCS12 keystore
-  * **PKCS12_CERTSTORE_PASSWORD** password to access the PKCS12 keystore
-  * **SENDER_AS2_ID** your AS2-from ID. Must match the OpenPEPPOL requirements (AP certificate CN name - e.g. `APP_1000000001`).
-  * **SENDER_EMAIL** your email address for out of band resolutions.
-  * **SENDER_KEY_ALIAS** the alias name of your PEPPOL-AP-certificate within the PKCS12 keystore. This should be the same value as **SENDER_AS2_ID** 
-
-# Sending a document
-
-Before being ready to send a document, the recipient participant identifier as well as the test document must be selected. This happens currently directly in the `main` method and you have to choose the recipient you want.
-
-The test files reside in the `src/main/resources/xml` folder and are referenced via classpath relative lookups.
-
-## Usage of a proxy server
-
-To use a proxy server, add the following items to the `smp-client.properties` configuration file (of course with adopted values):
- 
-```
-http.proxyHost=1.2.3.4
-http.proxyPort=8080
-https.proxyHost=1.2.3.4
-https.proxyPort=8080
-```
-
-If you need a username and password for your proxy see [here](http://rolandtapken.de/blog/2012-04/java-process-httpproxyuser-and-httpproxypassword) for a guideline.
-
-# Maven usage
-Add the following to your `pom.xml` to use this artifact:
-
-```xml
-<dependency>
-  <groupId>com.helger</groupId>
-  <artifactId>as2-peppol-client</artifactId>
-  <version>3.0.11</version>
-</dependency>
-```
-
-The binary version of this library can be found on http://repo2.maven.org/maven2/com/helger/as2-peppol-client/ 
-It depends on several other libraries so I suggest you are going for the Maven source integration.
 
 ---
 
