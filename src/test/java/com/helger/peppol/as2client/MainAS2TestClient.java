@@ -165,6 +165,7 @@ public final class MainAS2TestClient
       // Dump on console
       if (false)
         sOutgoingDumpFilename = null;
+      bDebugIncoming = true;
     }
     if (false)
     {
@@ -404,9 +405,9 @@ public final class MainAS2TestClient
     // Debug incoming (AS2 MDN)?
     if (bDebugIncoming)
       HTTPHelper.setHTTPIncomingDumperFactory ( () -> (aHeaderLines, aPayload, aMsg) -> {
-        LOGGER.info ("Received Headers: " + StringHelper.getImploded ("\n  ", aHeaderLines));
-        LOGGER.info ("Received Payload: " + new String (aPayload, StandardCharsets.UTF_8));
-        LOGGER.info ("Received Message: " + aMsg);
+        LOGGER.info ("Received Headers:\n" + StringHelper.getImploded ("\n  ", aHeaderLines));
+        LOGGER.info ("Received Payload:\n" + new String (aPayload, StandardCharsets.UTF_8));
+        LOGGER.info ("Received Message:\n" + aMsg);
       });
 
     // Read resource by filename

@@ -151,9 +151,9 @@ public final class MainAS2TestClientUpNxt
     // Debug incoming (AS2 MDN)?
     if (false)
       HTTPHelper.setHTTPIncomingDumperFactory ( () -> (aHeaderLines, aPayload, aMsg) -> {
-        LOGGER.info ("Received Headers: " + StringHelper.getImploded ("\n  ", aHeaderLines));
-        LOGGER.info ("Received Payload: " + new String (aPayload, StandardCharsets.UTF_8));
-        LOGGER.info ("Received Message: " + aMsg);
+        LOGGER.info ("Received Headers:\n" + StringHelper.getImploded ("\n  ", aHeaderLines));
+        LOGGER.info ("Received Payload:\n" + new String (aPayload, StandardCharsets.UTF_8));
+        LOGGER.info ("Received Message:\n" + aMsg);
       });
 
     final URI aSMPURI = URL_PROVIDER.getSMPURIOfParticipant (aReceiver, aSML);
