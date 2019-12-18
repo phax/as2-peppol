@@ -18,7 +18,7 @@ package com.helger.peppol.as2client;
 
 import javax.annotation.Nonnull;
 
-import com.helger.as2lib.exception.OpenAS2Exception;
+import com.helger.as2lib.exception.AS2Exception;
 import com.helger.as2lib.message.AS2Message;
 import com.helger.as2lib.processor.sender.AS2SenderModule;
 
@@ -30,11 +30,9 @@ import com.helger.as2lib.processor.sender.AS2SenderModule;
 public class PeppolAS2SenderModule extends AS2SenderModule
 {
   @Override
-  protected void onReceivedMDNError (@Nonnull final AS2Message aMsg,
-                                     @Nonnull final OpenAS2Exception ex) throws OpenAS2Exception
+  protected void onReceivedMDNError (@Nonnull final AS2Message aMsg, @Nonnull final AS2Exception ex) throws AS2Exception
   {
-    final OpenAS2Exception oae2 = new OpenAS2Exception ("Message was sent but an error occured while receiving the MDN",
-                                                        ex);
+    final AS2Exception oae2 = new AS2Exception ("Message was sent but an error occured while receiving the MDN", ex);
     oae2.setSourceMsg (aMsg);
     // Compared to the base implementation, this version propagates the message
     // to the outside
