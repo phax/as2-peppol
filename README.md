@@ -125,4 +125,5 @@ It depends on several other libraries so I suggest you are going for the Maven s
 ---
 
 My personal [Coding Styleguide](https://github.com/phax/meta/blob/master/CodingStyleguide.md) |
-On Twitter: <a href="https://twitter.com/philiphelger">@philiphelger</a>
+On Twitter: <a href="https://twitter.com/philiphelger">@philiphelger</a> |
+Kindly supported by [YourKit Java Profiler](https://www.yourkit.com)
