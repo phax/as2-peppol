@@ -46,7 +46,7 @@ Add the following to your `pom.xml` to use this artifact:
 <dependency>
   <groupId>com.helger</groupId>
   <artifactId>as2-peppol-client</artifactId>
-  <version>3.2.0</version>
+  <version>3.2.1</version>
 </dependency>
 ```
 
@@ -55,7 +55,7 @@ It depends on several other libraries so I suggest you are going for the Maven s
 
 # News and Noteworthy
 
-* v3.2.1 - work in progress
+* v3.2.1 - 2020-01-19
     * Updated to peppol-commons 7.0.6
     * Made the used SMP transport profile customizable via `AS2ClientBuilder.setSMPTransportProfiles`
     * By default both Peppol AS2 V1 and V2 are now handled in the SMP lookup (v2 as the fallback)
