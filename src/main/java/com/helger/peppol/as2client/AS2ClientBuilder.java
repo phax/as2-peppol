@@ -25,6 +25,7 @@ import java.security.cert.X509Certificate;
 import java.time.LocalDateTime;
 import java.util.Locale;
 import java.util.UUID;
+import java.util.function.Consumer;
 
 import javax.activation.DataHandler;
 import javax.annotation.Nonnull;
@@ -56,7 +57,11 @@ import com.helger.bdve.peppol.PeppolValidation;
 import com.helger.bdve.result.ValidationResultList;
 import com.helger.bdve.source.ValidationSource;
 import com.helger.commons.ValueEnforcer;
+import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.annotation.OverrideOnDemand;
+import com.helger.commons.annotation.ReturnsMutableCopy;
+import com.helger.commons.collection.impl.CommonsArrayList;
+import com.helger.commons.collection.impl.ICommonsList;
 import com.helger.commons.datetime.PDTFactory;
 import com.helger.commons.email.EmailAddressHelper;
 import com.helger.commons.functional.ISupplier;
@@ -76,10 +81,11 @@ import com.helger.peppol.sbdh.PeppolSBDHDocument;
 import com.helger.peppol.sbdh.write.PeppolSBDHDocumentWriter;
 import com.helger.peppol.smp.ESMPTransportProfile;
 import com.helger.peppol.smp.EndpointType;
+import com.helger.peppol.smp.ISMPTransportProfile;
 import com.helger.peppol.smp.SignedServiceMetadataType;
+import com.helger.peppol.smpclient.ISMPServiceMetadataProvider;
 import com.helger.peppol.smpclient.SMPClientReadOnly;
 import com.helger.peppol.smpclient.exception.SMPClientException;
-import com.helger.peppol.smpclient.exception.SMPClientNotFoundException;
 import com.helger.peppol.utils.EPeppolCertificateCheckResult;
 import com.helger.peppol.utils.PeppolCertificateChecker;
 import com.helger.peppol.utils.PeppolCertificateHelper;
@@ -125,6 +131,14 @@ public class AS2ClientBuilder
   /** The default validation handler doing nothing */
   public static final IAS2ClientBuilderValidatonResultHandler DEFAULT_VALIDATION_RESULT_HANDLER = new IAS2ClientBuilderValidatonResultHandler ()
   {};
+  public final Consumer <ISMPTransportProfile> DEFAULT_SELECTED_TRANSPORT_PROFILE_CONSUMER = aTP -> {
+    // Overwrite the signing algorithm depending on the found transport profile
+    if (aTP == ESMPTransportProfile.TRANSPORT_PROFILE_AS2)
+      setAS2SigningAlgorithm (ECryptoAlgorithmSign.DIGEST_SHA_1);
+    else
+      if (aTP == ESMPTransportProfile.TRANSPORT_PROFILE_AS2_V2)
+        setAS2SigningAlgorithm (ECryptoAlgorithmSign.DIGEST_SHA_256);
+  };
 
   /**
    * Default {@link AS2Client} supplier to be used. You can derive from this
@@ -152,7 +166,7 @@ public class AS2ClientBuilder
    * The default implementation of
    * {@link IAS2ClientBuilderCertificateCheckResultHandler} that can be used as
    * a basis in derived classes.
-   * 
+   *
    * @author Philip Helger
    * @since 3.1.0
    */
@@ -200,7 +214,7 @@ public class AS2ClientBuilder
   private IDocumentTypeIdentifier m_aPeppolDocumentTypeID;
   private IProcessIdentifier m_aPeppolProcessID;
   private VESID m_aVESID;
-  private SMPClientReadOnly m_aSMPClient;
+  private ISMPServiceMetadataProvider m_aSMPClient;
   private ISupplier <AS2Client> m_aAS2ClientFactory = new AS2ClientSupplier ();
   private INamespaceContext m_aSBDHNamespaceContext;
   private EContentTransferEncoding m_eCTE = EContentTransferEncoding.AS2_DEFAULT;
@@ -210,6 +224,9 @@ public class AS2ClientBuilder
   private IHTTPIncomingDumper m_aHttpIncomingDumper;
   private boolean m_bUseDataHandler = DEFAULT_USE_DATA_HANDLER;
   private IMimeType m_aMimeType = DEFAULT_MIME_TYPE;
+  private final ICommonsList <ISMPTransportProfile> m_aTransportProfiles = new CommonsArrayList <> (ESMPTransportProfile.TRANSPORT_PROFILE_AS2,
+                                                                                                    ESMPTransportProfile.TRANSPORT_PROFILE_AS2_V2);
+  private Consumer <ISMPTransportProfile> m_aSelectedTransportProfileConsumer = DEFAULT_SELECTED_TRANSPORT_PROFILE_CONSUMER;
 
   /**
    * Default constructor.
@@ -938,6 +955,62 @@ public class AS2ClientBuilder
   }
 
   /**
+   * @return Get the transport profile ID used in the SMP lookup. By default
+   *         this is Peppol AS2 v1, than Peppol AS2 v2. Never <code>null</code>.
+   * @since v3.2.1
+   */
+  @Nonnull
+  @Nonempty
+  @ReturnsMutableCopy
+  public ICommonsList <ISMPTransportProfile> getAllSMPTransportProfiles ()
+  {
+    return m_aTransportProfiles.getClone ();
+  }
+
+  /**
+   * Set the SMP transport profiles to be used. This is needed if Peppol AS2 V2
+   * should be prioritized over v1.
+   *
+   * @param aTransportProfiles
+   *        The new SMP transport profiles to be used. The order of the array is
+   *        the order of execution. May neither be <code>null</code> nor empty.
+   * @return this for chaining
+   * @since v3.2.1
+   */
+  @Nonnull
+  public AS2ClientBuilder setSMPTransportProfiles (@Nonnull @Nonempty final ISMPTransportProfile... aTransportProfiles)
+  {
+    ValueEnforcer.notEmpty (aTransportProfiles, "TransportProfiles");
+    m_aTransportProfiles.setAll (aTransportProfiles);
+    return this;
+  }
+
+  /**
+   * @return The consumer that is invoked when an SMP client lookup is performed
+   *         and a transport profile was chosen. May be <code>null</code>.
+   * @since v3.2.1
+   */
+  @Nullable
+  public Consumer <ISMPTransportProfile> getSelectedTransportProfileConsumer ()
+  {
+    return m_aSelectedTransportProfileConsumer;
+  }
+
+  /**
+   * @param aConsumer
+   *        The consumer that is invoked when an SMP client lookup is performed
+   *        and a transport profile was chosen. May be <code>null</code>.
+   * @return this for chaining
+   * @since v3.2.1
+   */
+  @Nonnull
+  public AS2ClientBuilder setSelectedTransportProfileConsumer (@Nullable final Consumer <ISMPTransportProfile> aConsumer)
+  {
+    m_aSelectedTransportProfileConsumer = aConsumer;
+    return this;
+  }
+
+  /**
    * This method is responsible for performing the SMP client lookup if an SMP
    * client was specified via {@link #setSMPClient(SMPClientReadOnly)}. If any
    * of the prerequisites mentioned there is not fulfilled a warning is emitted
@@ -971,27 +1044,25 @@ public class AS2ClientBuilder
             if (m_sReceiverAS2Url == null || m_aReceiverCert == null || m_sReceiverAS2ID == null)
             {
               // Perform the lookup.
+              if (LOGGER.isDebugEnabled ())
+                LOGGER.debug ("Performing SMP lookup for receiver '" +
+                              m_aPeppolReceiverID.getURIEncoded () +
+                              "' on document type '" +
+                              m_aPeppolDocumentTypeID.getURIEncoded () +
+                              "' and process ID '" +
+                              m_aPeppolProcessID.getURIEncoded () +
+                              "' using transport profiles " +
+                              StringHelper.getImplodedMapped (", ", m_aTransportProfiles, ISMPTransportProfile::getID));
+
               SignedServiceMetadataType aServiceMetadata = null;
               try
               {
-                if (LOGGER.isDebugEnabled ())
-                  LOGGER.debug ("Performing SMP lookup for receiver '" +
-                                m_aPeppolReceiverID.getURIEncoded () +
-                                "' on document type '" +
-                                m_aPeppolDocumentTypeID.getURIEncoded () +
-                                "' and process ID '" +
-                                m_aPeppolProcessID.getURIEncoded () +
-                                "' using transport profile for AS2");
-
-                aServiceMetadata = m_aSMPClient.getServiceRegistration (m_aPeppolReceiverID, m_aPeppolDocumentTypeID);
-              }
-              catch (final SMPClientNotFoundException ex)
-              {
-                if (LOGGER.isDebugEnabled ())
-                  LOGGER.debug ("No such SMP service registration", ex);
-                else
-                  LOGGER.error ("No such SMP service registration: " + ex.getMessage ());
-                // Fall through
+                aServiceMetadata = m_aSMPClient.getServiceMetadataOrNull (m_aPeppolReceiverID, m_aPeppolDocumentTypeID);
+                if (aServiceMetadata == null)
+                  if (LOGGER.isDebugEnabled ())
+                    LOGGER.debug ("No such SMP service registration");
+                  else
+                    LOGGER.warn ("No such SMP service registration");
               }
               catch (final SMPClientException ex)
               {
@@ -1006,9 +1077,22 @@ public class AS2ClientBuilder
               if (aServiceMetadata != null)
               {
                 // Try to extract the endpoint from the service metadata
-                aEndpoint = SMPClientReadOnly.getEndpoint (aServiceMetadata,
-                                                           m_aPeppolProcessID,
-                                                           ESMPTransportProfile.TRANSPORT_PROFILE_AS2);
+                for (final ISMPTransportProfile aTP : m_aTransportProfiles)
+                {
+                  aEndpoint = SMPClientReadOnly.getEndpoint (aServiceMetadata, m_aPeppolProcessID, aTP);
+                  if (aEndpoint != null)
+                  {
+                    // Break after the first hit
+                    if (LOGGER.isDebugEnabled ())
+                      LOGGER.debug ("Using SMP endpoint using transport profile '" + aTP.getID () + "'");
+
+                    // Call consumer
+                    if (m_aSelectedTransportProfileConsumer != null)
+                      m_aSelectedTransportProfileConsumer.accept (aTP);
+
+                    break;
+                  }
+                }
               }
 
               // Interpret the result
@@ -1021,7 +1105,11 @@ public class AS2ClientBuilder
                                             m_aPeppolDocumentTypeID.getURIEncoded () +
                                             "' and process ID '" +
                                             m_aPeppolProcessID.getURIEncoded () +
-                                            "' using transport profile for AS2. " +
+                                            "' using transport profiles '" +
+                                            StringHelper.getImplodedMapped (", ",
+                                                                            m_aTransportProfiles,
+                                                                            ISMPTransportProfile::getID) +
+                                            ". " +
                                             (aServiceMetadata != null ? "The service metadata was gathered successfully but no endpoint was found."
                                                                       : "Failed to get the service metadata."));
               }
