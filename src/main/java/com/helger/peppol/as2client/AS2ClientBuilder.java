@@ -745,7 +745,7 @@ public class AS2ClientBuilder
    * @return this for chaining
    */
   @Nonnull
-  public AS2ClientBuilder setSMPClient (@Nullable final SMPClientReadOnly aSMPClient)
+  public AS2ClientBuilder setSMPClient (@Nullable final ISMPServiceMetadataProvider aSMPClient)
   {
     m_aSMPClient = aSMPClient;
     return this;
@@ -1012,11 +1012,12 @@ public class AS2ClientBuilder
 
   /**
    * This method is responsible for performing the SMP client lookup if an SMP
-   * client was specified via {@link #setSMPClient(SMPClientReadOnly)}. If any
-   * of the prerequisites mentioned there is not fulfilled a warning is emitted
-   * via the {@link #getMessageHandler()} and nothing happens. If all fields to
-   * be determined by the SMP are already no SMP lookup is performed either. If
-   * the SMP lookup fails, a warning is emitted and nothing happens.
+   * client was specified via
+   * {@link #setSMPClient(ISMPServiceMetadataProvider)}. If any of the
+   * prerequisites mentioned there is not fulfilled a warning is emitted via the
+   * {@link #getMessageHandler()} and nothing happens. If all fields to be
+   * determined by the SMP are already no SMP lookup is performed either. If the
+   * SMP lookup fails, a warning is emitted and nothing happens.
    *
    * @throws AS2ClientBuilderException
    *         In case SMP client lookup triggers an unrecoverable error via the

@@ -59,6 +59,7 @@ It depends on several other libraries so I suggest you are going for the Maven s
     * Updated to peppol-commons 7.0.6
     * Made the used SMP transport profile customizable via `AS2ClientBuilder.setSMPTransportProfiles`
     * By default both Peppol AS2 V1 and V2 are now handled in the SMP lookup (v2 as the fallback)
+    * Using type `ISMPServiceMetadataProvider` instead of `SMPClient` for improved configurability
 * v3.2.0 - 2019-12-19
     * Updated to as2-lib 4.5.0
 * v3.1.0 - 2019-11-27
