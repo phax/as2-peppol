@@ -48,7 +48,7 @@ public final class AS2ClientHelper
    * @return The common name of the certificate subject
    * @throws CertificateEncodingException
    *         In case of an internal error
-   * @deprecated Use
+   * @deprecated in v3.2.0. Use
    *             {@link PeppolCertificateHelper#getSubjectCN(X509Certificate)}
    *             instead
    */
