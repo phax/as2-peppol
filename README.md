@@ -55,6 +55,8 @@ It depends on several other libraries so I suggest you are going for the Maven s
 
 # News and Noteworthy
 
+* v3.3.0 - work in progress
+    * Updated to peppol-commons 8.x
 * v3.2.1 - 2020-01-19
     * Updated to peppol-commons 7.0.6
     * Made the used SMP transport profile customizable via `AS2ClientBuilder.setSMPTransportProfiles`
