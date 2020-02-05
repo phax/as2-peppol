@@ -103,7 +103,7 @@ import com.helger.xml.serialize.read.DOMReader;
 
 /**
  * A builder class for easy usage of the AS2 client for sending messages to a
- * PEPPOL participant. After building use the {@link #sendSynchronous()} message
+ * Peppol participant. After building use the {@link #sendSynchronous()} message
  * to trigger the sending. All parameters that not explicitly have a default
  * value must be set otherwise the verification process will fail.
  *
@@ -113,15 +113,13 @@ import com.helger.xml.serialize.read.DOMReader;
 public class AS2ClientBuilder
 {
   /** Default AS2 subject */
-  public static final String DEFAULT_AS2_SUBJECT = "OpenPEPPOL AS2 message";
+  public static final String DEFAULT_AS2_SUBJECT = "Peppol AS2 message";
   /** Default AS2 signing algorithm for PEPPOL AS2 profile v1 */
   public static final ECryptoAlgorithmSign DEFAULT_SIGNING_ALGORITHM = ECryptoAlgorithmSign.DIGEST_SHA_1;
   /** Default AS2 signing algorithm for PEPPOL AS2 profile v2 */
   public static final ECryptoAlgorithmSign DEFAULT_SIGNING_ALGORITHM_V2 = ECryptoAlgorithmSign.DIGEST_SHA_256;
   /** Default AS2 message ID format */
   public static final String DEFAULT_AS2_MESSAGE_ID_FORMAT = "OpenPEPPOL-$date.ddMMyyyyHHmmssZ$-$rand.1234$@$msg.sender.as2_id$_$msg.receiver.as2_id$";
-  /** PEPPOL prefix for AS2 ID and key aliases */
-  public static final String APP_PREFIX_V2 = "APP_";
   /** "P" + country code (e.g. "DK" for Denmark or "OP" for OpenPEPPOL */
   public static final String APP_PREFIX_V3 = "P";
   /** By default a data handler should be used */
@@ -224,8 +222,8 @@ public class AS2ClientBuilder
   private IHTTPIncomingDumper m_aHttpIncomingDumper;
   private boolean m_bUseDataHandler = DEFAULT_USE_DATA_HANDLER;
   private IMimeType m_aMimeType = DEFAULT_MIME_TYPE;
-  private final ICommonsList <ISMPTransportProfile> m_aTransportProfiles = new CommonsArrayList <> (ESMPTransportProfile.TRANSPORT_PROFILE_AS2,
-                                                                                                    ESMPTransportProfile.TRANSPORT_PROFILE_AS2_V2);
+  private final ICommonsList <ISMPTransportProfile> m_aTransportProfiles = new CommonsArrayList <> (ESMPTransportProfile.TRANSPORT_PROFILE_AS2_V2,
+                                                                                                    ESMPTransportProfile.TRANSPORT_PROFILE_AS2);
   private Consumer <ISMPTransportProfile> m_aSelectedTransportProfileConsumer = DEFAULT_SELECTED_TRANSPORT_PROFILE_CONSUMER;
 
   /**
@@ -349,9 +347,9 @@ public class AS2ClientBuilder
 
   /**
    * Set the AS2 sender ID (your ID). It is mapped to the "AS2-From" header. For
-   * PEPPOL the AS2 sender ID must be the common name (CN) of the sender's AP
+   * Peppol the AS2 sender ID must be the common name (CN) of the sender's AP
    * certificate subject. Therefore it usually starts with
-   * {@value #APP_PREFIX_V2} or {@link #APP_PREFIX_V3}
+   * {@link #APP_PREFIX_V3}
    *
    * @param sSenderAS2ID
    *        The AS2 sender ID to be used. May not be <code>null</code>.
@@ -366,7 +364,7 @@ public class AS2ClientBuilder
 
   /**
    * Set the email address of the sender. This is required for the AS2 protocol
-   * but not (to my knowledge) used in PEPPOL.
+   * but not (to my knowledge) used in Peppol.
    *
    * @param sSenderAS2Email
    *        The email address of the sender. May not be <code>null</code> and
@@ -381,7 +379,7 @@ public class AS2ClientBuilder
   }
 
   /**
-   * Set the key alias of the sender's key in the key store. For PEPPOL the key
+   * Set the key alias of the sender's key in the key store. For Peppol the key
    * alias of the sender should be identical to the AS2 sender ID (
    * {@link #setSenderAS2ID(String)}), so it should also start with "APP_" or
    * "PKD" (I think case insensitive for PKCS12 key stores).
@@ -401,7 +399,7 @@ public class AS2ClientBuilder
 
   /**
    * Set the AS2 receiver ID (recipient ID). It is mapped to the "AS2-To"
-   * header. For PEPPOL the AS2 receiver ID must be the common name (CN) of the
+   * header. For Peppol the AS2 receiver ID must be the common name (CN) of the
    * receiver's AP certificate subject (as determined by the SMP query).
    * Therefore it usually starts with "APP_".
    *
@@ -417,7 +415,7 @@ public class AS2ClientBuilder
   }
 
   /**
-   * Set the key alias of the receiver's key in the key store. For PEPPOL the
+   * Set the key alias of the receiver's key in the key store. For Peppol the
    * key alias of the receiver should be identical to the AS2 receiver ID (
    * {@link #setReceiverAS2ID(String)}), so it should also start with "APP_" or
    * "PKD" (I think case insensitive for PKCS12 key stores).
@@ -486,7 +484,7 @@ public class AS2ClientBuilder
   /**
    * Set the algorithm to be used to sign AS2 messages. By default
    * {@link #DEFAULT_SIGNING_ALGORITHM} is used. An encryption algorithm cannot
-   * be set because according to the PEPPOL AS2 specification the AS2 messages
+   * be set because according to the Peppol AS2 specification the AS2 messages
    * may not be encrypted on a business level.
    *
    * @param eSigningAlgo
@@ -572,7 +570,7 @@ public class AS2ClientBuilder
   /**
    * Set the resource that represents the main business document to be
    * transmitted. It must be an XML document - other documents are not supported
-   * by PEPPOL.<br>
+   * by Peppol.<br>
    * Note: This should NOT be the SBDH as this is added internally.<br>
    * Note: don't call this, if you have the SBDH already available.
    *
@@ -590,7 +588,7 @@ public class AS2ClientBuilder
   /**
    * Set the resource that represents the main business document to be
    * transmitted. It must be an XML document - other documents are not supported
-   * by PEPPOL.<br>
+   * by Peppol.<br>
    * Note: This should NOT be the SBDH as this is added internally.<br>
    * Note: don't call this, if you have the SBDH already available.
    *
@@ -608,7 +606,7 @@ public class AS2ClientBuilder
   /**
    * Set the resource that represents the main business document to be
    * transmitted. It must be an XML document - other documents are not supported
-   * by PEPPOL.<br>
+   * by Peppol.<br>
    * Note: This should NOT be the SBDH as this is added internally.<br>
    * Note: don't call this, if you have the SBDH already available.
    *
@@ -642,10 +640,10 @@ public class AS2ClientBuilder
   }
 
   /**
-   * Set the PEPPOL sender ID. This is your PEPPOL participant ID.
+   * Set the Peppol sender ID. This is your Peppol participant ID.
    *
    * @param aPeppolSenderID
-   *        The sender PEPPOL participant ID. May be <code>null</code>.
+   *        The sender Peppol participant ID. May be <code>null</code>.
    * @return this for chaining
    */
   @Nonnull
@@ -656,11 +654,11 @@ public class AS2ClientBuilder
   }
 
   /**
-   * Set the PEPPOL receiver ID. This is the PEPPOL participant ID of the
+   * Set the Peppol receiver ID. This is the Peppol participant ID of the
    * recipient.
    *
    * @param aPeppolReceiverID
-   *        The receiver PEPPOL participant ID. May be <code>null</code>.
+   *        The receiver Peppol participant ID. May be <code>null</code>.
    * @return this for chaining
    */
   @Nonnull
@@ -671,11 +669,11 @@ public class AS2ClientBuilder
   }
 
   /**
-   * Set the PEPPOL document type identifier for the exchanged business
+   * Set the Peppol document type identifier for the exchanged business
    * document.
    *
    * @param aPeppolDocumentTypeID
-   *        The PEPPOL document type identifier. May be <code>null</code>.
+   *        The Peppol document type identifier. May be <code>null</code>.
    * @return this for chaining
    */
   @Nonnull
@@ -686,10 +684,10 @@ public class AS2ClientBuilder
   }
 
   /**
-   * Set the PEPPOL process identifier for the exchanged business document.
+   * Set the Peppol process identifier for the exchanged business document.
    *
    * @param aPeppolProcessID
-   *        The PEPPOL process identifier. May be <code>null</code>.
+   *        The Peppol process identifier. May be <code>null</code>.
    * @return this for chaining
    */
   @Nonnull
@@ -731,11 +729,11 @@ public class AS2ClientBuilder
    * As a prerequisite to performing an SMP lookup, at least the following
    * properties must be set:
    * <ul>
-   * <li>The PEPPOL receiver participant ID -
+   * <li>The Peppol receiver participant ID -
    * {@link #setPeppolReceiverID(IParticipantIdentifier)}</li>
-   * <li>The PEPPOL document type ID -
+   * <li>The Peppol document type ID -
    * {@link #setPeppolDocumentTypeID(IDocumentTypeIdentifier)}</li>
-   * <li>The PEPPOL process ID - {@link #setPeppolProcessID(IProcessIdentifier)}
+   * <li>The Peppol process ID - {@link #setPeppolProcessID(IProcessIdentifier)}
    * </li>
    * </ul>
    *
@@ -1029,13 +1027,13 @@ public class AS2ClientBuilder
     {
       // Check pre-requisites
       if (m_aPeppolReceiverID == null)
-        getMessageHandler ().warn ("Cannot perform SMP lookup because the PEPPOL receiver ID is missing");
+        getMessageHandler ().warn ("Cannot perform SMP lookup because the Peppol receiver ID is missing");
       else
         if (m_aPeppolDocumentTypeID == null)
-          getMessageHandler ().warn ("Cannot perform SMP lookup because the PEPPOL document type ID is missing");
+          getMessageHandler ().warn ("Cannot perform SMP lookup because the Peppol document type ID is missing");
         else
           if (m_aPeppolProcessID == null)
-            getMessageHandler ().warn ("Cannot perform SMP lookup because the PEPPOL process ID is missing");
+            getMessageHandler ().warn ("Cannot perform SMP lookup because the Peppol process ID is missing");
           else
           {
             // All prerequisites are matched
@@ -1214,14 +1212,12 @@ public class AS2ClientBuilder
     if (StringHelper.hasNoText (m_sSenderAS2ID))
       m_aMessageHandler.error ("The AS2 sender ID is missing");
     else
-      if (!m_sSenderAS2ID.startsWith (APP_PREFIX_V2) && !m_sSenderAS2ID.startsWith (APP_PREFIX_V3))
+      if (!m_sSenderAS2ID.startsWith (APP_PREFIX_V3))
         m_aMessageHandler.warn ("The AS2 sender ID '" +
                                 m_sSenderAS2ID +
                                 "' should start with '" +
-                                APP_PREFIX_V2 +
-                                "' or '" +
                                 APP_PREFIX_V3 +
-                                "' as required by the PEPPOL specification");
+                                "' as required by the Peppol specification");
 
     if (StringHelper.hasNoText (m_sSenderAS2Email))
       m_aMessageHandler.error ("The AS2 sender email address is missing");
@@ -1234,12 +1230,10 @@ public class AS2ClientBuilder
     if (StringHelper.hasNoText (m_sSenderAS2KeyAlias))
       m_aMessageHandler.error ("The AS2 sender key alias is missing");
     else
-      if (!m_sSenderAS2KeyAlias.startsWith (APP_PREFIX_V2) && !m_sSenderAS2KeyAlias.startsWith (APP_PREFIX_V3))
+      if (!m_sSenderAS2KeyAlias.startsWith (APP_PREFIX_V3))
         m_aMessageHandler.warn ("The AS2 sender key alias '" +
                                 m_sSenderAS2KeyAlias +
                                 "' should start with '" +
-                                APP_PREFIX_V2 +
-                                "' or '" +
                                 APP_PREFIX_V3 +
                                 "' for the use with the dynamic AS2 partnerships");
       else
@@ -1253,24 +1247,20 @@ public class AS2ClientBuilder
     if (StringHelper.hasNoText (m_sReceiverAS2ID))
       m_aMessageHandler.error ("The AS2 receiver ID is missing");
     else
-      if (!m_sReceiverAS2ID.startsWith (APP_PREFIX_V2) && !m_sReceiverAS2ID.startsWith (APP_PREFIX_V3))
+      if (!m_sReceiverAS2ID.startsWith (APP_PREFIX_V3))
         m_aMessageHandler.warn ("The AS2 receiver ID '" +
                                 m_sReceiverAS2ID +
                                 "' should start with '" +
-                                APP_PREFIX_V2 +
-                                "' or '" +
                                 APP_PREFIX_V3 +
-                                "' as required by the PEPPOL specification");
+                                "' as required by the Peppol specification");
 
     if (StringHelper.hasNoText (m_sReceiverAS2KeyAlias))
       m_aMessageHandler.error ("The AS2 receiver key alias is missing");
     else
-      if (!m_sReceiverAS2KeyAlias.startsWith (APP_PREFIX_V2) && !m_sReceiverAS2KeyAlias.startsWith (APP_PREFIX_V3))
+      if (!m_sReceiverAS2KeyAlias.startsWith (APP_PREFIX_V3))
         m_aMessageHandler.warn ("The AS2 receiver key alias '" +
                                 m_sReceiverAS2KeyAlias +
                                 "' should start with '" +
-                                APP_PREFIX_V2 +
-                                "' or '" +
                                 APP_PREFIX_V3 +
                                 "' for the use with the dynamic AS2 partnerships");
       else
@@ -1308,34 +1298,34 @@ public class AS2ClientBuilder
     }
 
     if (m_aPeppolSenderID == null)
-      m_aMessageHandler.error ("The PEPPOL sender participant ID is missing");
+      m_aMessageHandler.error ("The Peppol sender participant ID is missing");
     else
       if (!m_aPeppolSenderID.hasScheme (PeppolIdentifierHelper.DEFAULT_PARTICIPANT_SCHEME))
-        m_aMessageHandler.warn ("The PEPPOL sender participant ID '" +
+        m_aMessageHandler.warn ("The Peppol sender participant ID '" +
                                 m_aPeppolSenderID.getURIEncoded () +
                                 "' is using a non-standard scheme!");
 
     if (m_aPeppolReceiverID == null)
-      m_aMessageHandler.error ("The PEPPOL receiver participant ID is missing");
+      m_aMessageHandler.error ("The Peppol receiver participant ID is missing");
     else
       if (!m_aPeppolReceiverID.hasScheme (PeppolIdentifierHelper.DEFAULT_PARTICIPANT_SCHEME))
-        m_aMessageHandler.warn ("The PEPPOL receiver participant ID '" +
+        m_aMessageHandler.warn ("The Peppol receiver participant ID '" +
                                 m_aPeppolReceiverID.getURIEncoded () +
                                 "' is using a non-standard scheme!");
 
     if (m_aPeppolDocumentTypeID == null)
-      m_aMessageHandler.error ("The PEPPOL document type ID is missing");
+      m_aMessageHandler.error ("The Peppol document type ID is missing");
     else
       if (!m_aPeppolDocumentTypeID.hasScheme (PeppolIdentifierHelper.DEFAULT_DOCUMENT_TYPE_SCHEME))
-        m_aMessageHandler.warn ("The PEPPOL document type ID '" +
+        m_aMessageHandler.warn ("The Peppol document type ID '" +
                                 m_aPeppolDocumentTypeID.getURIEncoded () +
                                 "' is using a non-standard scheme!");
 
     if (m_aPeppolProcessID == null)
-      m_aMessageHandler.error ("The PEPPOL process ID is missing");
+      m_aMessageHandler.error ("The Peppol process ID is missing");
     else
       if (!m_aPeppolProcessID.hasScheme (PeppolIdentifierHelper.DEFAULT_PROCESS_SCHEME))
-        m_aMessageHandler.warn ("The PEPPOL process ID '" +
+        m_aMessageHandler.warn ("The Peppol process ID '" +
                                 m_aPeppolProcessID.getURIEncoded () +
                                 "' is using a non-standard scheme!");
 
@@ -1348,7 +1338,7 @@ public class AS2ClientBuilder
     // Ensure that if a non-throwing message handler is installed, that the
     // sending is not performed!
     if (m_aMessageHandler.getErrorCount () > 0)
-      throw new AS2ClientBuilderException ("Not all required fields are present so the PEPPOL AS2 client call can NOT be performed. See the message handler for details!");
+      throw new AS2ClientBuilderException ("Not all required fields are present so the Peppol AS2 client call can NOT be performed. See the message handler for details!");
   }
 
   /**
@@ -1443,7 +1433,7 @@ public class AS2ClientBuilder
   }
 
   /**
-   * Perform the standard PEPPOL validation of the outgoing business document
+   * Perform the standard Peppol validation of the outgoing business document
    * before sending takes place. In case validation fails, an exception is
    * thrown. The validation is configured using the validation key. This method
    * is only called, when a validation key was set.
@@ -1666,7 +1656,7 @@ public class AS2ClientBuilder
     if (m_aVESID != null)
       validateOutgoingBusinessDocument (aBusinessDocumentXML);
 
-    // 3. build PEPPOL SBDH data
+    // 3. build Peppol SBDH data
     final StandardBusinessDocument aSBD = createSBDH (m_aPeppolSenderID,
                                                       m_aPeppolReceiverID,
                                                       m_aPeppolDocumentTypeID,
