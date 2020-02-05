@@ -34,10 +34,6 @@ import com.helger.commons.io.resource.IReadableResource;
 import com.helger.commons.timing.StopWatch;
 import com.helger.peppol.sml.ESML;
 import com.helger.peppol.sml.ISMLInfo;
-import com.helger.peppol.smpclient.SMPClientConfiguration;
-import com.helger.peppol.smpclient.SMPClientReadOnly;
-import com.helger.peppol.url.IPeppolURLProvider;
-import com.helger.peppol.url.PeppolURLProvider;
 import com.helger.peppolid.IDocumentTypeIdentifier;
 import com.helger.peppolid.IParticipantIdentifier;
 import com.helger.peppolid.IProcessIdentifier;
@@ -46,6 +42,10 @@ import com.helger.peppolid.factory.PeppolIdentifierFactory;
 import com.helger.peppolid.peppol.doctype.EPredefinedDocumentTypeIdentifier;
 import com.helger.peppolid.peppol.process.EPredefinedProcessIdentifier;
 import com.helger.security.keystore.EKeyStoreType;
+import com.helger.smpclient.config.SMPClientConfiguration;
+import com.helger.smpclient.peppol.SMPClientReadOnly;
+import com.helger.smpclient.url.IPeppolURLProvider;
+import com.helger.smpclient.url.PeppolURLProvider;
 
 /**
  * Main class to send AS2 messages.

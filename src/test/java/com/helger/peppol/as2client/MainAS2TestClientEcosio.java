@@ -27,8 +27,6 @@ import com.helger.as2lib.crypto.ECryptoAlgorithmSign;
 import com.helger.bdve.peppol.PeppolValidation370;
 import com.helger.commons.debug.GlobalDebug;
 import com.helger.commons.io.resource.ClassPathResource;
-import com.helger.peppol.smpclient.SMPClientConfiguration;
-import com.helger.peppol.smpclient.SMPClientReadOnly;
 import com.helger.peppolid.IDocumentTypeIdentifier;
 import com.helger.peppolid.IParticipantIdentifier;
 import com.helger.peppolid.IProcessIdentifier;
@@ -37,6 +35,8 @@ import com.helger.peppolid.factory.PeppolIdentifierFactory;
 import com.helger.peppolid.peppol.doctype.EPredefinedDocumentTypeIdentifier;
 import com.helger.peppolid.peppol.process.EPredefinedProcessIdentifier;
 import com.helger.security.keystore.EKeyStoreType;
+import com.helger.smpclient.config.SMPClientConfiguration;
+import com.helger.smpclient.peppol.SMPClientReadOnly;
 
 /**
  * Main class to send AS2 messages.
