@@ -46,7 +46,7 @@ Add the following to your `pom.xml` to use this artifact:
 <dependency>
   <groupId>com.helger</groupId>
   <artifactId>as2-peppol-client</artifactId>
-  <version>3.2.1</version>
+  <version>3.3.0</version>
 </dependency>
 ```
 
@@ -55,7 +55,7 @@ It depends on several other libraries so I suggest you are going for the Maven s
 
 # News and Noteworthy
 
-* v3.3.0 - work in progress
+* v3.3.0 - 2020-02-07
     * Updated to peppol-commons 8.x
     * Changed the priority of AS2 specifications so that Peppol AS2 v2 is preferred over Peppol AS2 v1.
 * v3.2.1 - 2020-01-19
