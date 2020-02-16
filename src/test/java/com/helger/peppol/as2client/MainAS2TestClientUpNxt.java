@@ -163,7 +163,7 @@ public final class MainAS2TestClientUpNxt
     if (!aSMPClient.getSMPHostURI ().startsWith ("http://localhost") &&
         !aSMPClient.getSMPHostURI ().startsWith ("http://127."))
     {
-      aSMPClient.setProxy (aProxy);
+      aSMPClient.httpClientSettings ().setProxyHost (aProxy);
     }
 
     try
