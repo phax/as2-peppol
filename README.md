@@ -55,6 +55,8 @@ It depends on several other libraries so I suggest you are going for the Maven s
 
 # News and Noteworthy
 
+* v3.3.1 - 2020-02-17
+    * Updated to ph-web 9.1.9
 * v3.3.0 - 2020-02-07
     * Updated to peppol-commons 8.x
     * Changed the priority of AS2 specifications so that Peppol AS2 v2 is preferred over Peppol AS2 v1.
