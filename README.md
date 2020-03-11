@@ -55,6 +55,8 @@ It depends on several other libraries so I suggest you are going for the Maven s
 
 # News and Noteworthy
 
+* v3.3.2 - work in progress
+    * Added a possibility to retrieve the byte array representation of the created SBDH
 * v3.3.1 - 2020-02-17
     * Updated to ph-web 9.1.9
 * v3.3.0 - 2020-02-07

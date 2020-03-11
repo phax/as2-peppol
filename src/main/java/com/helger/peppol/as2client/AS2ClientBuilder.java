@@ -64,6 +64,7 @@ import com.helger.commons.collection.impl.CommonsArrayList;
 import com.helger.commons.collection.impl.ICommonsList;
 import com.helger.commons.datetime.PDTFactory;
 import com.helger.commons.email.EmailAddressHelper;
+import com.helger.commons.functional.IConsumer;
 import com.helger.commons.functional.ISupplier;
 import com.helger.commons.http.CHttpHeader;
 import com.helger.commons.io.resource.FileSystemResource;
@@ -215,6 +216,7 @@ public class AS2ClientBuilder
   private ISMPServiceMetadataProvider m_aSMPClient;
   private ISupplier <AS2Client> m_aAS2ClientFactory = new AS2ClientSupplier ();
   private INamespaceContext m_aSBDHNamespaceContext;
+  private IConsumer <byte []> m_aSBDHBytesConsumer;
   private EContentTransferEncoding m_eCTE = EContentTransferEncoding.AS2_DEFAULT;
   private IAS2ClientBuilderValidatonResultHandler m_aValidationResultHandler = DEFAULT_VALIDATION_RESULT_HANDLER;
   private transient ValidationExecutorSetRegistry m_aVESRegistry;
@@ -807,6 +809,27 @@ public class AS2ClientBuilder
   public AS2ClientBuilder setSBDHNamespaceContext (@Nullable final INamespaceContext aSBDHNamespaceContext)
   {
     m_aSBDHNamespaceContext = aSBDHNamespaceContext;
+    return this;
+  }
+
+  /**
+   * Set an optional consumer that takes the byte array representation of the
+   * created StandardBusinessDocument. This is for logging purposes only. Please
+   * note that the invocation of the callback has an impact on runtime
+   * performance if the data handler is not used, since the conversion to a byte
+   * array happens explicitly for this logging call. For big messages that may
+   * make an impact.
+   *
+   * @param aSBDHBytesConsumer
+   *        The optional consumer to use. May be <code>null</code>.
+   * @return this for chaining
+   * @see #setUseDataHandler(boolean)
+   * @since 3.3.2
+   */
+  @Nonnull
+  public AS2ClientBuilder setSBDHBytesConsumer (@Nullable final IConsumer <byte []> aSBDHBytesConsumer)
+  {
+    m_aSBDHBytesConsumer = aSBDHBytesConsumer;
     return this;
   }
 
@@ -1677,10 +1700,23 @@ public class AS2ClientBuilder
     {
       // Use data to force the usage of "application/xml" Content-Type in the
       // DataHandler
-      aRequest.setData (new DataHandler (aBAOS.toByteArray (), m_aMimeType.getAsString ()));
+
+      // Convert to byte[] once
+      final byte [] aSBDHBytes = aBAOS.toByteArray ();
+
+      if (m_aSBDHBytesConsumer != null)
+        m_aSBDHBytesConsumer.accept (aSBDHBytes);
+
+      aRequest.setData (new DataHandler (aSBDHBytes, m_aMimeType.getAsString ()));
     }
     else
     {
+      if (m_aSBDHBytesConsumer != null)
+      {
+        // Convert to byte[] only for the callback
+        m_aSBDHBytesConsumer.accept (aBAOS.toByteArray ());
+      }
+
       // Using a String is better when having a
       // com.sun.xml.ws.encoding.XmlDataContentHandler installed!
       aRequest.setData (aBAOS.getAsString (StandardCharsets.UTF_8), StandardCharsets.UTF_8);
