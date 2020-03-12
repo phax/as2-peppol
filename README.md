@@ -46,7 +46,7 @@ Add the following to your `pom.xml` to use this artifact:
 <dependency>
   <groupId>com.helger</groupId>
   <artifactId>as2-peppol-client</artifactId>
-  <version>3.3.0</version>
+  <version>3.3.2</version>
 </dependency>
 ```
 
@@ -55,7 +55,7 @@ It depends on several other libraries so I suggest you are going for the Maven s
 
 # News and Noteworthy
 
-* v3.3.2 - work in progress
+* v3.3.2 - 2020-03-12
     * Added a possibility to retrieve the byte array representation of the created SBDH (see [issue #7](https://github.com/phax/as2-peppol-client/issues/7))
 * v3.3.1 - 2020-02-17
     * Updated to ph-web 9.1.9
