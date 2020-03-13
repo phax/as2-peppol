@@ -46,9 +46,9 @@ public class MainCreate2GBXMLFile
   {
     LOGGER.info ("Reading");
     final InvoiceType aInvoice = UBL21Reader.invoice ()
-                                            .read (new FileSystemResource ("src/test/resources/xml/as2-test-at-gov.xml"));
+                                            .read (new FileSystemResource ("src/test/resources/xml/at-gov-peppol-ubl.xml"));
 
-    final String sNote = StringHelper.getRepeated ('X', 1024);
+    final String sNote = StringHelper.getRepeated ("Lorem ipsum - who cares", 1024);
     final long nNotes = 2 * CGlobal.BYTES_PER_GIGABYTE / sNote.length ();
     LOGGER.info ("Adding " + nNotes + " notes");
     for (long i = 0; i < nNotes; ++i)
@@ -56,7 +56,7 @@ public class MainCreate2GBXMLFile
     LOGGER.info ("Writing");
     UBL21Writer.invoice ()
                .write (aInvoice,
-                       new GZIPOutputStream (new FileSystemResource ("src/test/resources/xml/as2-test-at-gov-2gb.gz").getOutputStream (EAppend.TRUNCATE)));
+                       new GZIPOutputStream (new FileSystemResource ("src/test/resources/xml/at-gov-peppol-ubl-2gb.gz").getOutputStream (EAppend.TRUNCATE)));
     LOGGER.info ("Done");
   }
 }

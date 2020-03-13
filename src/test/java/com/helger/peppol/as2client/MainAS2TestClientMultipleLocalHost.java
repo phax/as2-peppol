@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
 import com.helger.as2lib.client.AS2ClientResponse;
 import com.helger.as2lib.crypto.ECryptoAlgorithmSign;
 import com.helger.bdve.executorset.VESID;
-import com.helger.bdve.peppol.PeppolValidation370;
+import com.helger.bdve.peppol.PeppolValidation391;
 import com.helger.bdve.result.ValidationResult;
 import com.helger.commons.debug.GlobalDebug;
 import com.helger.commons.io.resource.ClassPathResource;
@@ -63,7 +63,7 @@ public final class MainAS2TestClientMultipleLocalHost
   /** Your AS2 sender email address */
   private static final String SENDER_EMAIL = "peppol@example.org";
   /** Your AS2 key alias in the PKCS12 key store */
-  private static final String SENDER_KEY_ALIAS = SENDER_AS2_ID;
+  private static final String SENDER_KEY_ALIAS = "openpeppol aisbl id von pop000306";
   private static final IIdentifierFactory IF = PeppolIdentifierFactory.INSTANCE;
   private static final IPeppolURLProvider URL_PROVIDER = PeppolURLProvider.INSTANCE;
   /** The PEPPOL sender participant ID */
@@ -94,7 +94,7 @@ public final class MainAS2TestClientMultipleLocalHost
     String sReceiverKeyAlias = null;
     String sReceiverAddress = null;
     ISMLInfo aSML = ESML.DIGIT_PRODUCTION;
-    final VESID aValidationKey = true ? null : PeppolValidation370.VID_OPENPEPPOL_T10_V2;
+    final VESID aValidationKey = true ? null : PeppolValidation391.VID_OPENPEPPOL_INVOICE_V3;
     final URI aSMPURI = null;
     final ECryptoAlgorithmSign eMICAlg = ECryptoAlgorithmSign.DIGEST_SHA_1;
     final HttpHost aProxy = SMPClientConfiguration.getHttpProxy ();

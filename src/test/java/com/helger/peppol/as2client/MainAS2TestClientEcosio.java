@@ -24,7 +24,7 @@ import org.slf4j.LoggerFactory;
 
 import com.helger.as2lib.client.AS2ClientResponse;
 import com.helger.as2lib.crypto.ECryptoAlgorithmSign;
-import com.helger.bdve.peppol.PeppolValidation370;
+import com.helger.bdve.peppol.PeppolValidation391;
 import com.helger.commons.debug.GlobalDebug;
 import com.helger.commons.io.resource.ClassPathResource;
 import com.helger.peppolid.IDocumentTypeIdentifier;
@@ -46,7 +46,7 @@ import com.helger.smpclient.peppol.SMPClientReadOnly;
 public final class MainAS2TestClientEcosio
 {
   /** The file path to the PKCS12 key store */
-  private static final String PKCS12_CERTSTORE_PATH = "as2-client-data/AP-test-cert.p12";
+  private static final String PKCS12_CERTSTORE_PATH = "as2-client-data/test-ap.p12";
   /** The password to open the PKCS12 key store */
   private static final String PKCS12_CERTSTORE_PASSWORD = "peppol";
   /** Your AS2 sender ID */
@@ -54,7 +54,7 @@ public final class MainAS2TestClientEcosio
   /** Your AS2 sender email address */
   private static final String SENDER_EMAIL = "peppol@ecosio.com";
   /** Your AS2 key alias in the PKCS12 key store */
-  private static final String SENDER_KEY_ALIAS = "POP000092";
+  private static final String SENDER_KEY_ALIAS = "openpeppol aisbl id von pop000306";
   private static final IIdentifierFactory IF = PeppolIdentifierFactory.INSTANCE;
   /** The PEPPOL sender participant ID */
   private static final IParticipantIdentifier SENDER_PEPPOL_ID = IF.createParticipantIdentifierWithDefaultScheme ("9999:test-sender");
@@ -82,9 +82,9 @@ public final class MainAS2TestClientEcosio
 
     // localhost test endpoint
     final IParticipantIdentifier aReceiver = IF.createParticipantIdentifierWithDefaultScheme ("0088:ecosio");
-    final String sTestFilename = "xml/as2-test-at-gov.xml";
+    final String sTestFilename = "xml/at-gov-peppol-ubl.xml";
 
-    if (true)
+    if (false)
     {
       // Avoid SMP lookup
       sReceiverAddress = "http://localhost:8878/as2";
@@ -92,27 +92,34 @@ public final class MainAS2TestClientEcosio
       sReceiverKeyAlias = "POP000092";
     }
 
-    final AS2ClientResponse aResponse = new AS2ClientBuilder ().setSMPClient (new SMPClientReadOnly (URI.create ("http://test-smp.ecosio.com")))
-                                                               .setKeyStore (EKeyStoreType.PKCS12,
-                                                                             new File (PKCS12_CERTSTORE_PATH),
-                                                                             PKCS12_CERTSTORE_PASSWORD)
-                                                               .setSenderAS2ID (SENDER_AS2_ID)
-                                                               .setSenderAS2Email (SENDER_EMAIL)
-                                                               .setSenderAS2KeyAlias (SENDER_KEY_ALIAS)
-                                                               .setReceiverAS2ID (sReceiverID)
-                                                               .setReceiverAS2KeyAlias (sReceiverKeyAlias)
-                                                               .setReceiverAS2Url (sReceiverAddress)
-                                                               .setAS2SigningAlgorithm (ECryptoAlgorithmSign.DIGEST_SHA_1)
-                                                               .setBusinessDocument (new ClassPathResource (sTestFilename))
-                                                               .setPeppolSenderID (SENDER_PEPPOL_ID)
-                                                               .setPeppolReceiverID (aReceiver)
-                                                               .setPeppolDocumentTypeID (DOCTYPE)
-                                                               .setPeppolProcessID (PROCESS)
-                                                               .setValidationKey (PeppolValidation370.VID_OPENPEPPOL_T10_V2)
-                                                               .sendSynchronous ();
-    if (aResponse.hasException ())
-      LOGGER.warn (aResponse.getAsString ());
+    try
+    {
+      final AS2ClientResponse aResponse = new AS2ClientBuilder ().setSMPClient (new SMPClientReadOnly (URI.create ("http://test-smp.ecosio.com")))
+                                                                 .setKeyStore (EKeyStoreType.PKCS12,
+                                                                               new File (PKCS12_CERTSTORE_PATH),
+                                                                               PKCS12_CERTSTORE_PASSWORD)
+                                                                 .setSenderAS2ID (SENDER_AS2_ID)
+                                                                 .setSenderAS2Email (SENDER_EMAIL)
+                                                                 .setSenderAS2KeyAlias (SENDER_KEY_ALIAS)
+                                                                 .setReceiverAS2ID (sReceiverID)
+                                                                 .setReceiverAS2KeyAlias (sReceiverKeyAlias)
+                                                                 .setReceiverAS2Url (sReceiverAddress)
+                                                                 .setAS2SigningAlgorithm (ECryptoAlgorithmSign.DIGEST_SHA_1)
+                                                                 .setBusinessDocument (new ClassPathResource (sTestFilename))
+                                                                 .setPeppolSenderID (SENDER_PEPPOL_ID)
+                                                                 .setPeppolReceiverID (aReceiver)
+                                                                 .setPeppolDocumentTypeID (DOCTYPE)
+                                                                 .setPeppolProcessID (PROCESS)
+                                                                 .setValidationKey (PeppolValidation391.VID_OPENPEPPOL_INVOICE_V3)
+                                                                 .sendSynchronous ();
+      if (aResponse.hasException ())
+        LOGGER.warn (aResponse.getAsString ());
 
-    LOGGER.info ("Done");
+      LOGGER.info ("Done");
+    }
+    catch (final AS2ClientBuilderValidationException ex)
+    {
+      LOGGER.warn (ex.getValidationResult ().getAllErrors ().toString ());
+    }
   }
 }

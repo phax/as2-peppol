@@ -38,7 +38,7 @@ import com.helger.as2lib.util.dump.IHTTPOutgoingDumper;
 import com.helger.as2lib.util.http.HTTPHelper;
 import com.helger.bdve.executorset.VESID;
 import com.helger.bdve.executorset.ValidationExecutorSetRegistry;
-import com.helger.bdve.peppol.PeppolValidation370;
+import com.helger.bdve.peppol.PeppolValidation391;
 import com.helger.bdve.result.ValidationResult;
 import com.helger.commons.debug.GlobalDebug;
 import com.helger.commons.io.file.SimpleFileIO;
@@ -142,7 +142,7 @@ public final class MainAS2TestClientSBDH
     final String sReceiverKeyAlias = null;
     final String sReceiverAddress = null;
     final ISMLInfo aSML = ESML.DIGIT_TEST;
-    final VESID aValidationKey = PeppolValidation370.VID_OPENPEPPOL_T10_V2;
+    final VESID aValidationKey = PeppolValidation391.VID_OPENPEPPOL_INVOICE_V3;
     URI aSMPURI = null;
     final ECryptoAlgorithmSign eMICAlg = ECryptoAlgorithmSign.DIGEST_SHA_1;
     HttpHost aProxy = SMPClientConfiguration.getHttpProxy ();

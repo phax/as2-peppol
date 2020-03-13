@@ -24,7 +24,7 @@ import org.slf4j.LoggerFactory;
 
 import com.helger.as2lib.client.AS2ClientResponse;
 import com.helger.as2lib.crypto.ECryptoAlgorithmSign;
-import com.helger.bdve.peppol.PeppolValidation370;
+import com.helger.bdve.peppol.PeppolValidation391;
 import com.helger.commons.debug.GlobalDebug;
 import com.helger.commons.io.resource.ClassPathResource;
 import com.helger.peppolid.IDocumentTypeIdentifier;
@@ -44,7 +44,7 @@ import com.helger.smpclient.peppol.SMPClientReadOnly;
 public final class MainAS2TestClientGHX
 {
   /** The file path to the PKCS12 key store */
-  private static final String PKCS12_CERTSTORE_PATH = "as2-client-data/client-certs.p12";
+  private static final String PKCS12_CERTSTORE_PATH = "as2-client-data/test-ap.p12";
   /** The password to open the PKCS12 key store */
   private static final String PKCS12_CERTSTORE_PASSWORD = "peppol";
   /** Your AS2 sender ID */
@@ -52,7 +52,7 @@ public final class MainAS2TestClientGHX
   /** Your AS2 sender email address */
   private static final String SENDER_EMAIL = "peppol@example.org";
   /** Your AS2 key alias in the PKCS12 key store */
-  private static final String SENDER_KEY_ALIAS = "APP_1000000004";
+  private static final String SENDER_KEY_ALIAS = "openpeppol aisbl id von pop000306";
   private static final IIdentifierFactory IF = PeppolIdentifierFactory.INSTANCE;
   /** The PEPPOL sender participant ID */
   private static final IParticipantIdentifier SENDER_PEPPOL_ID = IF.createParticipantIdentifierWithDefaultScheme ("9999:test-sender");
@@ -106,7 +106,7 @@ public final class MainAS2TestClientGHX
                                                                .setPeppolReceiverID (aReceiver)
                                                                .setPeppolDocumentTypeID (DOCTYPE)
                                                                .setPeppolProcessID (PROCESS)
-                                                               .setValidationKey (PeppolValidation370.VID_OPENPEPPOL_T10_V2)
+                                                               .setValidationKey (PeppolValidation391.VID_OPENPEPPOL_INVOICE_V3)
                                                                .sendSynchronous ();
     if (aResponse.hasException ())
       LOGGER.warn (aResponse.getAsString ());

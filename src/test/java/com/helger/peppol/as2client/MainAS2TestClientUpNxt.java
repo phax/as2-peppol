@@ -107,8 +107,7 @@ public final class MainAS2TestClientUpNxt
   /** Your AS2 sender ID */
   private static final String _getSenderAS2ID ()
   {
-    // Pro: 306 Test: 309
-    return "APP_1000000306";
+    return "PDK000270";
   }
 
   /** Your AS2 key alias in the PKCS12 key store */
