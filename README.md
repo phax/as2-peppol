@@ -1,14 +1,24 @@
 # as2-peppol-client
 
 [![Build Status](https://travis-ci.org/phax/as2-peppol-client.svg?branch=master)](https://travis-ci.org/phax/as2-peppol-client)
+
+# Status information
+
+Peppol migrated to AS4 as the mandatory transport protocol as of February 1st 2020.
+The support of AS2 will be gracefully faded out.
+Personally I wouldn't recommend to start new Peppol AS2 projects.
+
+See **phase4** as an AS4 solution that can send and receive Peppol Message: https://github.com/phax/phase4
+
+# Introduction
 ﻿
-An example AS2 client to easily send AS2 messages to PEPPOL.
+An example AS2 client to easily send AS2 messages to Peppol.
 This AS2 client is based on my **[as2-lib](https://github.com/phax/as2-lib)** library.
 
-When you are looking for a PEPPOL AS2 server component you may have a look at my **[as2-peppol-server](https://github.com/phax/as2-peppol-server)** project.
+When you are looking for a Peppol AS2 server component you may have a look at my **[as2-peppol-server](https://github.com/phax/as2-peppol-server)** project.
 
-Please have a look at the [PEPPOL practical AP guide](http://peppol.helger.com/public/?menuitem=docs-setup-ap)
-for a detailed description on how it works and how it fits in the overall PEPPOL transport infrastructure.
+Please have a look at the [Peppol practical AP guide](http://peppol.helger.com/public/?menuitem=docs-setup-ap)
+for a detailed description on how it works and how it fits in the overall Peppol transport infrastructure.
 
 This project is licensed under the Apache 2 License.
 
@@ -76,7 +86,7 @@ It depends on several other libraries so I suggest you are going for the Maven s
     * Added possibility to send a previously created SBDH (see [issue #5](https://github.com/phax/as2-peppol-client/issues/5))
     * Improved reusability of existing default values/classes in `AS2ClientBuilder`  
 * v3.0.11 - 2019-11-03
-    * Updated to ph-bdve 5.1.14 with PEPPOL validation 3.9.0
+    * Updated to ph-bdve 5.1.14 with Peppol validation 3.9.0
 * v3.0.10 - 2019-10-11
     * Updated to as2-lib 4.4.5
     * Made the usage of `DataHandler` the default, but made it customizable.
@@ -86,7 +96,7 @@ It depends on several other libraries so I suggest you are going for the Maven s
     * Updated to as2-lib 4.4.4
 * v3.0.8 - 2019-09-11
     * Updated to as2-lib 4.4.2
-    * Updated to ph-bdve 5.1.12 with PEPPOL validation 3.8.1
+    * Updated to ph-bdve 5.1.12 with Peppol validation 3.8.1
 * v3.0.7 - 2019-06-17
     * Updated to as2-lib 4.4.0
     * Updated to peppol-commons 7.0.0
@@ -96,12 +106,12 @@ It depends on several other libraries so I suggest you are going for the Maven s
     * Updated to as2-lib 4.3.0, thereby simplifying the Random topic
     * Added support for AS2 prefix "P" (as in "PDK" or "POP")
 * v3.0.5 - 2019-05-16
-    * Updated to ph-bdve 5.1.8 to support PEPPOL Spring Release 2019 validation artefacts
+    * Updated to ph-bdve 5.1.8 to support Peppol Spring Release 2019 validation artefacts
 * v3.0.4 - 2019-03-22
     * Updated to as2-lib 4.2.2
 * v3.0.3 - 2018-11-26
     * Requires ph-commons 9.2.0
-    * Includes ph-bdve 5.1.0 with PEPPOL validation 3.7.0 
+    * Includes ph-bdve 5.1.0 with Peppol validation 3.7.0 
 * v3.0.2 - 2018-06-28
     * Updated to ph-commons 9.1.2
     * Updated to as2-lib 4.1.0
@@ -123,7 +133,7 @@ It depends on several other libraries so I suggest you are going for the Maven s
 * v2.0.5 - 2017-05-23
     * Added possibility to provide a custom namespace context
 * v2.0.4 - 2017-05-18
-    * Updated to ph-bdve 3.1.0 (PEPPOL validation 3.4.0)
+    * Updated to ph-bdve 3.1.0 (Peppol validation 3.4.0)
 * v2.0.3 - 2017-03-20
     * Improved customizability of `AS2ClientBuilder`
 * v2.0.2 - 2017-03-01
