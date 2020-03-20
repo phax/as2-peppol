@@ -2,13 +2,13 @@
 
 [![Build Status](https://travis-ci.org/phax/as2-peppol-client.svg?branch=master)](https://travis-ci.org/phax/as2-peppol-client)
 
-# Status information
+# Status migration AS2 &rarr; AS4
 
-Peppol migrated to AS4 as the mandatory transport protocol as of February 1st 2020.
+Peppol migrated to AS4 as the mandatory transport protocol as of February 1<sup>st</sup>, 2020.
 The support of AS2 will be gracefully faded out.
 Personally I wouldn't recommend to start new Peppol AS2 projects.
 
-See **phase4** as an AS4 solution that can send and receive Peppol Message: https://github.com/phax/phase4
+See **phase4** as an AS4 solution that can send and receive Peppol Messages: https://github.com/phax/phase4
 
 # Introduction
 ﻿
