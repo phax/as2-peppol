@@ -132,9 +132,9 @@ public final class MainAS2TestClientSBDH
   public static void main (final String [] args) throws Exception
   {
     /** The PEPPOL document type to use. */
-    final IDocumentTypeIdentifier aDocTypeID = EPredefinedDocumentTypeIdentifier.INVOICE_T010_BIS4A_V20.getAsDocumentTypeIdentifier ();
+    final IDocumentTypeIdentifier aDocTypeID = EPredefinedDocumentTypeIdentifier.INVOICE_EN16931_PEPPOL_V30.getAsDocumentTypeIdentifier ();
     /** The PEPPOL process to use. */
-    final IProcessIdentifier aProcessID = EPredefinedProcessIdentifier.BIS4A_V2.getAsProcessIdentifier ();
+    final IProcessIdentifier aProcessID = EPredefinedProcessIdentifier.BIS3_BILLING.getAsProcessIdentifier ();
     final IParticipantIdentifier aReceiver = IF.createParticipantIdentifierWithDefaultScheme ("9915:test");
     final String sTestFilename = "xml/as2-test-at-gov.xml";
     IReadableResource aTestResource = null;
@@ -161,8 +161,7 @@ public final class MainAS2TestClientSBDH
     {
       if (StringHelper.hasText (sOutgoingDumpFilename))
       {
-        aOutgoingDumper = new HTTPOutgoingDumperFileBased (new File (sOutgoingDumpFilename)).setDumpComment (false)
-                                                                                            .setDumpHeader (false);
+        aOutgoingDumper = new HTTPOutgoingDumperFileBased (new File (sOutgoingDumpFilename)).setDumpComment (false).setDumpHeader (false);
       }
       else
       {
@@ -205,8 +204,7 @@ public final class MainAS2TestClientSBDH
     final SMPClientReadOnly aSMPClient = new SMPClientReadOnly (aSMPURI);
 
     // No proxy for local host
-    if (!aSMPClient.getSMPHostURI ().startsWith ("http://localhost") &&
-        !aSMPClient.getSMPHostURI ().startsWith ("http://127."))
+    if (!aSMPClient.getSMPHostURI ().startsWith ("http://localhost") && !aSMPClient.getSMPHostURI ().startsWith ("http://127."))
     {
       aSMPClient.httpClientSettings ().setProxyHost (aProxy);
     }
@@ -221,9 +219,7 @@ public final class MainAS2TestClientSBDH
       // 1. Read XML into memory
       final Document aXMLDocument = DOMReader.readXMLDOM (aTestResource);
       if (aXMLDocument == null)
-        throw new AS2ClientBuilderException ("Failed to read business document '" +
-                                             aTestResource.getPath () +
-                                             "' as XML");
+        throw new AS2ClientBuilderException ("Failed to read business document '" + aTestResource.getPath () + "' as XML");
 
       // 2. Validate
       final ValidationExecutorSetRegistry aVESRegistry = AS2ClientBuilder.createDefaultValidationRegistry ();

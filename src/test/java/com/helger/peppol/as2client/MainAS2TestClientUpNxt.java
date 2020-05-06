@@ -120,9 +120,9 @@ public final class MainAS2TestClientUpNxt
   public static void main (final String [] args) throws Exception
   {
     /** The PEPPOL document type to use. */
-    final IDocumentTypeIdentifier aDocTypeID = EPredefinedDocumentTypeIdentifier.INVOICE_T010_BIS4A_V20.getAsDocumentTypeIdentifier ();
+    final IDocumentTypeIdentifier aDocTypeID = EPredefinedDocumentTypeIdentifier.INVOICE_EN16931_PEPPOL_V30.getAsDocumentTypeIdentifier ();
     /** The PEPPOL process to use. */
-    final IProcessIdentifier aProcessID = EPredefinedProcessIdentifier.BIS4A_V2.getAsProcessIdentifier ();
+    final IProcessIdentifier aProcessID = EPredefinedProcessIdentifier.BIS3_BILLING.getAsProcessIdentifier ();
     final IParticipantIdentifier aReceiver = IF.createParticipantIdentifierWithDefaultScheme ("9915:test");
     final IReadableResource aTestResource = new ClassPathResource ("xml/si/a1_extended.xml");
     final String sReceiverID = _getSenderAS2ID ();
@@ -159,8 +159,7 @@ public final class MainAS2TestClientUpNxt
     final SMPClientReadOnly aSMPClient = new SMPClientReadOnly (aSMPURI);
 
     // No proxy for local host
-    if (!aSMPClient.getSMPHostURI ().startsWith ("http://localhost") &&
-        !aSMPClient.getSMPHostURI ().startsWith ("http://127."))
+    if (!aSMPClient.getSMPHostURI ().startsWith ("http://localhost") && !aSMPClient.getSMPHostURI ().startsWith ("http://127."))
     {
       aSMPClient.httpClientSettings ().setProxyHost (aProxy);
     }

@@ -59,9 +59,9 @@ public final class MainAS2TestClientEcosio
   /** The PEPPOL sender participant ID */
   private static final IParticipantIdentifier SENDER_PEPPOL_ID = IF.createParticipantIdentifierWithDefaultScheme ("9999:test-sender");
   /** The PEPPOL document type to use. */
-  private static final IDocumentTypeIdentifier DOCTYPE = EPredefinedDocumentTypeIdentifier.INVOICE_T010_BIS4A_V20.getAsDocumentTypeIdentifier ();
+  private static final IDocumentTypeIdentifier DOCTYPE = EPredefinedDocumentTypeIdentifier.INVOICE_EN16931_PEPPOL_V30.getAsDocumentTypeIdentifier ();
   /** The PEPPOL process to use. */
-  private static final IProcessIdentifier PROCESS = EPredefinedProcessIdentifier.BIS4A_V2.getAsProcessIdentifier ();
+  private static final IProcessIdentifier PROCESS = EPredefinedProcessIdentifier.BIS3_BILLING.getAsProcessIdentifier ();
 
   private static final Logger LOGGER = LoggerFactory.getLogger (MainAS2TestClientEcosio.class);
 

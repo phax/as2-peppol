@@ -84,9 +84,9 @@ public final class MainAS2TestClientMultipleLocalHost
   public static void main (final String [] args) throws Exception
   {
     /** The PEPPOL document type to use. */
-    final IDocumentTypeIdentifier aDocTypeID = EPredefinedDocumentTypeIdentifier.INVOICE_T010_BIS4A_V20.getAsDocumentTypeIdentifier ();
+    final IDocumentTypeIdentifier aDocTypeID = EPredefinedDocumentTypeIdentifier.INVOICE_EN16931_PEPPOL_V30.getAsDocumentTypeIdentifier ();
     /** The PEPPOL process to use. */
-    final IProcessIdentifier aProcessID = EPredefinedProcessIdentifier.BIS4A_V2.getAsProcessIdentifier ();
+    final IProcessIdentifier aProcessID = EPredefinedProcessIdentifier.BIS3_BILLING.getAsProcessIdentifier ();
     IParticipantIdentifier aReceiver = null;
     String sTestFilename = null;
     IReadableResource aTestResource = null;
@@ -118,8 +118,7 @@ public final class MainAS2TestClientMultipleLocalHost
                                                          : new SMPClientReadOnly (URL_PROVIDER, aReceiver, aSML);
 
     // No proxy for local host
-    if (!aSMPClient.getSMPHostURI ().startsWith ("http://localhost") &&
-        !aSMPClient.getSMPHostURI ().startsWith ("http://127."))
+    if (!aSMPClient.getSMPHostURI ().startsWith ("http://localhost") && !aSMPClient.getSMPHostURI ().startsWith ("http://127."))
     {
       aSMPClient.httpClientSettings ().setProxyHost (aProxy);
     }
