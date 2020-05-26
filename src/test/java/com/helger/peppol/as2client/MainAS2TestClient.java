@@ -35,7 +35,7 @@ import com.helger.as2lib.util.dump.HTTPOutgoingDumperStreamBased;
 import com.helger.as2lib.util.dump.IHTTPOutgoingDumper;
 import com.helger.as2lib.util.http.HTTPHelper;
 import com.helger.bdve.executorset.VESID;
-import com.helger.bdve.peppol.PeppolValidation391;
+import com.helger.bdve.peppol.PeppolValidation3_10_0;
 import com.helger.bdve.result.ValidationResult;
 import com.helger.commons.CGlobal;
 import com.helger.commons.debug.GlobalDebug;
@@ -158,7 +158,7 @@ public final class MainAS2TestClient
       aReceiver = IF.createParticipantIdentifierWithDefaultScheme ("9915:test");
       sTestFilename = "xml/as2-test-at-gov.xml";
       aSML = ESML.DIGIT_TEST;
-      aValidationKey = PeppolValidation391.VID_OPENPEPPOL_INVOICE_V3;
+      aValidationKey = PeppolValidation3_10_0.VID_OPENPEPPOL_INVOICE_V3;
       bDebugOutgoing = true;
       if (true)
         eCTE = EContentTransferEncoding.BASE64;
@@ -392,8 +392,7 @@ public final class MainAS2TestClient
     {
       if (StringHelper.hasText (sOutgoingDumpFilename))
       {
-        aOutgoingDumper = new HTTPOutgoingDumperFileBased (new File (sOutgoingDumpFilename)).setDumpComment (false)
-                                                                                            .setDumpHeader (false);
+        aOutgoingDumper = new HTTPOutgoingDumperFileBased (new File (sOutgoingDumpFilename)).setDumpComment (false).setDumpHeader (false);
       }
       else
       {
@@ -436,8 +435,7 @@ public final class MainAS2TestClient
     final SMPClientReadOnly aSMPClient = new SMPClientReadOnly (aSMPURI);
 
     // No proxy for local host
-    if (!aSMPClient.getSMPHostURI ().startsWith ("http://localhost") &&
-        !aSMPClient.getSMPHostURI ().startsWith ("http://127."))
+    if (!aSMPClient.getSMPHostURI ().startsWith ("http://localhost") && !aSMPClient.getSMPHostURI ().startsWith ("http://127."))
     {
       aSMPClient.setProxy (aProxy);
     }
