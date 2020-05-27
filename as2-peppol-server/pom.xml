@@ -150,6 +150,8 @@
         <targetPath>${project.build.directory}/test-classes</targetPath>
       </resource>
     </resources>
+    <!-- Leave out "-${version}" for Docker -->
+    <finalName>${artifactId}</finalName>
     
     <plugins>
       <plugin>
@@ -176,6 +178,7 @@
             <webInfIncludeJarPattern>.*/^(asm-all-repackaged)[^/]*\.jar$</webInfIncludeJarPattern>
           </webApp>
         </configuration>
+        <!--
         <dependencies>
           <dependency>
             <groupId>org.ow2.asm</groupId>
@@ -188,6 +191,7 @@
             <version>8.0.1</version>
           </dependency>
         </dependencies>
+      -->
       </plugin>
     </plugins>
   </build>

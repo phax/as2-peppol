@@ -26,3 +26,5 @@ as2-in-*/
 as2-out-*/
 *.dump
 jetty-log/
+private-*.properties
+zz
