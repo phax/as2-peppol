@@ -153,7 +153,7 @@ This approach is useful if you need just run the reference implementation agains
 
 The prebuild Dockerfile builds the WAR and runs it in Jetty.
 
-Build like this: `docker --pull build -t as2-peppol-server .`
+Build like this: `docker build --pull -t as2-peppol-server .`
 
 Run like this: `docker run -d --name as2-peppol-server -p 8888:8080 as2-peppol-server`
 

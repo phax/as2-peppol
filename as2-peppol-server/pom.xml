@@ -38,20 +38,6 @@
       <distribution>repo</distribution>
     </license>
   </licenses>
-
-  <organization>
-    <name>Philip Helger</name>
-    <url>http://www.helger.com</url>
-  </organization>
-
-  <developers>
-    <developer>
-      <id>philip</id>
-      <name>Philip Helger</name>
-      <email>ph(at)helger.com</email>
-      <url>http://www.helger.com</url>
-    </developer>
-  </developers>
   
   <properties>
     <m2e.jaxrs.activation>false</m2e.jaxrs.activation>
@@ -60,7 +46,7 @@
     <!-- Don't forget to update the Dockerfile when changing something here -->
     <jetty.version>9.4.29.v20200521</jetty.version>
   </properties>
-
+  
   <dependencies>
     <dependency>
       <groupId>com.helger</groupId>

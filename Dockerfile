@@ -16,9 +16,14 @@
 #
 
 FROM maven:3.6-jdk-8-alpine
-WORKDIR /as2-peppol-server
-COPY pom.xml /as2-peppol-server/pom.xml
-COPY src /as2-peppol-server/src
+WORKDIR /as2-peppol
+
+# Parent POM
+COPY pom.xml /as2-peppol/pom.xml
+
+# Server POM
+COPY as2-peppol-server/pom.xml /as2-peppol/server/pom.xml
+COPY as2-peppol-server/src /as2-peppol/server/src
 VOLUME [ "/var/www/peppol-as2/receive", "/var/www/peppol-as2/send", "/var/www/peppol-as2/data" ]
 EXPOSE 8080
 
@@ -35,7 +40,7 @@ RUN apk add openssh
 #         - aliasname must match to the certificate CN (Common Name)
 #         - key store password shall be 'peppol'
 #         - keystore filename shall be 'test-client-certs.p12' to work with "as2-peppol-client"
-WORKDIR /as2-peppol-server/src/main/resources/keystore
+WORKDIR /as2-peppol/server/src/main/resources/keystore
 RUN openssl req \
     -new \
     -newkey rsa:2048 \
@@ -47,14 +52,21 @@ RUN openssl x509 -signkey my-private.key -in my-certificate.csr -req -days 365 -
 RUN openssl pkcs12 -export -in my-certificate.cer -inkey my-private.key \
     -out ap.pilot.p12 -passout pass:peppol -name ap.pilot
 
-# building step
-WORKDIR /as2-peppol-server
 
-# NOTE: in maven Docker image default Maven repository location is configured as a volume 
+# NOTE: in Maven Docker image default Maven repository location is configured as a volume 
 # so anything copied there in a Dockerfile at build time is lost in /root/.m2/repository
 # To preserve the project dependencies in the image we use special Maven settings
 # for details see https://hub.docker.com/_/maven/
-RUN mvn -B -s /usr/share/maven/ref/settings-docker.xml package -DskipTests=true
+
+# building step 1
+WORKDIR /as2-peppol
+# Use "-N" to avoid submodules are build
+RUN mvn -B -s /usr/share/maven/ref/settings-docker.xml install -DskipTests=true -N
+
+# building step 2
+WORKDIR /as2-peppol/server
+# Use "-U" for SNAPSHOTs
+RUN mvn -B -s /usr/share/maven/ref/settings-docker.xml package -DskipTests=true -U
 
 RUN mvn jetty:deploy-war
 

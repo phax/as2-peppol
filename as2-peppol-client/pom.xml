@@ -38,20 +38,6 @@
       <distribution>repo</distribution>
     </license>
   </licenses>
-
-  <organization>
-    <name>Philip Helger</name>
-    <url>http://www.helger.com</url>
-  </organization>
-
-  <developers>
-    <developer>
-      <id>philip</id>
-      <name>Philip Helger</name>
-      <email>ph(at)helger.com</email>
-      <url>http://www.helger.com</url>
-    </developer>
-  </developers>
   
   <dependencies>
     <dependency>
