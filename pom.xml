@@ -24,12 +24,13 @@
     <artifactId>parent-pom</artifactId>
     <version>1.11.1</version>
   </parent>
-  <artifactId>as2-peppol-client</artifactId>
-  <version>3.3.3-SNAPSHOT</version>
-  <name>as2-peppol-client</name>
-  <packaging>bundle</packaging>
-  <description>A simple AS2 client to send PEPPOL messages</description>
-  <url>https://github.com/phax/as2-peppol-client</url>
+  <groupId>com.helger.peppol</groupId>
+  <artifactId>as2-peppol-parent-pom</artifactId>
+  <version>5.4.0-SNAPSHOT</version>
+  <name>as2-peppol-parent-pom</name>
+  <packaging>pom</packaging>
+  <description>The Peppol AS2 package</description>
+  <url>https://github.com/phax/as2-peppol</url>
   <inceptionYear>2014</inceptionYear>
 
   <licenses>
@@ -41,9 +42,9 @@
   </licenses>
 
   <scm>
-    <connection>scm:git:git@github.com:phax/as2-peppol-client.git</connection>
-    <developerConnection>scm:git:git@github.com:phax/as2-peppol-client.git</developerConnection>
-    <url>http://github.com/phax/as2-peppol-client</url>
+    <connection>scm:git:git@github.com:phax/as2-peppol.git</connection>
+    <developerConnection>scm:git:git@github.com:phax/as2-peppol.git</developerConnection>
+    <url>http://github.com/phax/as2-peppol</url>
     <tag>HEAD</tag>
   </scm>
 
@@ -87,7 +88,7 @@
       <dependency>
         <groupId>com.helger.as2</groupId>
         <artifactId>as2-lib-parent-pom</artifactId>
-        <version>4.6.0-SNAPSHOT</version>
+        <version>4.6.0</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
@@ -106,89 +107,44 @@
         <scope>import</scope>
       </dependency>
       <dependency>
+        <groupId>com.helger.photon</groupId>
+        <artifactId>ph-oton-parent-pom</artifactId>
+        <version>8.2.5</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+      <dependency>
         <groupId>com.helger.bdve</groupId>
         <artifactId>ph-bdve-parent-pom</artifactId>
         <version>5.3.0</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
+
+      <dependency>
+        <groupId>com.helger.peppol</groupId>
+        <artifactId>as2-peppol-client</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.helger.peppol</groupId>
+        <artifactId>as2-peppol-servlet</artifactId>
+        <version>${project.version}</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 
   <dependencies>
     <dependency>
-      <groupId>com.helger</groupId>
-      <artifactId>ph-commons</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.helger.as2</groupId>
-      <artifactId>as2-lib</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.helger.peppol</groupId>
-      <artifactId>peppol-sbdh</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.helger.peppol</groupId>
-      <artifactId>peppol-smp-client</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.helger.bdve</groupId>
-      <artifactId>ph-bdve-peppol</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>javax.servlet-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>dnsjava</groupId>
-      <artifactId>dnsjava</artifactId>
-    </dependency>
-   
-    <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <scope>test</scope>
     </dependency>
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-simple</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.helger.bdve</groupId>
-      <artifactId>ph-bdve-simplerinvoicing</artifactId>
-      <scope>test</scope>
-    </dependency>
   </dependencies>
 
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.felix</groupId>
-        <artifactId>maven-bundle-plugin</artifactId>
-        <extensions>true</extensions>
-        <configuration>
-          <instructions>
-            <Automatic-Module-Name>com.helger.peppol.as2client</Automatic-Module-Name>
-            <Export-Package>com.helger.peppol.as2client.*</Export-Package>
-            <Import-Package>!javax.annotation.*,*</Import-Package>
-          </instructions>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>com.mycila</groupId>
-        <artifactId>license-maven-plugin</artifactId>
-        <configuration>
-          <excludes>
-            <exclude>src/test/resources/xml/**</exclude>
-            <exclude>as2-client-data/**</exclude>
-            <exclude>**/LICENSE</exclude>
-            <exclude>**/NOTICE</exclude>
-            <exclude>**/*.txt</exclude>
-          </excludes>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
+  <modules>
+    <module>as2-peppol-client</module>
+    <module>as2-peppol-servlet</module>
+    <module>as2-peppol-server</module>
+  </modules>
 </project>

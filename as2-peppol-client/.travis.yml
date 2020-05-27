@@ -1,0 +1,42 @@
+dist: xenial
+language: java
+
+env:
+  global:
+    - SONATYPE_USERNAME=ph@phloc.com
+    - secure: "QTfHeFGGh4WqAMJmp0EDBug08772f3Eeu85hanCj9lcG6JhFjniTpzBpZB21QxGJav2/RDrjaUciT0KJKIf+Gu3/y
+hmiHXiRlX9rQ3W2eWuz5wK0mlHHfBrL23ouiC9zyFE012rBo67dEdjX1hXl7W9UdcW+83nvBJEgSbfMAmaPuR5PxmV5tbvsxHqcX
+fJRxz1CKgLC3vPwY8DJTb2hnSEDwKmSk88i6uLM7sFVKB/QI2q4Z5tQ64NuA/pbmdEBrlC6rXuRO6CV180RQbsIvn0RZMlgny5ak
+FUSiUextom6HGHkdAIfuwT1UyNS2354L40ZfDFm5xiuC/zvfqspfVGEBxp7YnBAhfokqoa4IWgT48eGSsq6SLFY00HJ2NRHAY+hL
+nTqMj6YSKdzrLIR4KYT13FE94HWpxbuekSGAmuQ7jGo+ApEjJ4ODtbLeWv7dCa+WY3wC8iNQld2+ahB5Hy3m6kQyDdP1Dy7Kj5Zp
+eAriiU10lJxUUHBaY+MzJiF8Pl2Wld5DHGvyyaArE29B/xlH5MriCtTsS60F6MS9GH3TRxWyc+oQGfDUM43wHmIoRIQHgOduHzud
+MtmU9SLvpL8v2yqvW28zjV5zRt+LZ0wbW/H0ElqjkmZLz/d8Yb7Z8CYDbWpY72BSDIY2wRyKIqO4+2dOPB7+zdIevCUlXI="
+  
+install:
+  - mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V -U
+  
+cache:
+  directories:
+    - $HOME/.m2
+
+branches:
+  only:
+    - master
+
+jobs:
+  include:
+    - stage: test
+      jdk: openjdk8
+      script:
+        - mvn test -B -P coverage
+      after_success:
+        - mvn deploy --settings travis-settings.xml -DskipTests=true -B -P travis-deploy
+        - bash <(curl -s https://codecov.io/bash)
+    - stage: test
+      jdk: openjdk11
+      script:
+        - mvn test -B
+    - stage: test
+      jdk: openjdk14
+      script:
+        - mvn test -B
