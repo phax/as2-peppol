@@ -34,7 +34,7 @@ RUN apk add openssh
 #     * AS2 client uses predefined names for the following items:
 #         - aliasname must match to the certificate CN (Common Name)
 #         - key store password shall be 'peppol'
-#         - keystore filename shall be 'test-client-certs.p12' to work with [as2-peppol-client](https://github.com/phax/as2-peppol-client)
+#         - keystore filename shall be 'test-client-certs.p12' to work with "as2-peppol-client"
 WORKDIR /as2-peppol-server/src/main/resources/keystore
 RUN openssl req \
     -new \

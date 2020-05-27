@@ -32,8 +32,6 @@ import com.helger.peppolid.IParticipantIdentifier;
 import com.helger.peppolid.IProcessIdentifier;
 import com.helger.peppolid.factory.IIdentifierFactory;
 import com.helger.peppolid.factory.PeppolIdentifierFactory;
-import com.helger.peppolid.peppol.doctype.EPredefinedDocumentTypeIdentifier;
-import com.helger.peppolid.peppol.process.EPredefinedProcessIdentifier;
 import com.helger.security.keystore.EKeyStoreType;
 import com.helger.smpclient.config.SMPClientConfiguration;
 import com.helger.smpclient.peppol.SMPClientReadOnly;
@@ -59,9 +57,9 @@ public final class MainAS2TestClientEcosio
   /** The PEPPOL sender participant ID */
   private static final IParticipantIdentifier SENDER_PEPPOL_ID = IF.createParticipantIdentifierWithDefaultScheme ("9999:test-sender");
   /** The PEPPOL document type to use. */
-  private static final IDocumentTypeIdentifier DOCTYPE = EPredefinedDocumentTypeIdentifier.INVOICE_EN16931_PEPPOL_V30.getAsDocumentTypeIdentifier ();
+  private static final IDocumentTypeIdentifier DOCTYPE = IF.createDocumentTypeIdentifierWithDefaultScheme ("urn:oasis:names:specification:ubl:schema:xsd:Invoice-2::Invoice##urn:www.cenbii.eu:transaction:biitrns010:ver2.0:extended:urn:www.peppol.eu:bis:peppol4a:ver2.0::2.1");
   /** The PEPPOL process to use. */
-  private static final IProcessIdentifier PROCESS = EPredefinedProcessIdentifier.BIS3_BILLING.getAsProcessIdentifier ();
+  private static final IProcessIdentifier PROCESS = IF.createProcessIdentifierWithDefaultScheme ("urn:www.cenbii.eu:profile:bii04:ver2.0");
 
   private static final Logger LOGGER = LoggerFactory.getLogger (MainAS2TestClientEcosio.class);
 

@@ -28,3 +28,5 @@ as2-out-*/
 jetty-log/
 private-*.properties
 zz
+*.p12
+*.jks

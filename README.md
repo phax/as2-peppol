@@ -44,7 +44,7 @@ It depends on several other libraries so I suggest you are going for the Maven s
 
 AS2 client to easily send AS2 messages to Peppol.
 
-When you are looking for a Peppol AS2 server component you may have a look at my **[as2-peppol-server](https://github.com/phax/as2-peppol-server)** project.
+When you are looking for a Peppol AS2 server component you may have a look at **as2-peppol-server** module.
 
 Please have a look at the [Peppol practical AP guide](http://peppol.helger.com/public/?menuitem=docs-setup-ap)
 for a detailed description on how it works and how it fits in the overall Peppol transport infrastructure.
@@ -82,7 +82,7 @@ https.proxyPort=8080
 ﻿
 A stand alone servlet that takes AS2 requests with Peppol StandardBusinessDocuments and handles them via SPI. This is not a self-contained package, but a good starting point for handling Peppol AS2 messages.
 
-An example application that uses *as2-peppol-servlet* for receiving Peppol AS2 messages is my **[as2-peppol-server](https://github.com/phax/as2-peppol-server)** project. It may serve as a practical starting point.
+An example application that uses *as2-peppol-servlet* for receiving Peppol AS2 messages is my **as2-peppol-server** project. It may serve as a practical starting point.
 
 This package depends on **[ph-commons](https://github.com/phax/ph-commons)**, **[ph-sbdh](https://github.com/phax/ph-sbdh)**, **[as2-lib and as2-servlet](https://github.com/phax/as2-lib)**. This transitively includes Bouncy Castle (1.64) and javax.mail (1.6.4) among other libraries.
 
@@ -101,7 +101,7 @@ To use this project you have to do the following:
 
 SPI stands for "Service provider interface" and is a Java standard feature to enable loose but typed coupling. [Read more on SPI](http://docs.oracle.com/javase/tutorial/ext/basics/spi.html)
 
-A [dummy SPI implementation](https://github.com/phax/as2-peppol-servlet/blob/master/src/test/java/com/helger/peppol/as2servlet/mock/MockIncomingSBDHandler.java) is contained in the test code of this project. Additionally you need to create a file `META-INF/services/com.helger.peppol.as2servlet.IAS2IncomingSBDHandlerSPI` (in the `src/main/resources/` folder when using Maven) which contains a single line referencing the implementation class. An [example file](https://github.com/phax/as2-peppol-servlet/blob/master/src/test/resources/META-INF/services/com.helger.peppol.as2servlet.IAS2IncomingSBDHandlerSPI) is located in the test resources of this project.
+A [dummy SPI implementation](https://github.com/phax/as2-peppol/blob/master/as2-peppol-servlet/src/test/java/com/helger/peppol/as2servlet/mock/MockIncomingSBDHandler.java) is contained in the test code of this project. Additionally you need to create a file `META-INF/services/com.helger.peppol.as2servlet.IAS2IncomingSBDHandlerSPI` (in the `src/main/resources/` folder when using Maven) which contains a single line referencing the implementation class. An [example file](https://github.com/phax/as2-peppol/blob/master/as2-peppol-servlet/src/test/resources/META-INF/services/com.helger.peppol.as2servlet.IAS2IncomingSBDHandlerSPI) is located in the test resources of this project.
 
 ### Known issues
 

@@ -98,7 +98,7 @@ public final class PeppolAS2HtmlProvider extends AbstractHTMLProvider
                                                    .setTargetBlank ()
                                                    .addChild ("@PhilipHelger"))
                               .addChild (" - ")
-                              .addChild (new HCA ().setHref (new SimpleURL ("https://github.com/phax/as2-peppol-server"))
+                              .addChild (new HCA ().setHref (new SimpleURL ("https://github.com/phax/as2-peppol"))
                                                    .setTargetBlank ()
                                                    .addChild ("GitHub project")));
   }

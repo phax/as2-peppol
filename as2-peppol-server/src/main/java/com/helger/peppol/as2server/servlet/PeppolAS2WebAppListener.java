@@ -93,11 +93,7 @@ public final class PeppolAS2WebAppListener extends WebAppListener
     else
     {
       if (LOGGER.isDebugEnabled ())
-        LOGGER.debug ("Special PEPPOL AS2 folder '" +
-                         aPath.getAbsolutePath () +
-                         "' for " +
-                         sWhat +
-                         " already exists!");
+        LOGGER.debug ("Special PEPPOL AS2 folder '" + aPath.getAbsolutePath () + "' for " + sWhat + " already exists!");
     }
   }
 
@@ -115,7 +111,7 @@ public final class PeppolAS2WebAppListener extends WebAppListener
     VendorInfo.setVendorName ("Philip Helger");
     VendorInfo.setInceptionYear (2015);
     VendorInfo.setVendorEmail ("as2-peppol-server@helger.com");
-    VendorInfo.setVendorURL ("https://github.com/phax/as2-peppol-server");
+    VendorInfo.setVendorURL ("https://github.com/phax/as2-peppol");
     VendorInfo.setVendorLocation ("Vienna");
 
     _checkSettings ();
@@ -135,8 +131,7 @@ public final class PeppolAS2WebAppListener extends WebAppListener
     }
 
     PhotonGlobalState.removeAllApplicationServletPathMappings ();
-    PhotonGlobalState.state (CApplicationID.APP_ID_SECURE)
-                     .setServletPath (AbstractSecureApplicationServlet.SERVLET_DEFAULT_PATH);
+    PhotonGlobalState.state (CApplicationID.APP_ID_SECURE).setServletPath (AbstractSecureApplicationServlet.SERVLET_DEFAULT_PATH);
     PhotonGlobalState.getInstance ().setDefaultApplicationID (CApplicationID.APP_ID_SECURE);
   }
 
@@ -160,13 +155,11 @@ public final class PeppolAS2WebAppListener extends WebAppListener
     // Check keystore configuration
     APKeyManager.reloadFromConfiguration ();
     if (!APKeyManager.isCertificateValid ())
-      throw new InitializationException ("AP key store initialization errors: " +
-                                         APKeyManager.getInitializationError ());
+      throw new InitializationException ("AP key store initialization errors: " + APKeyManager.getInitializationError ());
 
     // Check truststore configuration
     APTrustManager.reloadFromConfiguration ();
     if (!APTrustManager.isCertificateValid ())
-      throw new InitializationException ("AP trust store initialization errors: " +
-                                         APTrustManager.getInitializationError ());
+      throw new InitializationException ("AP trust store initialization errors: " + APTrustManager.getInitializationError ());
   }
 }
