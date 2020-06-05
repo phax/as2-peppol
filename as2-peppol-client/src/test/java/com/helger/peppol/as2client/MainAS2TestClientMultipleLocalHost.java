@@ -25,9 +25,9 @@ import org.slf4j.LoggerFactory;
 
 import com.helger.as2lib.client.AS2ClientResponse;
 import com.helger.as2lib.crypto.ECryptoAlgorithmSign;
-import com.helger.bdve.executorset.VESID;
+import com.helger.bdve.api.executorset.VESID;
+import com.helger.bdve.api.result.ValidationResult;
 import com.helger.bdve.peppol.PeppolValidation3_10_0;
-import com.helger.bdve.result.ValidationResult;
 import com.helger.commons.debug.GlobalDebug;
 import com.helger.commons.io.resource.ClassPathResource;
 import com.helger.commons.io.resource.IReadableResource;

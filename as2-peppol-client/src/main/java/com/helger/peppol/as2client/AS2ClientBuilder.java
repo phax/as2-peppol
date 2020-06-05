@@ -23,7 +23,6 @@ import java.nio.charset.StandardCharsets;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.time.LocalDateTime;
-import java.util.Locale;
 import java.util.UUID;
 import java.util.function.Consumer;
 
@@ -49,13 +48,14 @@ import com.helger.as2lib.disposition.DispositionOptions;
 import com.helger.as2lib.util.dump.IHTTPIncomingDumper;
 import com.helger.as2lib.util.dump.IHTTPOutgoingDumper;
 import com.helger.as2lib.util.dump.IHTTPOutgoingDumperFactory;
-import com.helger.bdve.execute.ValidationExecutionManager;
-import com.helger.bdve.executorset.IValidationExecutorSet;
-import com.helger.bdve.executorset.VESID;
-import com.helger.bdve.executorset.ValidationExecutorSetRegistry;
+import com.helger.bdve.api.execute.ValidationExecutionManager;
+import com.helger.bdve.api.executorset.IValidationExecutorSet;
+import com.helger.bdve.api.executorset.VESID;
+import com.helger.bdve.api.executorset.ValidationExecutorSetRegistry;
+import com.helger.bdve.api.result.ValidationResultList;
+import com.helger.bdve.engine.source.IValidationSourceXML;
+import com.helger.bdve.engine.source.ValidationSourceXML;
 import com.helger.bdve.peppol.PeppolValidation;
-import com.helger.bdve.result.ValidationResultList;
-import com.helger.bdve.source.ValidationSource;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.annotation.OverrideOnDemand;
@@ -219,7 +219,7 @@ public class AS2ClientBuilder
   private IConsumer <byte []> m_aSBDHBytesConsumer;
   private EContentTransferEncoding m_eCTE = EContentTransferEncoding.AS2_DEFAULT;
   private IAS2ClientBuilderValidatonResultHandler m_aValidationResultHandler = DEFAULT_VALIDATION_RESULT_HANDLER;
-  private transient ValidationExecutorSetRegistry m_aVESRegistry;
+  private transient ValidationExecutorSetRegistry <IValidationSourceXML> m_aVESRegistry;
   private IHTTPOutgoingDumperFactory m_aHttpOutgoingDumperFactory;
   private IHTTPIncomingDumper m_aHttpIncomingDumper;
   private boolean m_bUseDataHandler = DEFAULT_USE_DATA_HANDLER;
@@ -1128,9 +1128,7 @@ public class AS2ClientBuilder
                                             "' and process ID '" +
                                             m_aPeppolProcessID.getURIEncoded () +
                                             "' using transport profiles '" +
-                                            StringHelper.getImplodedMapped (", ",
-                                                                            m_aTransportProfiles,
-                                                                            ISMPTransportProfile::getID) +
+                                            StringHelper.getImplodedMapped (", ", m_aTransportProfiles, ISMPTransportProfile::getID) +
                                             ". " +
                                             (aServiceMetadata != null ? "The service metadata was gathered successfully but no endpoint was found."
                                                                       : "Failed to get the service metadata."));
@@ -1208,9 +1206,7 @@ public class AS2ClientBuilder
     if (m_aKeyStoreFile != null)
     {
       if (!m_aKeyStoreFile.exists ())
-        m_aMessageHandler.error ("The provided AS2 key store file '" +
-                                 m_aKeyStoreFile.getAbsolutePath () +
-                                 "' does not exist.");
+        m_aMessageHandler.error ("The provided AS2 key store file '" + m_aKeyStoreFile.getAbsolutePath () + "' does not exist.");
       else
         if (!m_aKeyStoreFile.isFile ())
           m_aMessageHandler.error ("The provided AS2 key store file '" +
@@ -1246,9 +1242,7 @@ public class AS2ClientBuilder
       m_aMessageHandler.error ("The AS2 sender email address is missing");
     else
       if (!EmailAddressHelper.isValid (m_sSenderAS2Email))
-        m_aMessageHandler.warn ("The AS2 sender email address '" +
-                                m_sSenderAS2Email +
-                                "' seems to be an invalid email address.");
+        m_aMessageHandler.warn ("The AS2 sender email address '" + m_sSenderAS2Email + "' seems to be an invalid email address.");
 
     if (StringHelper.hasNoText (m_sSenderAS2KeyAlias))
       m_aMessageHandler.error ("The AS2 sender key alias is missing");
@@ -1315,9 +1309,7 @@ public class AS2ClientBuilder
         m_aMessageHandler.error ("The XML business document to be send is missing.");
       else
         if (m_aBusinessDocumentRes != null && !m_aBusinessDocumentRes.exists ())
-          m_aMessageHandler.error ("The XML business document to be send '" +
-                                   m_aBusinessDocumentRes.getPath () +
-                                   "' does not exist.");
+          m_aMessageHandler.error ("The XML business document to be send '" + m_aBusinessDocumentRes.getPath () + "' does not exist.");
     }
 
     if (m_aPeppolSenderID == null)
@@ -1348,9 +1340,7 @@ public class AS2ClientBuilder
       m_aMessageHandler.error ("The Peppol process ID is missing");
     else
       if (!m_aPeppolProcessID.hasScheme (PeppolIdentifierHelper.DEFAULT_PROCESS_SCHEME))
-        m_aMessageHandler.warn ("The Peppol process ID '" +
-                                m_aPeppolProcessID.getURIEncoded () +
-                                "' is using a non-standard scheme!");
+        m_aMessageHandler.warn ("The Peppol process ID '" + m_aPeppolProcessID.getURIEncoded () + "' is using a non-standard scheme!");
 
     if (bSendBusinessDocument)
     {
@@ -1389,9 +1379,9 @@ public class AS2ClientBuilder
    * @since 3.1.0
    */
   @Nonnull
-  public static ValidationExecutorSetRegistry createDefaultValidationRegistry ()
+  public static ValidationExecutorSetRegistry <IValidationSourceXML> createDefaultValidationRegistry ()
   {
-    final ValidationExecutorSetRegistry aVESRegistry = new ValidationExecutorSetRegistry ();
+    final ValidationExecutorSetRegistry <IValidationSourceXML> aVESRegistry = new ValidationExecutorSetRegistry <> ();
     PeppolValidation.initStandard (aVESRegistry);
     PeppolValidation.initThirdParty (aVESRegistry);
     return aVESRegistry;
@@ -1411,7 +1401,7 @@ public class AS2ClientBuilder
    */
   @OverrideOnDemand
   @Nonnull
-  protected ValidationExecutorSetRegistry createValidationRegistry ()
+  protected ValidationExecutorSetRegistry <IValidationSourceXML> createValidationRegistry ()
   {
     return createDefaultValidationRegistry ();
   }
@@ -1432,20 +1422,17 @@ public class AS2ClientBuilder
    *         on the result handler
    * @since 3.1.0
    */
-  public static void validateBusinessDocument (@Nonnull final ValidationExecutorSetRegistry aVESRegistry,
+  public static void validateBusinessDocument (@Nonnull final ValidationExecutorSetRegistry <IValidationSourceXML> aVESRegistry,
                                                @Nonnull final VESID aVESID,
                                                @Nonnull final IAS2ClientBuilderValidatonResultHandler aValidationResultHandler,
                                                @Nonnull final Element aXML) throws AS2ClientBuilderException
   {
-    final IValidationExecutorSet aVES = aVESRegistry.getOfID (aVESID);
+    final IValidationExecutorSet <IValidationSourceXML> aVES = aVESRegistry.getOfID (aVESID);
     if (aVES == null)
-      throw new AS2ClientBuilderException ("The validation executor set ID " +
-                                           aVESID.getAsSingleID () +
-                                           " is unknown!");
+      throw new AS2ClientBuilderException ("The validation executor set ID " + aVESID.getAsSingleID () + " is unknown!");
 
-    final ValidationExecutionManager aVEM = aVES.createExecutionManager ();
-    final ValidationResultList aValidationResult = aVEM.executeValidation (ValidationSource.create (null, aXML),
-                                                                           (Locale) null);
+    final ValidationResultList aValidationResult = ValidationExecutionManager.executeValidation (aVES,
+                                                                                                 ValidationSourceXML.create (null, aXML));
     if (aValidationResult.containsAtLeastOneError ())
     {
       aValidationResultHandler.onValidationErrors (aValidationResult);
@@ -1523,8 +1510,7 @@ public class AS2ClientBuilder
     aData.setDocumentIdentification (aPayloadElement.getNamespaceURI (),
                                      StringHelper.hasText (sUBLVersion) ? sUBLVersion : CPeppolSBDH.TYPE_VERSION_21,
                                      aPayloadElement.getLocalName (),
-                                     StringHelper.hasText (sInstanceIdentifier) ? sInstanceIdentifier
-                                                                                : UUID.randomUUID ().toString (),
+                                     StringHelper.hasText (sInstanceIdentifier) ? sInstanceIdentifier : UUID.randomUUID ().toString (),
                                      PDTFactory.getCurrentLocalDateTime ());
     aData.setBusinessMessage (aPayloadElement);
     return new PeppolSBDHDocumentWriter ().createStandardBusinessDocument (aData);
@@ -1598,9 +1584,7 @@ public class AS2ClientBuilder
     aAS2ClientSettings.setReceiverCertificate (m_aReceiverCert);
 
     // AS2 stuff - no need to change anything in this block
-    aAS2ClientSettings.setPartnershipName (aAS2ClientSettings.getSenderAS2ID () +
-                                           "-" +
-                                           aAS2ClientSettings.getReceiverAS2ID ());
+    aAS2ClientSettings.setPartnershipName (aAS2ClientSettings.getSenderAS2ID () + "-" + aAS2ClientSettings.getReceiverAS2ID ());
     aAS2ClientSettings.setMDNOptions (new DispositionOptions ().setMICAlg (m_eSigningAlgo)
                                                                .setMICAlgImportance (DispositionOptions.IMPORTANCE_REQUIRED)
                                                                .setProtocol (DispositionOptions.PROTOCOL_PKCS7_SIGNATURE)
@@ -1662,9 +1646,7 @@ public class AS2ClientBuilder
     {
       final Document aXMLDocument = DOMReader.readXMLDOM (m_aBusinessDocumentRes);
       if (aXMLDocument == null)
-        throw new AS2ClientBuilderException ("Failed to read business document '" +
-                                             m_aBusinessDocumentRes.getPath () +
-                                             "' as XML");
+        throw new AS2ClientBuilderException ("Failed to read business document '" + m_aBusinessDocumentRes.getPath () + "' as XML");
       aBusinessDocumentXML = aXMLDocument.getDocumentElement ();
       LOGGER.info ("Successfully parsed the business document");
     }

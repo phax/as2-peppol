@@ -33,9 +33,10 @@ import com.helger.as2lib.crypto.ECryptoAlgorithmSign;
 import com.helger.as2lib.util.dump.HTTPOutgoingDumperStreamBased;
 import com.helger.as2lib.util.dump.IHTTPOutgoingDumper;
 import com.helger.as2lib.util.http.HTTPHelper;
-import com.helger.bdve.executorset.VESID;
-import com.helger.bdve.executorset.ValidationExecutorSetRegistry;
-import com.helger.bdve.result.ValidationResult;
+import com.helger.bdve.api.executorset.VESID;
+import com.helger.bdve.api.executorset.ValidationExecutorSetRegistry;
+import com.helger.bdve.api.result.ValidationResult;
+import com.helger.bdve.engine.source.IValidationSourceXML;
 import com.helger.bdve.simplerinvoicing.SimplerInvoicingValidation;
 import com.helger.commons.annotation.OverrideOnDemand;
 import com.helger.commons.debug.GlobalDebug;
@@ -171,9 +172,9 @@ public final class MainAS2TestClientUpNxt
         @Override
         @OverrideOnDemand
         @Nonnull
-        protected ValidationExecutorSetRegistry createValidationRegistry ()
+        protected ValidationExecutorSetRegistry <IValidationSourceXML> createValidationRegistry ()
         {
-          final ValidationExecutorSetRegistry aVESRegistry = super.createValidationRegistry ();
+          final ValidationExecutorSetRegistry <IValidationSourceXML> aVESRegistry = super.createValidationRegistry ();
           SimplerInvoicingValidation.initSimplerInvoicing (aVESRegistry);
           return aVESRegistry;
         }

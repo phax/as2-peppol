@@ -34,9 +34,10 @@ import com.helger.as2lib.util.dump.HTTPOutgoingDumperFileBased;
 import com.helger.as2lib.util.dump.HTTPOutgoingDumperStreamBased;
 import com.helger.as2lib.util.dump.IHTTPOutgoingDumper;
 import com.helger.as2lib.util.http.HTTPHelper;
-import com.helger.bdve.executorset.VESID;
+import com.helger.bdve.api.executorset.VESID;
+import com.helger.bdve.api.result.ValidationResult;
+import com.helger.bdve.api.result.ValidationResultList;
 import com.helger.bdve.peppol.PeppolValidation3_10_0;
-import com.helger.bdve.result.ValidationResult;
 import com.helger.commons.CGlobal;
 import com.helger.commons.debug.GlobalDebug;
 import com.helger.commons.io.file.SimpleFileIO;
@@ -449,7 +450,7 @@ public final class MainAS2TestClient
 
       final IAS2ClientBuilderValidatonResultHandler aValidationResultHandler = new IAS2ClientBuilderValidatonResultHandler ()
       {
-        public void onValidationErrors (final com.helger.bdve.result.ValidationResultList aValidationResult) throws AS2ClientBuilderException
+        public void onValidationErrors (final ValidationResultList aValidationResult) throws AS2ClientBuilderException
         {
           for (final ValidationResult aVR : aValidationResult)
             if (aVR.isFailure ())
