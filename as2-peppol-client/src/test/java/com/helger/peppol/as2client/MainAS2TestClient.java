@@ -37,7 +37,7 @@ import com.helger.as2lib.util.http.HTTPHelper;
 import com.helger.bdve.api.executorset.VESID;
 import com.helger.bdve.api.result.ValidationResult;
 import com.helger.bdve.api.result.ValidationResultList;
-import com.helger.bdve.peppol.PeppolValidation3_10_0;
+import com.helger.bdve.peppol.PeppolValidation3_10_1;
 import com.helger.commons.CGlobal;
 import com.helger.commons.debug.GlobalDebug;
 import com.helger.commons.io.file.SimpleFileIO;
@@ -159,7 +159,7 @@ public final class MainAS2TestClient
       aReceiver = IF.createParticipantIdentifierWithDefaultScheme ("9915:test");
       sTestFilename = "xml/as2-test-at-gov.xml";
       aSML = ESML.DIGIT_TEST;
-      aValidationKey = PeppolValidation3_10_0.VID_OPENPEPPOL_INVOICE_V3;
+      aValidationKey = PeppolValidation3_10_1.VID_OPENPEPPOL_INVOICE_V3;
       bDebugOutgoing = true;
       if (true)
         eCTE = EContentTransferEncoding.BASE64;
