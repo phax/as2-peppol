@@ -45,8 +45,7 @@ public class MainCreate2GBXMLFile
   public static void main (final String [] args) throws IOException
   {
     LOGGER.info ("Reading");
-    final InvoiceType aInvoice = UBL21Reader.invoice ()
-                                            .read (new FileSystemResource ("src/test/resources/xml/at-gov-peppol-ubl.xml"));
+    final InvoiceType aInvoice = UBL21Reader.invoice ().read (new FileSystemResource ("src/test/resources/xml/at-gov-peppol-ubl.xml"));
 
     final String sNote = StringHelper.getRepeated ("Lorem ipsum - who cares", 1024);
     final long nNotes = 2 * CGlobal.BYTES_PER_GIGABYTE / sNote.length ();

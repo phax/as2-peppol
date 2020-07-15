@@ -83,10 +83,10 @@ public final class APKeyManager extends AbstractGlobalSingleton
 
     m_aKeyEntry = aLoadedKey.getKeyEntry ();
     LOGGER.info ("APKeyManager successfully initialized with keystore '" +
-                    AppSettings.getKeyStorePath () +
-                    "' and alias '" +
-                    AppSettings.getKeyStoreKeyAlias () +
-                    "'");
+                 AppSettings.getKeyStorePath () +
+                 "' and alias '" +
+                 AppSettings.getKeyStoreKeyAlias () +
+                 "'");
     s_aCertificateValid.set (true);
   }
 

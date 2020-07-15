@@ -89,9 +89,7 @@ public class AS2IncomingSBDHandler implements IAS2IncomingSBDHandlerSPI
     {
       // Try to read the UBL document - performs implicit XSD validation
       final CollectingValidationEventHandler aEventHdl = new CollectingValidationEventHandler ();
-      final Object aUBLDocument = UBL21ReaderBuilder.createGeneric (eDocType)
-                                                    .setValidationEventHandler (aEventHdl)
-                                                    .read (aElement);
+      final Object aUBLDocument = UBL21ReaderBuilder.createGeneric (eDocType).setValidationEventHandler (aEventHdl).read (aElement);
       if (aUBLDocument == null)
       {
         aErrors.error ("Failed to read the UBL document as " +
@@ -108,8 +106,7 @@ public class AS2IncomingSBDHandler implements IAS2IncomingSBDHandlerSPI
     }
 
     // Save SBDH to error folder
-    final File aFile = new File (AppSettings.getFolderForReceivingErrors (),
-                                 GlobalIDFactory.getNewPersistentStringID () + ".xml");
+    final File aFile = new File (AppSettings.getFolderForReceivingErrors (), GlobalIDFactory.getNewPersistentStringID () + ".xml");
     if (true)
       SBDHWriter.standardBusinessDocument ().write (aStandardBusinessDocument, aFile);
     else
@@ -127,8 +124,7 @@ public class AS2IncomingSBDHandler implements IAS2IncomingSBDHandlerSPI
     final IPair <EUBL21DocumentType, Object> aPair = extractUBLDocument (aStandardBusinessDocument);
 
     // Write UBL to receiving folder
-    final File aFile = new File (AppSettings.getFolderForReceiving (),
-                                 GlobalIDFactory.getNewPersistentStringID () + ".xml");
+    final File aFile = new File (AppSettings.getFolderForReceiving (), GlobalIDFactory.getNewPersistentStringID () + ".xml");
     if (true)
     {
       // Write the complete SBDH to a folder

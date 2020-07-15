@@ -67,9 +67,7 @@ public final class APTrustManager extends AbstractGlobalSingleton
     }
     m_aTrustStore = aTrustStoreLoading.getKeyStore ();
 
-    LOGGER.info ("APTrustManager successfully initialized with truststore '" +
-                    AppSettings.getTrustStorePath () +
-                    "'");
+    LOGGER.info ("APTrustManager successfully initialized with truststore '" + AppSettings.getTrustStorePath () + "'");
     s_aCertificateValid.set (true);
   }
 

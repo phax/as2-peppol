@@ -59,18 +59,15 @@ public class PeppolAS2ReceiveXServletHandler extends AbstractAS2ReceiveXServletH
   }
 
   @Override
-  protected AS2Session createAS2Session (@Nonnull final ICommonsMap <String, String> aInitParams) throws AS2Exception,
-                                                                                                  ServletException
+  protected AS2Session createAS2Session (@Nonnull final ICommonsMap <String, String> aInitParams) throws AS2Exception, ServletException
   {
     final AS2Session ret = new AS2Session ();
     {
       final CertificateFactory aCF = new CertificateFactory ();
       aCF.initDynamicComponent (ret,
-                                new StringMap ().add (CertificateFactory.ATTR_TYPE,
-                                                      AppSettings.getKeyStoreType ().getID ())
+                                new StringMap ().add (CertificateFactory.ATTR_TYPE, AppSettings.getKeyStoreType ().getID ())
                                                 .add (CertificateFactory.ATTR_FILENAME, AppSettings.getKeyStorePath ())
-                                                .add (CertificateFactory.ATTR_PASSWORD,
-                                                      AppSettings.getKeyStorePassword ())
+                                                .add (CertificateFactory.ATTR_PASSWORD, AppSettings.getKeyStorePassword ())
                                                 .add (CertificateFactory.ATTR_SAVE_CHANGES_TO_FILE, true));
       ret.setCertificateFactory (aCF);
     }
@@ -79,9 +76,7 @@ public class PeppolAS2ReceiveXServletHandler extends AbstractAS2ReceiveXServletH
       final AS2ServletPartnershipFactory aPF = new AS2ServletPartnershipFactory ();
       aPF.initDynamicComponent (ret,
                                 new StringMap ().add (XMLPartnershipFactory.ATTR_FILENAME,
-                                                      WebFileIO.getDataIO ()
-                                                               .getFile ("as2-server-partnerships.xml")
-                                                               .getAbsolutePath ())
+                                                      WebFileIO.getDataIO ().getFile ("as2-server-partnerships.xml").getAbsolutePath ())
                                                 .add (XMLPartnershipFactory.ATTR_DISABLE_BACKUP, true));
       ret.setPartnershipFactory (aPF);
     }
@@ -143,9 +138,7 @@ public class PeppolAS2ReceiveXServletHandler extends AbstractAS2ReceiveXServletH
         aMod.initDynamicComponent (ret,
                                    new StringMap ().add (AbstractActiveNetModule.ATTR_PORT, 10080)
                                                    .add (AbstractActiveNetModule.ATTR_ERROR_DIRECTORY,
-                                                         aReceiveIO.getFile ("as2-inbox-error/" +
-                                                                             "$date.uuuu$/" +
-                                                                             "$date.MM$")
+                                                         aReceiveIO.getFile ("as2-inbox-error/" + "$date.uuuu$/" + "$date.MM$")
                                                                    .getAbsolutePath ())
                                                    .add (AbstractActiveNetModule.ATTR_ERROR_FORMAT,
                                                          "$msg.sender.as2_id$-$msg.receiver.as2_id$-$msg.headers.message-id$")

@@ -31,8 +31,7 @@ public class MockIncomingSBDHandler implements IAS2IncomingSBDHandlerSPI
 {
   private static final Logger LOGGER = LoggerFactory.getLogger (MockIncomingSBDHandler.class);
 
-  public void handleIncomingSBD (@Nonnull final HttpHeaderMap aHeaders,
-                                 @Nonnull final StandardBusinessDocument aSBD) throws Exception
+  public void handleIncomingSBD (@Nonnull final HttpHeaderMap aHeaders, @Nonnull final StandardBusinessDocument aSBD) throws Exception
   {
     // Do something with the incoming headers and SBD
     LOGGER.info ("Headers:\n");

@@ -104,9 +104,7 @@ public class AS2ServletSBDModule extends AbstractProcessorModule
     m_eAS2Version = eAS2Version;
   }
 
-  public boolean canHandle (@Nonnull final String sAction,
-                            @Nonnull final IMessage aMsg,
-                            @Nullable final Map <String, Object> aOptions)
+  public boolean canHandle (@Nonnull final String sAction, @Nonnull final IMessage aMsg, @Nullable final Map <String, Object> aOptions)
   {
     // Using the store action, because this action is automatically called upon
     // receipt
@@ -160,8 +158,7 @@ public class AS2ServletSBDModule extends AbstractProcessorModule
     }
     catch (final Throwable t)
     {
-      throw new AS2Exception (sLogPrefix + "Failed to retrieve endpoint of recipient " + aRecipientID.getURIEncoded (),
-                              t);
+      throw new AS2Exception (sLogPrefix + "Failed to retrieve endpoint of recipient " + aRecipientID.getURIEncoded (), t);
     }
   }
 
@@ -219,8 +216,7 @@ public class AS2ServletSBDModule extends AbstractProcessorModule
     if (aRecipientCert == null)
     {
       // No certificate found - most likely because of invalid SMP entry
-      throw new AS2Exception (sLogPrefix +
-                              "No certificate found in looked up endpoint! Is this AP maybe NOT contained in an SMP?");
+      throw new AS2Exception (sLogPrefix + "No certificate found in looked up endpoint! Is this AP maybe NOT contained in an SMP?");
     }
 
     // Certificate found

@@ -25,8 +25,7 @@ public class PeppolAS2RootServlet extends AbstractXServlet
 {
   public PeppolAS2RootServlet ()
   {
-    handlerRegistry ().registerHandler (EHttpMethod.GET,
-                                        new RootXServletHandler (AbstractSecureApplicationServlet.SERVLET_DEFAULT_PATH));
+    handlerRegistry ().registerHandler (EHttpMethod.GET, new RootXServletHandler (AbstractSecureApplicationServlet.SERVLET_DEFAULT_PATH));
     handlerRegistry ().copyHandlerToAll (EHttpMethod.GET);
   }
 }

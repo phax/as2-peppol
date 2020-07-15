@@ -34,8 +34,6 @@ public final class PeppolAS2ReceiveV1Servlet extends AbstractXServlet
 
   public PeppolAS2ReceiveV1Servlet ()
   {
-    handlerRegistry ().registerHandler (EHttpMethod.POST,
-                                        new PeppolAS2ReceiveXServletHandler (EPeppolAS2Version.V1),
-                                        false);
+    handlerRegistry ().registerHandler (EHttpMethod.POST, new PeppolAS2ReceiveXServletHandler (EPeppolAS2Version.V1), false);
   }
 }
