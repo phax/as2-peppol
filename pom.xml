@@ -88,7 +88,7 @@
       <dependency>
         <groupId>com.helger.as2</groupId>
         <artifactId>as2-lib-parent-pom</artifactId>
-        <version>4.6.0</version>
+        <version>4.6.1</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
