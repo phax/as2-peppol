@@ -193,6 +193,8 @@ For example:
 
 # News and Noteworthy
 
+* v5.4.1 - 2020-08-30
+    * Updated to ph-bdve-rules 1.0.6
 * v5.4.0 - 2020-05-27
     * Merged `as2-peppol-client`, `as2-peppol-servlet` and `as2-peppol-server` into a single repository
         * The history of `as2-peppol-servlet` can be found at https://github.com/phax/as2-peppol-servlet#news-and-noteworthy
