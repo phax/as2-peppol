@@ -67,63 +67,63 @@
       <dependency>
         <groupId>com.helger</groupId>
         <artifactId>ph-commons-parent-pom</artifactId>
-        <version>9.4.8</version>
+        <version>9.5.0</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
       <dependency>
         <groupId>com.helger.web</groupId>
         <artifactId>ph-web-parent-pom</artifactId>
-        <version>9.3.3</version>
+        <version>9.3.4</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
       <dependency>
         <groupId>com.helger</groupId>
         <artifactId>ph-schematron-parent-pom</artifactId>
-        <version>5.6.1</version>
+        <version>5.6.2</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
       <dependency>
         <groupId>com.helger.photon</groupId>
         <artifactId>ph-oton-parent-pom</artifactId>
-        <version>8.2.6</version>
+        <version>8.2.8</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
       <dependency>
         <groupId>com.helger.as2</groupId>
         <artifactId>as2-lib-parent-pom</artifactId>
-        <version>4.6.1</version>
+        <version>4.6.2</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
       <dependency>
         <groupId>com.helger.ubl</groupId>
         <artifactId>ph-ubl-parent-pom</artifactId>
-        <version>6.4.0</version>
+        <version>6.4.1</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
       <dependency>
         <groupId>com.helger.peppol</groupId>
         <artifactId>peppol-commons-parent-pom</artifactId>
-        <version>8.1.8</version>
+        <version>8.2.2</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
       <dependency>
         <groupId>com.helger.bdve</groupId>
         <artifactId>ph-bdve-parent-pom</artifactId>
-        <version>6.0.2</version>
+        <version>6.0.3</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
       <dependency>
         <groupId>com.helger.bdve.rules</groupId>
         <artifactId>ph-bdve-rules-parent-pom</artifactId>
-        <version>1.0.6</version>
+        <version>1.0.7</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
@@ -154,4 +154,16 @@
     <module>as2-peppol-servlet</module>
     <module>as2-peppol-server</module>
   </modules>
+  
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <configuration>
+          <source>8</source>
+        </configuration>
+      </plugin> 
+    </plugins>
+  </build>
 </project>

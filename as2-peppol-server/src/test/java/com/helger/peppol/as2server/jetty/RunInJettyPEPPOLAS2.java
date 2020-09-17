@@ -19,7 +19,6 @@ package com.helger.peppol.as2server.jetty;
 import javax.annotation.concurrent.Immutable;
 
 import com.helger.photon.jetty.JettyStarter;
-import com.helger.smpclient.config.SMPClientConfiguration;
 
 /**
  * Run as2-peppol-server as a standalone web application in Jetty on port 8080.
@@ -33,9 +32,6 @@ public final class RunInJettyPEPPOLAS2
 {
   public static void main (final String [] args) throws Exception
   {
-    // Proxy configuration may be contained in SMP client properties
-    SMPClientConfiguration.getConfigFile ().applyAllNetworkSystemProperties ();
-
     new JettyStarter (RunInJettyPEPPOLAS2.class).run ();
   }
 }

@@ -23,35 +23,19 @@ import java.io.UncheckedIOException;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.annotation.UsedViaReflection;
-import com.helger.commons.io.resource.IReadableResource;
 import com.helger.commons.string.StringHelper;
+import com.helger.config.ConfigFactory;
+import com.helger.config.IConfig;
 import com.helger.peppol.sml.ESML;
 import com.helger.peppol.sml.ISMLInfo;
 import com.helger.peppol.utils.PeppolKeyStoreHelper;
 import com.helger.scope.singleton.AbstractGlobalSingleton;
 import com.helger.security.keystore.EKeyStoreType;
-import com.helger.settings.ISettings;
-import com.helger.settings.exchange.configfile.ConfigFile;
-import com.helger.settings.exchange.configfile.ConfigFileBuilder;
 
 /**
- * This class provides access to the web application settings. The order of the
- * properties file resolving is as follows:
- * <ol>
- * <li>Check for the value of the system property
- * <code>peppol.as2-server.properties.path</code></li>
- * <li>Check for the value of the system property
- * <code>as2-server.properties.path</code></li>
- * <li>The filename <code>private-as2-server.properties</code> in the root of
- * the classpath</li>
- * <li>The filename <code>as2-server.properties</code> in the root of the
- * classpath</li>
- * </ol>
+ * This class provides access to the web application settings.
  *
  * @author Philip Helger
  */
@@ -70,38 +54,15 @@ public final class AppSettings extends AbstractGlobalSingleton
   public static final String KEY_TRUSTSTORE_PATH = "truststore.path";
   public static final String KEY_TRUSTSTORE_PASSWORD = "truststore.password";
 
-  private static final Logger LOGGER = LoggerFactory.getLogger (AppSettings.class);
-
-  private static final ConfigFile s_aConfigFile;
-
-  static
-  {
-    final ConfigFileBuilder aCFB = new ConfigFileBuilder ().addPathFromSystemProperty ("peppol.as2-server.properties.path")
-                                                           .addPathFromSystemProperty ("as2-server.properties.path")
-                                                           .addPath ("private-as2-server.properties")
-                                                           .addPath ("as2-server.properties");
-
-    s_aConfigFile = aCFB.build ();
-    if (!s_aConfigFile.isRead ())
-      throw new IllegalStateException ("Failed to read PEPPOL AP AS2 server properties from " + aCFB.getAllPaths ());
-    LOGGER.info ("Read PEPPOL AP AS2 server properties from " + s_aConfigFile.getReadResource ().getPath ());
-  }
-
   @Deprecated
   @UsedViaReflection
   private AppSettings ()
   {}
 
   @Nonnull
-  public static ISettings getSettingsObject ()
+  public static IConfig getConfig ()
   {
-    return s_aConfigFile.getSettings ();
-  }
-
-  @Nonnull
-  public static IReadableResource getSettingsResource ()
-  {
-    return s_aConfigFile.getReadResource ();
+    return ConfigFactory.getDefaultConfig ();
   }
 
   /**
@@ -111,7 +72,7 @@ public final class AppSettings extends AbstractGlobalSingleton
   @Nonnull
   public static ISMLInfo getSMLToUse ()
   {
-    final String sSMLID = s_aConfigFile.getAsString ("sml.id");
+    final String sSMLID = getConfig ().getAsString ("sml.id");
     return ESML.getFromIDOrDefault (sSMLID, ESML.DIGIT_PRODUCTION);
   }
 
@@ -137,7 +98,7 @@ public final class AppSettings extends AbstractGlobalSingleton
   @Nullable
   public static File getFolderForSending ()
   {
-    return _getAsFile (s_aConfigFile.getAsString (KEY_FOLDER_SENDING));
+    return _getAsFile (getConfig ().getAsString (KEY_FOLDER_SENDING));
   }
 
   /**
@@ -148,7 +109,7 @@ public final class AppSettings extends AbstractGlobalSingleton
   @Nullable
   public static File getFolderForSendingErrors ()
   {
-    return _getAsFile (s_aConfigFile.getAsString (KEY_FOLDER_SENDING_ERROR));
+    return _getAsFile (getConfig ().getAsString (KEY_FOLDER_SENDING_ERROR));
   }
 
   /**
@@ -158,7 +119,7 @@ public final class AppSettings extends AbstractGlobalSingleton
   @Nullable
   public static File getFolderForReceiving ()
   {
-    return _getAsFile (s_aConfigFile.getAsString (KEY_FOLDER_RECEIVING));
+    return _getAsFile (getConfig ().getAsString (KEY_FOLDER_RECEIVING));
   }
 
   /**
@@ -169,7 +130,7 @@ public final class AppSettings extends AbstractGlobalSingleton
   @Nullable
   public static File getFolderForReceivingErrors ()
   {
-    return _getAsFile (s_aConfigFile.getAsString (KEY_FOLDER_RECEIVING_ERROR));
+    return _getAsFile (getConfig ().getAsString (KEY_FOLDER_RECEIVING_ERROR));
   }
 
   /**
@@ -179,7 +140,7 @@ public final class AppSettings extends AbstractGlobalSingleton
   @Nonnull
   public static EKeyStoreType getKeyStoreType ()
   {
-    final String sType = s_aConfigFile.getAsString (KEY_KEYSTORE_TYPE);
+    final String sType = getConfig ().getAsString (KEY_KEYSTORE_TYPE);
     return EKeyStoreType.getFromIDCaseInsensitiveOrDefault (sType, EKeyStoreType.JKS);
   }
 
@@ -190,7 +151,7 @@ public final class AppSettings extends AbstractGlobalSingleton
   @Nullable
   public static String getKeyStorePath ()
   {
-    return s_aConfigFile.getAsString (KEY_KEYSTORE_PATH);
+    return getConfig ().getAsString (KEY_KEYSTORE_PATH);
   }
 
   /**
@@ -200,7 +161,7 @@ public final class AppSettings extends AbstractGlobalSingleton
   @Nullable
   public static String getKeyStorePassword ()
   {
-    return s_aConfigFile.getAsString (KEY_KEYSTORE_PASSWORD);
+    return getConfig ().getAsString (KEY_KEYSTORE_PASSWORD);
   }
 
   /**
@@ -210,7 +171,7 @@ public final class AppSettings extends AbstractGlobalSingleton
   @Nullable
   public static String getKeyStoreKeyAlias ()
   {
-    return s_aConfigFile.getAsString (KEY_KEYSTORE_KEY_ALIAS);
+    return getConfig ().getAsString (KEY_KEYSTORE_KEY_ALIAS);
   }
 
   /**
@@ -221,7 +182,7 @@ public final class AppSettings extends AbstractGlobalSingleton
   @Nullable
   public static char [] getKeyStoreKeyPassword ()
   {
-    return s_aConfigFile.getAsCharArray (KEY_KEYSTORE_KEY_PASSWORD);
+    return getConfig ().getAsCharArray (KEY_KEYSTORE_KEY_PASSWORD);
   }
 
   /**
@@ -231,7 +192,7 @@ public final class AppSettings extends AbstractGlobalSingleton
   @Nonnull
   public static EKeyStoreType getTrustStoreType ()
   {
-    final String sType = s_aConfigFile.getAsString (KEY_TRUSTSTORE_TYPE);
+    final String sType = getConfig ().getAsString (KEY_TRUSTSTORE_TYPE);
     return EKeyStoreType.getFromIDCaseInsensitiveOrDefault (sType, PeppolKeyStoreHelper.TRUSTSTORE_TYPE);
   }
 
@@ -243,7 +204,7 @@ public final class AppSettings extends AbstractGlobalSingleton
   @Nonempty
   public static String getTrustStorePath ()
   {
-    return s_aConfigFile.getAsString (KEY_TRUSTSTORE_PATH, PeppolKeyStoreHelper.TRUSTSTORE_COMPLETE_CLASSPATH);
+    return getConfig ().getAsString (KEY_TRUSTSTORE_PATH, PeppolKeyStoreHelper.TRUSTSTORE_COMPLETE_CLASSPATH);
   }
 
   /**
@@ -254,6 +215,6 @@ public final class AppSettings extends AbstractGlobalSingleton
   @Nonempty
   public static String getTrustStorePassword ()
   {
-    return s_aConfigFile.getAsString (KEY_TRUSTSTORE_PASSWORD, PeppolKeyStoreHelper.TRUSTSTORE_PASSWORD);
+    return getConfig ().getAsString (KEY_TRUSTSTORE_PASSWORD, PeppolKeyStoreHelper.TRUSTSTORE_PASSWORD);
   }
 }

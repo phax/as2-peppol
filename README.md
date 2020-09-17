@@ -193,6 +193,9 @@ For example:
 
 # News and Noteworthy
 
+* v5.4.2 - 2020-09-17
+    * Updated to Jakarta JAXB 2.3.3
+    * Updated to peppol-commons 8.2.2
 * v5.4.1 - 2020-08-30
     * Updated to ph-bdve-rules 1.0.6
 * v5.4.0 - 2020-05-27

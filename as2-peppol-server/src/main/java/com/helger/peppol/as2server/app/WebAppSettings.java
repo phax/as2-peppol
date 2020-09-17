@@ -19,51 +19,19 @@ package com.helger.peppol.as2server.app;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.helger.commons.annotation.UsedViaReflection;
 import com.helger.commons.debug.GlobalDebug;
-import com.helger.commons.io.resource.IReadableResource;
+import com.helger.config.ConfigFactory;
+import com.helger.config.IConfig;
 import com.helger.scope.singleton.AbstractGlobalSingleton;
-import com.helger.settings.ISettings;
-import com.helger.settings.exchange.configfile.ConfigFile;
-import com.helger.settings.exchange.configfile.ConfigFileBuilder;
 
 /**
- * This class provides access to the web application settings. The order of the
- * properties file resolving is as follows:
- * <ol>
- * <li>Check for the value of the system property
- * <code>peppol.ap.webapp.properties.path</code></li>
- * <li>Check for the value of the system property
- * <code>ap.webapp.properties.path</code></li>
- * <li>The filename <code>private-webapp.properties</code> in the root of the
- * classpath</li>
- * <li>The filename <code>webapp.properties</code> in the root of the
- * classpath</li>
- * </ol>
+ * This class provides access to the web application settings.
  *
  * @author Philip Helger
  */
 public final class WebAppSettings extends AbstractGlobalSingleton
 {
-  private static final Logger LOGGER = LoggerFactory.getLogger (WebAppSettings.class);
-
-  private static final ConfigFile s_aConfigFile;
-
-  static
-  {
-    final ConfigFileBuilder aCFB = new ConfigFileBuilder ().addPathFromSystemProperty ("peppol.ap.webapp.properties.path")
-                                                           .addPathFromSystemProperty ("ap.webapp.properties.path")
-                                                           .addPath ("private-webapp.properties")
-                                                           .addPath ("webapp.properties");
-
-    s_aConfigFile = aCFB.build ();
-    if (!s_aConfigFile.isRead ())
-      throw new IllegalStateException ("Failed to read PEPPOL AP web app properties from " + aCFB.getAllPaths ());
-    LOGGER.info ("Read PEPPOL AP web app properties from " + s_aConfigFile.getReadResource ().getPath ());
-  }
 
   @Deprecated
   @UsedViaReflection
@@ -71,15 +39,9 @@ public final class WebAppSettings extends AbstractGlobalSingleton
   {}
 
   @Nonnull
-  public static ISettings getSettingsObject ()
+  public static IConfig getConfig ()
   {
-    return s_aConfigFile.getSettings ();
-  }
-
-  @Nonnull
-  public static IReadableResource getSettingsResource ()
-  {
-    return s_aConfigFile.getReadResource ();
+    return ConfigFactory.getDefaultConfig ();
   }
 
   /**
@@ -89,7 +51,7 @@ public final class WebAppSettings extends AbstractGlobalSingleton
   @Nullable
   public static String getGlobalDebug ()
   {
-    return s_aConfigFile.getAsString ("global.debug");
+    return getConfig ().getAsString ("global.debug");
   }
 
   /**
@@ -99,7 +61,7 @@ public final class WebAppSettings extends AbstractGlobalSingleton
   @Nullable
   public static String getGlobalProduction ()
   {
-    return s_aConfigFile.getAsString ("global.production");
+    return getConfig ().getAsString ("global.production");
   }
 
   /**
@@ -109,12 +71,12 @@ public final class WebAppSettings extends AbstractGlobalSingleton
   @Nullable
   public static String getDataPath ()
   {
-    return s_aConfigFile.getAsString ("webapp.datapath");
+    return getConfig ().getAsString ("webapp.datapath");
   }
 
   public static boolean isCheckFileAccess ()
   {
-    return s_aConfigFile.getAsBoolean ("webapp.checkfileaccess", false);
+    return getConfig ().getAsBoolean ("webapp.checkfileaccess", false);
   }
 
   /**
@@ -123,6 +85,6 @@ public final class WebAppSettings extends AbstractGlobalSingleton
    */
   public static boolean isTestVersion ()
   {
-    return s_aConfigFile.getAsBoolean ("webapp.testversion", GlobalDebug.isDebugMode ());
+    return getConfig ().getAsBoolean ("webapp.testversion", GlobalDebug.isDebugMode ());
   }
 }

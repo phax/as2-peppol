@@ -86,7 +86,7 @@ public final class MainAS2TestClient
   static
   {
     // Set Proxy Settings from property file.
-    SMPClientConfiguration.getConfigFile ().applyAllNetworkSystemProperties ();
+    SMPClientConfiguration.applyAllNetworkSystemProperties ();
 
     // Enable or disable debug mode
     GlobalDebug.setDebugModeDirect (false);
@@ -438,7 +438,7 @@ public final class MainAS2TestClient
     // No proxy for local host
     if (!aSMPClient.getSMPHostURI ().startsWith ("http://localhost") && !aSMPClient.getSMPHostURI ().startsWith ("http://127."))
     {
-      aSMPClient.setProxy (aProxy);
+      aSMPClient.httpClientSettings ().setProxyHost (aProxy);
     }
 
     try

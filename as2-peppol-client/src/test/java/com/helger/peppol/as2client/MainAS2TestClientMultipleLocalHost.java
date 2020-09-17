@@ -74,7 +74,7 @@ public final class MainAS2TestClientMultipleLocalHost
   static
   {
     // Set Proxy Settings from property file.
-    SMPClientConfiguration.getConfigFile ().applyAllNetworkSystemProperties ();
+    SMPClientConfiguration.applyAllNetworkSystemProperties ();
 
     // Enable or disable debug mode
     GlobalDebug.setDebugModeDirect (false);
