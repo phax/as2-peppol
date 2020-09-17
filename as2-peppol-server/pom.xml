@@ -21,7 +21,7 @@
   <parent>
     <groupId>com.helger.peppol</groupId>
     <artifactId>as2-peppol-parent-pom</artifactId>
-    <version>5.4.2-SNAPSHOT</version>
+    <version>5.4.2</version>
   </parent>
   <artifactId>as2-peppol-server</artifactId>
   <name>as2-peppol-server</name>
