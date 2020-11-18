@@ -27,7 +27,7 @@ import com.helger.as2lib.client.AS2ClientResponse;
 import com.helger.as2lib.crypto.ECryptoAlgorithmSign;
 import com.helger.bdve.api.executorset.VESID;
 import com.helger.bdve.api.result.ValidationResult;
-import com.helger.bdve.peppol.PeppolValidation3_10_1;
+import com.helger.bdve.peppol.PeppolValidation3_11_1;
 import com.helger.commons.debug.GlobalDebug;
 import com.helger.commons.io.resource.ClassPathResource;
 import com.helger.commons.io.resource.IReadableResource;
@@ -94,7 +94,7 @@ public final class MainAS2TestClientMultipleLocalHost
     String sReceiverKeyAlias = null;
     String sReceiverAddress = null;
     ISMLInfo aSML = ESML.DIGIT_PRODUCTION;
-    final VESID aValidationKey = true ? null : PeppolValidation3_10_1.VID_OPENPEPPOL_INVOICE_V3;
+    final VESID aValidationKey = true ? null : PeppolValidation3_11_1.VID_OPENPEPPOL_INVOICE_V3;
     final URI aSMPURI = null;
     final ECryptoAlgorithmSign eMICAlg = ECryptoAlgorithmSign.DIGEST_SHA_1;
     final HttpHost aProxy = SMPClientConfiguration.getHttpProxy ();

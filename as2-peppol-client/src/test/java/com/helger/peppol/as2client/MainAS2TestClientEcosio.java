@@ -24,7 +24,7 @@ import org.slf4j.LoggerFactory;
 
 import com.helger.as2lib.client.AS2ClientResponse;
 import com.helger.as2lib.crypto.ECryptoAlgorithmSign;
-import com.helger.bdve.peppol.PeppolValidation3_10_1;
+import com.helger.bdve.peppol.PeppolValidation3_11_1;
 import com.helger.commons.debug.GlobalDebug;
 import com.helger.commons.io.resource.ClassPathResource;
 import com.helger.peppolid.IDocumentTypeIdentifier;
@@ -108,7 +108,7 @@ public final class MainAS2TestClientEcosio
                                                                  .setPeppolReceiverID (aReceiver)
                                                                  .setPeppolDocumentTypeID (DOCTYPE)
                                                                  .setPeppolProcessID (PROCESS)
-                                                                 .setValidationKey (PeppolValidation3_10_1.VID_OPENPEPPOL_INVOICE_V3)
+                                                                 .setValidationKey (PeppolValidation3_11_1.VID_OPENPEPPOL_INVOICE_V3)
                                                                  .sendSynchronous ();
       if (aResponse.hasException ())
         LOGGER.warn (aResponse.getAsString ());

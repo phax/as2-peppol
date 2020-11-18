@@ -41,7 +41,7 @@ import com.helger.bdve.api.executorset.ValidationExecutorSetRegistry;
 import com.helger.bdve.api.result.ValidationResult;
 import com.helger.bdve.api.result.ValidationResultList;
 import com.helger.bdve.engine.source.IValidationSourceXML;
-import com.helger.bdve.peppol.PeppolValidation3_10_1;
+import com.helger.bdve.peppol.PeppolValidation3_11_1;
 import com.helger.commons.debug.GlobalDebug;
 import com.helger.commons.io.file.SimpleFileIO;
 import com.helger.commons.io.resource.ClassPathResource;
@@ -144,7 +144,7 @@ public final class MainAS2TestClientSBDH
     final String sReceiverKeyAlias = null;
     final String sReceiverAddress = null;
     final ISMLInfo aSML = ESML.DIGIT_TEST;
-    final VESID aValidationKey = PeppolValidation3_10_1.VID_OPENPEPPOL_INVOICE_V3;
+    final VESID aValidationKey = PeppolValidation3_11_1.VID_OPENPEPPOL_INVOICE_V3;
     URI aSMPURI = null;
     final ECryptoAlgorithmSign eMICAlg = ECryptoAlgorithmSign.DIGEST_SHA_1;
     HttpHost aProxy = SMPClientConfiguration.getHttpProxy ();
