@@ -1,7 +1,7 @@
 # as2-peppol
 
 [![Build Status](https://travis-ci.com/phax/as2-peppol.svg?branch=master)](https://travis-ci.com/phax/as2-peppol)
-[![javadoc](https://javadoc.io/badge2/com.helger.peppol/as2-peppol-parent-pom/javadoc.svg)](https://javadoc.io/doc/com.helger.peppol/as2-peppol-parent-pom)
+[![javadoc](https://javadoc.io/badge2/com.helger.peppol/as2-peppol-client/javadoc.svg)](https://javadoc.io/doc/com.helger.peppol/as2-peppol-client)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.helger.peppol/as2-peppol-parent-pom/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.helger.peppol/as2-peppol-parent-pom) 
 
 ## Status migration AS2 &rarr; AS4
