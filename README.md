@@ -1,5 +1,9 @@
 # as2-peppol
 
+[![Build Status](https://travis-ci.com/phax/as2-peppol.svg?branch=master)](https://travis-ci.com/phax/as2-peppol)
+[![javadoc](https://javadoc.io/badge2/com.helger.peppol/as2-peppol-parent-pom/javadoc.svg)](https://javadoc.io/doc/com.helger.peppol/as2-peppol-parent-pom)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.helger.peppol/as2-peppol-parent-pom/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.helger.peppol/as2-peppol-parent-pom) 
+
 ## Status migration AS2 &rarr; AS4
 
 Peppol migrated to AS4 as the mandatory transport protocol as of February 1<sup>st</sup>, 2020.
