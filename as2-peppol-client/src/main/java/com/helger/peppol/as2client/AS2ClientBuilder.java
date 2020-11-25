@@ -1154,7 +1154,7 @@ public class AS2ClientBuilder
                   final EPeppolCertificateCheckResult eCertCheckResult = PeppolCertificateChecker.checkPeppolAPCertificate (m_aReceiverCert,
                                                                                                                             aNow,
                                                                                                                             ETriState.UNDEFINED,
-                                                                                                                            ETriState.UNDEFINED);
+                                                                                                                            null);
 
                   // Interpret the result
                   m_aReceiverCertCheckResultHandler.onCertificateCheckResult (m_aReceiverCert, aNow, eCertCheckResult);
