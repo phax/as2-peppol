@@ -57,8 +57,8 @@
       <artifactId>peppol-smp-client</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.helger.bdve.rules</groupId>
-      <artifactId>ph-bdve-rules-peppol</artifactId>
+      <groupId>com.helger.phive.rules</groupId>
+      <artifactId>phive-rules-peppol</artifactId>
     </dependency>
     <dependency>
       <groupId>javax.servlet</groupId>
@@ -80,8 +80,8 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>com.helger.bdve.rules</groupId>
-      <artifactId>ph-bdve-rules-simplerinvoicing</artifactId>
+      <groupId>com.helger.phive.rules</groupId>
+      <artifactId>phive-rules-simplerinvoicing</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>

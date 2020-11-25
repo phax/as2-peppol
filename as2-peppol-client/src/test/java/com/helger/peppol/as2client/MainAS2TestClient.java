@@ -34,10 +34,6 @@ import com.helger.as2lib.util.dump.HTTPOutgoingDumperFileBased;
 import com.helger.as2lib.util.dump.HTTPOutgoingDumperStreamBased;
 import com.helger.as2lib.util.dump.IHTTPOutgoingDumper;
 import com.helger.as2lib.util.http.HTTPHelper;
-import com.helger.bdve.api.executorset.VESID;
-import com.helger.bdve.api.result.ValidationResult;
-import com.helger.bdve.api.result.ValidationResultList;
-import com.helger.bdve.peppol.PeppolValidation3_11_1;
 import com.helger.commons.CGlobal;
 import com.helger.commons.debug.GlobalDebug;
 import com.helger.commons.io.file.SimpleFileIO;
@@ -60,6 +56,10 @@ import com.helger.peppolid.factory.IIdentifierFactory;
 import com.helger.peppolid.factory.PeppolIdentifierFactory;
 import com.helger.peppolid.peppol.doctype.EPredefinedDocumentTypeIdentifier;
 import com.helger.peppolid.peppol.process.EPredefinedProcessIdentifier;
+import com.helger.phive.api.executorset.VESID;
+import com.helger.phive.api.result.ValidationResult;
+import com.helger.phive.api.result.ValidationResultList;
+import com.helger.phive.peppol.PeppolValidation3_11_1;
 import com.helger.security.keystore.EKeyStoreType;
 import com.helger.security.keystore.IKeyStoreType;
 import com.helger.smpclient.config.SMPClientConfiguration;
@@ -115,14 +115,14 @@ public final class MainAS2TestClient
   }
 
   /** Your AS2 sender ID */
-  private static final String _getSenderAS2ID (final boolean bProd)
+  private static String _getSenderAS2ID (final boolean bProd)
   {
     // Pro: 306 Test: 309
     return bProd ? "PDK000270" : "PDK000270";
   }
 
   /** Your AS2 key alias in the PKCS12 key store */
-  private static final String _getSenderKeyAlias (final boolean bProd)
+  private static String _getSenderKeyAlias (final boolean bProd)
   {
     return _getSenderAS2ID (bProd);
   }

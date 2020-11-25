@@ -18,8 +18,8 @@ package com.helger.peppol.as2client;
 
 import javax.annotation.Nonnull;
 
-import com.helger.bdve.api.result.ValidationResultList;
 import com.helger.commons.ValueEnforcer;
+import com.helger.phive.api.result.ValidationResultList;
 
 /**
  * Special {@link AS2ClientBuilderException} exception for validation errors.

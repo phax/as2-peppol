@@ -24,7 +24,6 @@ import org.slf4j.LoggerFactory;
 
 import com.helger.as2lib.client.AS2ClientResponse;
 import com.helger.as2lib.crypto.ECryptoAlgorithmSign;
-import com.helger.bdve.peppol.PeppolValidation3_11_1;
 import com.helger.commons.debug.GlobalDebug;
 import com.helger.commons.io.resource.ClassPathResource;
 import com.helger.peppolid.IDocumentTypeIdentifier;
@@ -32,6 +31,7 @@ import com.helger.peppolid.IParticipantIdentifier;
 import com.helger.peppolid.IProcessIdentifier;
 import com.helger.peppolid.factory.IIdentifierFactory;
 import com.helger.peppolid.factory.PeppolIdentifierFactory;
+import com.helger.phive.peppol.PeppolValidation3_11_1;
 import com.helger.security.keystore.EKeyStoreType;
 import com.helger.smpclient.config.SMPClientConfiguration;
 import com.helger.smpclient.peppol.SMPClientReadOnly;
