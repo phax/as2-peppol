@@ -26,7 +26,7 @@
   </parent>
   <groupId>com.helger.peppol</groupId>
   <artifactId>as2-peppol-parent-pom</artifactId>
-  <version>5.4.3</version>
+  <version>5.4.4-SNAPSHOT</version>
   <name>as2-peppol-parent-pom</name>
   <packaging>pom</packaging>
   <description>The Peppol AS2 package</description>
@@ -45,7 +45,7 @@
     <connection>scm:git:git@github.com:phax/as2-peppol.git</connection>
     <developerConnection>scm:git:git@github.com:phax/as2-peppol.git</developerConnection>
     <url>http://github.com/phax/as2-peppol</url>
-    <tag>as2-peppol-parent-pom-5.4.3</tag>
+    <tag>HEAD</tag>
   </scm>
 
   <organization>
