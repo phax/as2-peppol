@@ -197,8 +197,9 @@ For example:
 
 # News and Noteworthy
 
-* v5.4.3 - work in progress
+* v5.4.3 - 2020-11-26
     * Updated to peppol-commons 8.3.0
+    * Updated to phive-rules-* 2.0.0
 * v5.4.2 - 2020-09-17
     * Updated to Jakarta JAXB 2.3.3
     * Updated to peppol-commons 8.2.2
