@@ -197,6 +197,8 @@ For example:
 
 # News and Noteworthy
 
+* v5.4.4 - work in progress
+    * Updated to peppol-commons 8.3.1
 * v5.4.3 - 2020-11-26
     * Updated to peppol-commons 8.3.0
     * Updated to phive-rules-* 2.0.0
