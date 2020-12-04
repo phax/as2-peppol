@@ -1331,7 +1331,8 @@ public class AS2ClientBuilder
     if (m_aPeppolDocumentTypeID == null)
       m_aMessageHandler.error ("The Peppol document type ID is missing");
     else
-      if (!m_aPeppolDocumentTypeID.hasScheme (PeppolIdentifierHelper.DEFAULT_DOCUMENT_TYPE_SCHEME))
+      if (!m_aPeppolDocumentTypeID.hasScheme (PeppolIdentifierHelper.DOCUMENT_TYPE_SCHEME_BUSDOX_DOCID_QNS) &&
+          !m_aPeppolDocumentTypeID.hasScheme (PeppolIdentifierHelper.DOCUMENT_TYPE_SCHEME_PEPPOL_DOCTYPE_WILDCARD))
         m_aMessageHandler.warn ("The Peppol document type ID '" +
                                 m_aPeppolDocumentTypeID.getURIEncoded () +
                                 "' is using a non-standard scheme!");
