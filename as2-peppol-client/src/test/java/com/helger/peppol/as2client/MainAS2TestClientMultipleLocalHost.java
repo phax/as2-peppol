@@ -25,9 +25,6 @@ import org.slf4j.LoggerFactory;
 
 import com.helger.as2lib.client.AS2ClientResponse;
 import com.helger.as2lib.crypto.ECryptoAlgorithmSign;
-import com.helger.bdve.api.executorset.VESID;
-import com.helger.bdve.api.result.ValidationResult;
-import com.helger.bdve.peppol.PeppolValidation3_10_1;
 import com.helger.commons.debug.GlobalDebug;
 import com.helger.commons.io.resource.ClassPathResource;
 import com.helger.commons.io.resource.IReadableResource;
@@ -41,6 +38,9 @@ import com.helger.peppolid.factory.IIdentifierFactory;
 import com.helger.peppolid.factory.PeppolIdentifierFactory;
 import com.helger.peppolid.peppol.doctype.EPredefinedDocumentTypeIdentifier;
 import com.helger.peppolid.peppol.process.EPredefinedProcessIdentifier;
+import com.helger.phive.api.executorset.VESID;
+import com.helger.phive.api.result.ValidationResult;
+import com.helger.phive.peppol.PeppolValidation3_11_1;
 import com.helger.security.keystore.EKeyStoreType;
 import com.helger.smpclient.config.SMPClientConfiguration;
 import com.helger.smpclient.peppol.SMPClientReadOnly;
@@ -94,7 +94,7 @@ public final class MainAS2TestClientMultipleLocalHost
     String sReceiverKeyAlias = null;
     String sReceiverAddress = null;
     ISMLInfo aSML = ESML.DIGIT_PRODUCTION;
-    final VESID aValidationKey = true ? null : PeppolValidation3_10_1.VID_OPENPEPPOL_INVOICE_V3;
+    final VESID aValidationKey = true ? null : PeppolValidation3_11_1.VID_OPENPEPPOL_INVOICE_V3;
     final URI aSMPURI = null;
     final ECryptoAlgorithmSign eMICAlg = ECryptoAlgorithmSign.DIGEST_SHA_1;
     final HttpHost aProxy = SMPClientConfiguration.getHttpProxy ();

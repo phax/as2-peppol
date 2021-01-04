@@ -33,11 +33,6 @@ import com.helger.as2lib.crypto.ECryptoAlgorithmSign;
 import com.helger.as2lib.util.dump.HTTPOutgoingDumperStreamBased;
 import com.helger.as2lib.util.dump.IHTTPOutgoingDumper;
 import com.helger.as2lib.util.http.HTTPHelper;
-import com.helger.bdve.api.executorset.VESID;
-import com.helger.bdve.api.executorset.ValidationExecutorSetRegistry;
-import com.helger.bdve.api.result.ValidationResult;
-import com.helger.bdve.engine.source.IValidationSourceXML;
-import com.helger.bdve.simplerinvoicing.SimplerInvoicingValidation;
 import com.helger.commons.annotation.OverrideOnDemand;
 import com.helger.commons.debug.GlobalDebug;
 import com.helger.commons.error.IError;
@@ -55,6 +50,11 @@ import com.helger.peppolid.factory.IIdentifierFactory;
 import com.helger.peppolid.factory.PeppolIdentifierFactory;
 import com.helger.peppolid.peppol.doctype.EPredefinedDocumentTypeIdentifier;
 import com.helger.peppolid.peppol.process.EPredefinedProcessIdentifier;
+import com.helger.phive.api.executorset.VESID;
+import com.helger.phive.api.executorset.ValidationExecutorSetRegistry;
+import com.helger.phive.api.result.ValidationResult;
+import com.helger.phive.engine.source.IValidationSourceXML;
+import com.helger.phive.simplerinvoicing.SimplerInvoicingValidation;
 import com.helger.security.keystore.EKeyStoreType;
 import com.helger.security.keystore.IKeyStoreType;
 import com.helger.smpclient.config.SMPClientConfiguration;
@@ -106,13 +106,13 @@ public final class MainAS2TestClientUpNxt
   }
 
   /** Your AS2 sender ID */
-  private static final String _getSenderAS2ID ()
+  private static String _getSenderAS2ID ()
   {
     return "PDK000270";
   }
 
   /** Your AS2 key alias in the PKCS12 key store */
-  private static final String _getSenderKeyAlias ()
+  private static String _getSenderKeyAlias ()
   {
     return _getSenderAS2ID ();
   }

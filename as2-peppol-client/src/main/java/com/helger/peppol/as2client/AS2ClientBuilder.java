@@ -48,14 +48,6 @@ import com.helger.as2lib.disposition.DispositionOptions;
 import com.helger.as2lib.util.dump.IHTTPIncomingDumper;
 import com.helger.as2lib.util.dump.IHTTPOutgoingDumper;
 import com.helger.as2lib.util.dump.IHTTPOutgoingDumperFactory;
-import com.helger.bdve.api.execute.ValidationExecutionManager;
-import com.helger.bdve.api.executorset.IValidationExecutorSet;
-import com.helger.bdve.api.executorset.VESID;
-import com.helger.bdve.api.executorset.ValidationExecutorSetRegistry;
-import com.helger.bdve.api.result.ValidationResultList;
-import com.helger.bdve.engine.source.IValidationSourceXML;
-import com.helger.bdve.engine.source.ValidationSourceXML;
-import com.helger.bdve.peppol.PeppolValidation;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.annotation.OverrideOnDemand;
@@ -90,6 +82,14 @@ import com.helger.peppolid.IParticipantIdentifier;
 import com.helger.peppolid.IProcessIdentifier;
 import com.helger.peppolid.factory.PeppolIdentifierFactory;
 import com.helger.peppolid.peppol.PeppolIdentifierHelper;
+import com.helger.phive.api.execute.ValidationExecutionManager;
+import com.helger.phive.api.executorset.IValidationExecutorSet;
+import com.helger.phive.api.executorset.VESID;
+import com.helger.phive.api.executorset.ValidationExecutorSetRegistry;
+import com.helger.phive.api.result.ValidationResultList;
+import com.helger.phive.engine.source.IValidationSourceXML;
+import com.helger.phive.engine.source.ValidationSourceXML;
+import com.helger.phive.peppol.PeppolValidation;
 import com.helger.sbdh.CSBDH;
 import com.helger.sbdh.SBDMarshaller;
 import com.helger.security.keystore.IKeyStoreType;
@@ -1154,7 +1154,7 @@ public class AS2ClientBuilder
                   final EPeppolCertificateCheckResult eCertCheckResult = PeppolCertificateChecker.checkPeppolAPCertificate (m_aReceiverCert,
                                                                                                                             aNow,
                                                                                                                             ETriState.UNDEFINED,
-                                                                                                                            ETriState.UNDEFINED);
+                                                                                                                            null);
 
                   // Interpret the result
                   m_aReceiverCertCheckResultHandler.onCertificateCheckResult (m_aReceiverCert, aNow, eCertCheckResult);
@@ -1331,7 +1331,8 @@ public class AS2ClientBuilder
     if (m_aPeppolDocumentTypeID == null)
       m_aMessageHandler.error ("The Peppol document type ID is missing");
     else
-      if (!m_aPeppolDocumentTypeID.hasScheme (PeppolIdentifierHelper.DEFAULT_DOCUMENT_TYPE_SCHEME))
+      if (!m_aPeppolDocumentTypeID.hasScheme (PeppolIdentifierHelper.DOCUMENT_TYPE_SCHEME_BUSDOX_DOCID_QNS) &&
+          !m_aPeppolDocumentTypeID.hasScheme (PeppolIdentifierHelper.DOCUMENT_TYPE_SCHEME_PEPPOL_DOCTYPE_WILDCARD))
         m_aMessageHandler.warn ("The Peppol document type ID '" +
                                 m_aPeppolDocumentTypeID.getURIEncoded () +
                                 "' is using a non-standard scheme!");
