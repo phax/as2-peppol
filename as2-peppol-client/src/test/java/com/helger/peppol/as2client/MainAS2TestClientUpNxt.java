@@ -131,6 +131,7 @@ public final class MainAS2TestClientUpNxt
     // Avoid SMP lookup
     final String sReceiverAddress = "http://localhost:8080/as2";
     final ISMLInfo aSML = ESML.DIGIT_TEST;
+    @SuppressWarnings ("deprecation")
     final VESID aValidationKey = SimplerInvoicingValidation.VID_SI_INVOICE_V11;
     final ECryptoAlgorithmSign eMICAlg = ECryptoAlgorithmSign.DIGEST_SHA_1;
     final HttpHost aProxy = SMPClientConfiguration.getHttpProxy ();
