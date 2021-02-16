@@ -96,11 +96,11 @@ import com.helger.security.keystore.IKeyStoreType;
 import com.helger.smpclient.exception.SMPClientException;
 import com.helger.smpclient.peppol.ISMPServiceMetadataProvider;
 import com.helger.smpclient.peppol.SMPClientReadOnly;
-import com.helger.smpclient.peppol.jaxb.EndpointType;
-import com.helger.smpclient.peppol.jaxb.SignedServiceMetadataType;
 import com.helger.xml.namespace.INamespaceContext;
 import com.helger.xml.namespace.MapBasedNamespaceContext;
 import com.helger.xml.serialize.read.DOMReader;
+import com.helger.xsds.peppol.smp1.EndpointType;
+import com.helger.xsds.peppol.smp1.SignedServiceMetadataType;
 
 /**
  * A builder class for easy usage of the AS2 client for sending messages to a

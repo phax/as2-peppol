@@ -49,7 +49,7 @@ import com.helger.sbdh.SBDMarshaller;
 import com.helger.security.certificate.CertificateHelper;
 import com.helger.smpclient.peppol.ISMPServiceMetadataProvider;
 import com.helger.smpclient.peppol.SMPClientReadOnly;
-import com.helger.smpclient.peppol.jaxb.EndpointType;
+import com.helger.xsds.peppol.smp1.EndpointType;
 
 /**
  * This processor module triggers the processing of the incoming SBD XML
