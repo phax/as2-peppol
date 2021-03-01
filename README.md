@@ -4,6 +4,9 @@
 [![javadoc](https://javadoc.io/badge2/com.helger.peppol/as2-peppol-client/javadoc.svg)](https://javadoc.io/doc/com.helger.peppol/as2-peppol-client)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.helger.peppol/as2-peppol-parent-pom/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.helger.peppol/as2-peppol-parent-pom) 
 
+AS2 should no longer be used in Peppol - use [phase4](https://github.com/phax/phase4) instead.
+That's why this project is archived - ping me if you have a good reason to continue this project.
+
 ## Status migration AS2 &rarr; AS4
 
 Peppol migrated to AS4 as the mandatory transport protocol as of February 1<sup>st</sup>, 2020.
